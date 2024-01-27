@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  schedule:
+    - cron: "0 */1 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      update_available: ${{ steps.update_available.outputs.update_status }}
+    steps:
+
+      - id: current_repo
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: ${{ github.repository }}
+
+      - id: ophirofox_repo
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: lovasoa/ophirofox
+
+      - name: "Grab latest ophirofox version name"
+        #working-directory: ophirofox
+        run: | 
+          echo OPHIROFOX_VERSION=$(cut -c2- <<< ${{ steps.ophirofox_repo.outputs.release }}) >> $GITHUB_ENV
+
+      - name: "Output latest OPHIROFOX_VERSION"
+        run: "echo OPHIROFOX_VERSION: ${{ env.OPHIROFOX_VERSION }}"
+
+      - id: update_available
+        run: |
+          echo CURRENT REPO RELEASE   : ${{ steps.current_repo.outputs.release }}
+          echo OPHIROFOX REPO RELEASE : ${{ steps.ophirofox_repo.outputs.release }}
+          if [[ ${{ steps.current_repo.outputs.release }} == ${{ steps.ophirofox_repo.outputs.release }} ]]; then
+            echo "No release available"
+            update_status=0
+            echo "update_status=false" >> $GITHUB_OUTPUT
+          else
+            echo "New release available"
+            update_status=1
+            echo "update_status=true" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: ${{ needs.check-version.outputs.update_available == 'true' }}
+    steps:
+
+      - id: ophirofox_repo
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: lovasoa/ophirofox
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@master
+        with:
+          repository: lovasoa/ophirofox
+          path: './ophirofox'
+
+      - name: "Grab latest ophirofox version name"
+        run: | 
+          echo OPHIROFOX_VERSION=$(cut -c2- <<< ${{ steps.ophirofox_repo.outputs.release }}) >> $GITHUB_ENV
+          echo "ophiro_latest_version=${{ env.OPHIROFOX_VERSION }}" >> $GITHUB_OUTPUT
+
+      - name: Copy generate-userscript.sh inside ophirofox dir
+        run: cp ./generate-userscript.sh ./ophirofox/generate-userscript.sh
+
+      - name: Grant execution rights to generate-userscript.sh
+        working-directory: ophirofox
+        run: chmod +x ./generate-userscript.sh
+
+      - name: Run generate-userscript.sh
+        working-directory: ophirofox
+        run: ./generate-userscript.sh ${{ env.OPHIROFOX_VERSION }}
+
+      - name: Get ophirofox changelog
+        working-directory: ophirofox
+        run: git log -1 --pretty=%B | tee /tmp/changelog.txt
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.OPHIROFOX_VERSION }}
+          name: Release ${{ env.OPHIROFOX_VERSION }}
+          draft: false
+          prerelease: false
+          body_path: /tmp/changelog.txt
+          files: |
+            ./ophirofox/ophirofox.user.js
+            /tmp/changelog.txt
+
+
+
