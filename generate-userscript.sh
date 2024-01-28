@@ -273,7 +273,7 @@ while IFS= read -r line; do
       });
 
       pasteStyle(`
-      '"$css_str"'
+'"$css_str"'
       `);
   }
 '
