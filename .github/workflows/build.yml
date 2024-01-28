@@ -98,7 +98,11 @@ jobs:
 
       - name: Beautify userscript
         working-directory: ophirofox
-        run: js-beautify ophirofox.user.js > ophirofox.user.js
+        run: js-beautify ophirofox.user.js >> ophirofox-pretty.user.js
+
+      - name: Preview beautified userscript
+        working-directory: ophirofox
+        run: cat ophirofox-pretty.user.js
 
       - name: Get ophirofox changelog
         working-directory: ophirofox
@@ -114,6 +118,7 @@ jobs:
           body_path: /tmp/changelog.txt
           files: |
             ./ophirofox/ophirofox.user.js
+            ./ophirofox/ophirofox-pretty.user.js
             /tmp/changelog.txt
 
 
