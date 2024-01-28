@@ -11,12 +11,12 @@ europress_urls_count=$(jq -rc 'del(.optional_permissions[] | select(. == "webNav
 
 SCRIPT=$(cat <<-END
 // ==UserScript==
-// @version     $1
-// @author      Write
-// @name        OphirofoxScript
-// @grant    GM.getValue
-// @grant    GM.setValue
-// @grant    GM.deleteValue
+// @version $1
+// @author  Write
+// @name    OphirofoxScript
+// @grant   GM.getValue
+// @grant   GM.setValue
+// @grant   GM.deleteValue
 END
 )
 SCRIPT+=$'\n'
@@ -51,8 +51,7 @@ SCRIPT+=$'//
    * ----------------
    * */
 
-  // Changer de votre université ici, voir la liste ci-dessous dans ophirofox_config_list
-  // 
+  // Changer la variable par le de votre université. Voir la liste ci-dessous dans ophirofox_config_list.
   const universityName = "Bibliotheque nationale et universitaire de Strasbourg"
 
   /* ----------------
