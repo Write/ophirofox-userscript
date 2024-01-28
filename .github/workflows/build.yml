@@ -41,14 +41,15 @@ jobs:
 
       - name: "Get latest ophirofox version number"
         working-directory: ophirofox
-        run: | 
+        run: |
+          echo OPHIROFOX_VERSION_RAW=$(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
           echo OPHIROFOX_VERSION=$(cut -c2- <<< $(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
 
       - id: update_available
         run: |
           echo CURRENT REPO RELEASE   : ${{ steps.current_repo.outputs.release }}
-          echo OPHIROFOX REPO RELEASE : ${{ env.OPHIROFOX_VERSION }}
-          if [[ ${{ steps.current_repo.outputs.release }} == ${{ env.OPHIROFOX_VERSION }} ]]; then
+          echo OPHIROFOX REPO RELEASE : ${{ env.OPHIROFOX_VERSION_RAW }}
+          if [[ ${{ steps.current_repo.outputs.release }} == ${{ env.OPHIROFOX_VERSION_RAW }} ]]; then
             echo "No release available"
             update_status=0
             echo "update_status=false" >> $GITHUB_OUTPUT
