@@ -31,18 +31,11 @@ jobs:
           fetch-depth: 0
           repository: lovasoa/ophirofox
           path: './ophirofox'
-
+ 
       - name: "Get latest ophirofox version number"
         working-directory: ophirofox
         run: |
-          git rev-list --tags --max-count=1
-          git describe --tags `git rev-list --tags --max-count=1`
-          echo OPHIROFOX_VERSION=$(cut -c2- <<< $(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
-
-      - name: "Get latest ophirofox version number"
-        working-directory: ophirofox
-        run: |
-          echo OPHIROFOX_VERSION_RAW=$(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
+          echo OPHIROFOX_VERSION_RAW=$(git describe --tags `git rev-list --tags --max-count=1`) >> $GITHUB_ENV
           echo OPHIROFOX_VERSION=$(cut -c2- <<< $(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
 
       - id: update_available
