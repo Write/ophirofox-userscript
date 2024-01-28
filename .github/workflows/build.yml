@@ -28,7 +28,7 @@ jobs:
 
       - uses: actions/checkout@master
         with:
-          fetch-depth: 3
+          fetch-depth: 0
           repository: lovasoa/ophirofox
           path: './ophirofox'
 
