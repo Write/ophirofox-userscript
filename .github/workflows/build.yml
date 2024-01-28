@@ -105,8 +105,8 @@ jobs:
         run: git log -1 --pretty=%B | tee /tmp/changelog.txt
 
       - name: Push to main
-        working-directory: ophirofox
         run: |
+          cp ./ophirofox/ophirofox.user.js .
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ophirofox.user.js
