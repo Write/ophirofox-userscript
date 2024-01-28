@@ -1,10 +1,10 @@
 // ==UserScript==
-// @version     2.4.26038.5913
-// @author      Write
-// @name        OphirofoxScript
-// @grant    GM.getValue
-// @grant    GM.setValue
-// @grant    GM.deleteValue
+// @version 2.4.26038.5913
+// @author  Write
+// @name    OphirofoxScript
+// @grant   GM.getValue
+// @grant   GM.setValue
+// @grant   GM.deleteValue
 // @include https://nouveau-europresse-com.essec.idm.oclc.org/*
 // @include https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*
 // @include https://nouveau-europresse-com.ezproxy.upf.pf/*
@@ -130,8 +130,7 @@
      * ----------------
      * */
 
-    // Changer de votre université ici, voir la liste ci-dessous dans ophirofox_config_list
-    // 
+    // Changer la variable par le de votre université. Voir la liste ci-dessous dans ophirofox_config_list.
     const universityName = "Bibliotheque nationale et universitaire de Strasbourg"
 
     /* ----------------
