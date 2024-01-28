@@ -28,12 +28,13 @@ jobs:
 
       - uses: actions/checkout@master
         with:
+          fetch-depth: 3
           repository: lovasoa/ophirofox
           path: './ophirofox'
 
       - name: "Get latest ophirofox version number"
         working-directory: ophirofox
-        run: | 
+        run: |
           git rev-list --tags --max-count=1
           git describe --tags `git rev-list --tags --max-count=1`
           echo OPHIROFOX_VERSION=$(cut -c2- <<< $(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
