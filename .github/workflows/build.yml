@@ -98,15 +98,20 @@ jobs:
 
       - name: Beautify userscript
         working-directory: ophirofox
-        run: js-beautify ophirofox.user.js >> ophirofox-pretty.user.js
-
-      - name: Preview beautified userscript
-        working-directory: ophirofox
-        run: cat ophirofox-pretty.user.js
+        run: js-beautify ophirofox.user.js >> ophirofox-pretty.user.js && mv ophirofox-pretty.user.js ophirofox.user.js
 
       - name: Get ophirofox changelog
         working-directory: ophirofox
         run: git log -1 --pretty=%B | tee /tmp/changelog.txt
+
+      - name: Push to main
+        working-directory: ophirofox
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ophirofox.user.js
+          git commit -m "Release from Ophirofox v${{ env.OPHIROFOX_VERSION }}"
+          git push
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -118,7 +123,6 @@ jobs:
           body_path: /tmp/changelog.txt
           files: |
             ./ophirofox/ophirofox.user.js
-            ./ophirofox/ophirofox-pretty.user.js
             /tmp/changelog.txt
 
 
