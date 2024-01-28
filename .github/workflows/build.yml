@@ -30,6 +30,7 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: lovasoa/ophirofox
+          excludes: "prerelease, draft"
 
       - name: "Grab latest ophirofox version name"
         #working-directory: ophirofox
@@ -63,6 +64,7 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: lovasoa/ophirofox
+          excludes: "prerelease, draft"
 
       - uses: actions/checkout@v3
 
@@ -72,7 +74,9 @@ jobs:
           path: './ophirofox'
 
       - name: "Grab latest ophirofox version name"
-        run: | 
+        working-directory: ophirofox
+        run: |
+          
           echo OPHIROFOX_VERSION=$(cut -c2- <<< ${{ steps.ophirofox_repo.outputs.release }}) >> $GITHUB_ENV
           echo "ophiro_latest_version=${{ env.OPHIROFOX_VERSION }}" >> $GITHUB_OUTPUT
 
