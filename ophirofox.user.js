@@ -86,6 +86,7 @@
 // @include https://nouveau-europresse-com.revproxy.escpeurope.eu/*
 // @include https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/
 // @include https://nouveau-europresse-com.ezproxy.unilim.fr/*
+// @include https://nouveau-europresse-com.ezproxy.uphf.fr/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -404,6 +405,9 @@
         "name": "Université de la Polynésie Française",
         "AUTH_URL": "http://nouveau.europresse.com.ezproxy.upf.pf/access/ip/default.aspx?un=tahitiT_1"
     }, {
+        "name": "Université Polytechnique Hauts-de-France",
+        "AUTH_URL": "http://ezproxy.uphf.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=valenciennesT_1"
+    }, {
         "name": "Université de Reims Champagne-Ardenne",
         "AUTH_URL": "https://urca.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ArdenneT_1"
     }, {
@@ -581,7 +585,8 @@
         "https://nouveau-europresse-com.proxy.bnl.lu/*".includes(hostname) ||
         "https://nouveau-europresse-com.revproxy.escpeurope.eu/*".includes(hostname) ||
         "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
@@ -650,23 +655,25 @@
 
         onLoad().catch(console.error);
 
-        pasteStyle(`mark,
-span.mark {
-  animation-duration: 3s;
-  animation-name: background-fadeout;
-  animation-fill-mode: forwards;
-  background-color: transparent;
-}
-
-@keyframes background-fadeout {
-  from {
-    background-color: #fbf592;
-  }
-
-  to {
-    background-color: transparent;
-  }
-}`);
+        pasteStyle(`
+        mark,
+        span.mark {
+          animation-duration: 3s;
+          animation-name: background-fadeout;
+          animation-fill-mode: forwards;
+          background-color: transparent;
+        }
+        
+        @keyframes background-fadeout {
+          from {
+            background-color: #fbf592;
+          }
+        
+          to {
+            background-color: transparent;
+          }
+        }
+        `);
     }
     if ("https://www.lemonde.fr/*".includes(hostname)) {
 
@@ -710,15 +717,15 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    color: black;
-    margin-left: 7px;
-}
-
-#js-message-register{
-    display: none;
-}
-      `);
+        .ophirofox-europresse {
+            color: black;
+            margin-left: 7px;
+        }
+        
+        #js-message-register{
+            display: none;
+        }
+        `);
     }
 
     if ("https://www.liberation.fr/*".includes(hostname)) {
@@ -794,23 +801,23 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    display: inline-block;
-    font-size: 0.875rem;
-    line-height: 1.125rem;
-    margin-bottom: 1rem;
-    margin-left: 0px;
-    padding: 5px 10px;
-    background-color: #eeb54e;
-    color: #000;
-    border-radius: 2px;
-    text-decoration: none;
-}
-
-.ophirofox-europresse:hover {
-    color: #666666;
-}
-      `);
+        .ophirofox-europresse {
+            display: inline-block;
+            font-size: 0.875rem;
+            line-height: 1.125rem;
+            margin-bottom: 1rem;
+            margin-left: 0px;
+            padding: 5px 10px;
+            background-color: #eeb54e;
+            color: #000;
+            border-radius: 2px;
+            text-decoration: none;
+        }
+        
+        .ophirofox-europresse:hover {
+            color: #666666;
+        }
+        `);
     }
 
     if ("https://next.liberation.fr/*".includes(hostname)) {
@@ -886,23 +893,23 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    display: inline-block;
-    font-size: 0.875rem;
-    line-height: 1.125rem;
-    margin-bottom: 1rem;
-    margin-left: 0px;
-    padding: 5px 10px;
-    background-color: #eeb54e;
-    color: #000;
-    border-radius: 2px;
-    text-decoration: none;
-}
-
-.ophirofox-europresse:hover {
-    color: #666666;
-}
-      `);
+        .ophirofox-europresse {
+            display: inline-block;
+            font-size: 0.875rem;
+            line-height: 1.125rem;
+            margin-bottom: 1rem;
+            margin-left: 0px;
+            padding: 5px 10px;
+            background-color: #eeb54e;
+            color: #000;
+            border-radius: 2px;
+            text-decoration: none;
+        }
+        
+        .ophirofox-europresse:hover {
+            color: #666666;
+        }
+        `);
     }
 
     if ("https://www.lefigaro.fr/*".includes(hostname)) {
@@ -936,10 +943,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
+        `);
     }
 
     if ("https://leparticulier.lefigaro.fr/*".includes(hostname)) {
@@ -973,10 +980,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
+        `);
     }
 
     if ("https://www.monde-diplomatique.fr/*".includes(hostname)) {
@@ -1016,10 +1023,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
+        `);
     }
 
     if ("https://www.la-croix.com/*".includes(hostname)) {
@@ -1039,32 +1046,32 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    -webkit-font-smoothing: antialiased;
-    align-items: center;
-    background-color: #ef7c03;
-    color: #fff !important;
-    display: inline-flex;
-    font-family: Public Sans,sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    height: 15px;
-    hyphens: none;
-    justify-content: center;
-    letter-spacing: 0;
-    line-height: 1.35;
-    margin: 0 5px;
-    position: relative;
-    text-align: center;
-    top: 50%;
-    vertical-align: middle;
-    width: 120px;
-}
-
-.above-image-wrapper {
-    align-items: center;
-}
-      `);
+        .ophirofox-europresse {
+            -webkit-font-smoothing: antialiased;
+            align-items: center;
+            background-color: #ef7c03;
+            color: #fff !important;
+            display: inline-flex;
+            font-family: Public Sans,sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            height: 15px;
+            hyphens: none;
+            justify-content: center;
+            letter-spacing: 0;
+            line-height: 1.35;
+            margin: 0 5px;
+            position: relative;
+            text-align: center;
+            top: 50%;
+            vertical-align: middle;
+            width: 120px;
+        }
+        
+        .above-image-wrapper {
+            align-items: center;
+        }
+        `);
     }
 
     if ("https://www.courrierinternational.com/*".includes(hostname)) {
@@ -1086,10 +1093,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
+        `);
     }
 
     if ("https://www.lamontagne.fr/*".includes(hostname)) {
@@ -1123,10 +1130,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    padding: 10px !important;
-}
-      `);
+        .ophirofox-europresse {
+            padding: 10px !important;
+        }
+        `);
     }
 
     if ("https://www.humanite.fr/*".includes(hostname)) {
@@ -1152,10 +1159,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    padding: 10px !important;
-}
-      `);
+        .ophirofox-europresse {
+            padding: 10px !important;
+        }
+        `);
     }
 
     if ("https://www.lepoint.fr/*".includes(hostname)) {
@@ -1178,11 +1185,11 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-    background-color: rgb(255, 187, 0);
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+            background-color: rgb(255, 187, 0);
+        }
+        `);
     }
 
     if ("https://www.lesoir.be/*".includes(hostname)) {
@@ -1216,10 +1223,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
+        `);
     }
 
     if ("https://www.lesechos.fr/*".includes(hostname)) {
@@ -1292,17 +1299,17 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #faec70;
-    padding: 0.4em;
-    padding-right: 1em;
-    padding-left: 1em;
-    border: 1px solid grey;
-    border-radius: 50px;
-    text-decoration: none;
-    font-size: 0.85em;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #faec70;
+            padding: 0.4em;
+            padding-right: 1em;
+            padding-left: 1em;
+            border: 1px solid grey;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.85em;
+        }
+        `);
     }
 
     if ("https://www.letemps.ch/*".includes(hostname)) {
@@ -1336,10 +1343,10 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    margin-left: 10px;
-}
-      `);
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
+        `);
     }
 
     if ("https://www.lalibre.be/*".includes(hostname)) {
@@ -1365,19 +1372,19 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-	margin-left: 0.25em;
-	background-color: #f7b500;
-	border-radius: 0.25rem;
-	color: #5d3c10 !important;
-	margin-right: 0.25em;
-	font-size: medium;
-	font-family: Libre Franklin,Helvetica Neue,Helvetica,Arial,sans-serif;
-	vertical-align: middle;
-	line-height: 2.5rem;
-	padding: 0.5rem 1rem 0.2rem;
-}
-      `);
+        .ophirofox-europresse {
+        	margin-left: 0.25em;
+        	background-color: #f7b500;
+        	border-radius: 0.25rem;
+        	color: #5d3c10 !important;
+        	margin-right: 0.25em;
+        	font-size: medium;
+        	font-family: Libre Franklin,Helvetica Neue,Helvetica,Arial,sans-serif;
+        	vertical-align: middle;
+        	line-height: 2.5rem;
+        	padding: 0.5rem 1rem 0.2rem;
+        }
+        `);
     }
 
     if ("https://www.lavoixdunord.fr/*".includes(hostname)) {
@@ -1412,11 +1419,11 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    padding: 8px 12px;
-    border-radius: 8px;
-}
-      `);
+        .ophirofox-europresse {
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        `);
     }
 
     if ("https://www.ouest-france.fr/*".includes(hostname)) {
@@ -1452,18 +1459,18 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background: #cba200;
-    color: #fff;
-    text-transform: none;
-    text-decoration: none;
-    border: 0;
-    font-weight: var(--font-weight-bold);
-    border-radius: 8px;
-    box-sizing: border-box;
-    padding: 8px 12px;
-}
-      `);
+        .ophirofox-europresse {
+            background: #cba200;
+            color: #fff;
+            text-transform: none;
+            text-decoration: none;
+            border: 0;
+            font-weight: var(--font-weight-bold);
+            border-radius: 8px;
+            box-sizing: border-box;
+            padding: 8px 12px;
+        }
+        `);
     }
 
     if ("https://www.sudouest.fr/*".includes(hostname)) {
@@ -1497,22 +1504,22 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    color: black;
-    margin-left: 7px;
-    padding: 0.4em 0.6em;
-    background-color: #ffc400;
-    font-size: 10px;
-    font-family: "SF Text","Helvetica Neue","Helvetica","Open Sans","Arial",sans-serif;
-    line-height: 1em;
-    border-radius: 0;
-    display: inline-block;
-    width: auto;
-   	text-transform: uppercase;
-    font-weight: 700;
-    height: auto;
-}
-      `);
+        .ophirofox-europresse {
+            color: black;
+            margin-left: 7px;
+            padding: 0.4em 0.6em;
+            background-color: #ffc400;
+            font-size: 10px;
+            font-family: "SF Text","Helvetica Neue","Helvetica","Open Sans","Arial",sans-serif;
+            line-height: 1em;
+            border-radius: 0;
+            display: inline-block;
+            width: auto;
+           	text-transform: uppercase;
+            font-weight: 700;
+            height: auto;
+        }
+        `);
     }
 
     if ("https://www.laprovence.com/*".includes(hostname)) {
@@ -1542,13 +1549,13 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    color: black;
-    margin-left: 7px;
-    padding: 0.4em 0.6em;
-    background-color: #ffcd1d;
-}
-      `);
+        .ophirofox-europresse {
+            color: black;
+            margin-left: 7px;
+            padding: 0.4em 0.6em;
+            background-color: #ffcd1d;
+        }
+        `);
     }
 
     if ("https://www.ladepeche.fr/*".includes(hostname)) {
@@ -1579,15 +1586,15 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #f2c94c;
-    color: #695106;
-    font-family: Lato,Lato-fallback,Arial,Helvetica,sans-serif;
-    padding: 1em;
-    vertical-align: middle;
-    border-radius: 0.5rem;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #f2c94c;
+            color: #695106;
+            font-family: Lato,Lato-fallback,Arial,Helvetica,sans-serif;
+            padding: 1em;
+            vertical-align: middle;
+            border-radius: 0.5rem;
+        }
+        `);
     }
 
     if ("https://www.leparisien.fr/*".includes(hostname)) {
@@ -1650,22 +1657,22 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #fc3;
-    color: black;
-    font-family: GraphikCompact,Arial,sans-serif;
-    font-weight: 600;
-    letter-spacing: .02em;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    text-decoration: none;
-    border-radius: 1.25rem;
-    padding: 0.7em;
-    margin-bottom: 10px;
-    display: block;
-    width: 135px;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #fc3;
+            color: black;
+            font-family: GraphikCompact,Arial,sans-serif;
+            font-weight: 600;
+            letter-spacing: .02em;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            text-decoration: none;
+            border-radius: 1.25rem;
+            padding: 0.7em;
+            margin-bottom: 10px;
+            display: block;
+            width: 135px;
+        }
+        `);
     }
 
     if ("https://www.lexpress.fr/*".includes(hostname)) {
@@ -1692,31 +1699,31 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-	padding: 0px;
-	text-decoration: none;
-	color: #333 !important;
-}
-
-.europresse-button {
-	background-color: #ffe066;
-	text-transform: uppercase;
-	text-align: center;
-	padding: 10px;
-	font-size: .75rem;
-	align-items: center;
-	display: flex;
-	border-radius: 5px;
-	margin-right: 14px;
-	margin-top: 14px;
-	width: fit-content;
-	font-weight: 600;
-	margin-bottom: 0px;
-	margin-left: 0px;
-	box-sizing: inherit;
-	color: #333;
-}
-      `);
+        .ophirofox-europresse {
+        	padding: 0px;
+        	text-decoration: none;
+        	color: #333 !important;
+        }
+        
+        .europresse-button {
+        	background-color: #ffe066;
+        	text-transform: uppercase;
+        	text-align: center;
+        	padding: 10px;
+        	font-size: .75rem;
+        	align-items: center;
+        	display: flex;
+        	border-radius: 5px;
+        	margin-right: 14px;
+        	margin-top: 14px;
+        	width: fit-content;
+        	font-weight: 600;
+        	margin-bottom: 0px;
+        	margin-left: 0px;
+        	box-sizing: inherit;
+        	color: #333;
+        }
+        `);
     }
 
     if ("https://www.nouvelobs.com/*".includes(hostname)) {
@@ -1739,26 +1746,26 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #fed500;
-    padding: 1rem 1.5rem;
-    color: #000;
-    border: none;
-    box-shadow: none;
-    text-transform: uppercase;
-    font-size: 1.2rem;
-    font-family: "Karla",ff-karla,sans-serif;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2rem!important;
-    
-}
-
-.ophirofox-europresse:hover, .ophirofox-europresse:active {
-	background-color: #000000;
-	color: #ffffff;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #fed500;
+            padding: 1rem 1.5rem;
+            color: #000;
+            border: none;
+            box-shadow: none;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            font-family: "Karla",ff-karla,sans-serif;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem!important;
+            
+        }
+        
+        .ophirofox-europresse:hover, .ophirofox-europresse:active {
+        	background-color: #000000;
+        	color: #ffffff;
+        }
+        `);
     }
 
     if ("https://www.estrepublicain.fr/*".includes(hostname)) {
@@ -1789,11 +1796,11 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    border-radius: 3px;
-    background-color: #f9dc00;
-}
-      `);
+        .ophirofox-europresse {
+            border-radius: 3px;
+            background-color: #f9dc00;
+        }
+        `);
     }
 
     if ("https://www.latribune.fr/*".includes(hostname)) {
@@ -1822,16 +1829,16 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #ffc612;
-    font-family: "Roboto",sans-serif;
-    padding: 2px 1rem;
-    font-size: 15px;
-    color: #163860;
-    border-radius: 1px;
-    display: inline-block;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #ffc612;
+            font-family: "Roboto",sans-serif;
+            padding: 2px 1rem;
+            font-size: 15px;
+            color: #163860;
+            border-radius: 1px;
+            display: inline-block;
+        }
+        `);
     }
 
     if ("https://www.lopinion.fr/*".includes(hostname)) {
@@ -1860,18 +1867,18 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #ffc612;
-    font-family: serif;
-    padding: 0.5rem 1.3rem;
-    font-size: 1.3rem;
-    font-weight: bold;
-    vertical-align: middle;
-    text-align: center;
-    border-radius: 5px;
-    display: inline-block;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #ffc612;
+            font-family: serif;
+            padding: 0.5rem 1.3rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            vertical-align: middle;
+            text-align: center;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        `);
     }
 
     if ("https://www.nicematin.com/*".includes(hostname)) {
@@ -1899,17 +1906,17 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #faec70;
-    font-family: "Raleway", Arial, Helvetica, sans-serif;
-    margin-left: 2em;
-    padding: 2px 1em;
-    font-size: 1.4rem;
-    font-weight: bold;
-    border-radius: 24px;
-    display: inline-block;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #faec70;
+            font-family: "Raleway", Arial, Helvetica, sans-serif;
+            margin-left: 2em;
+            padding: 2px 1em;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 24px;
+            display: inline-block;
+        }
+        `);
     }
 
     if ("https://www.corsematin.com/*".includes(hostname)) {
@@ -1937,17 +1944,17 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    background-color: #ffc612;
-    font-family: "Roboto", sans-serif;
-    padding: 2px 1em;
-    font-size: 1.4rem;
-    font-weight: 700;
-    border-radius: 24px;
-    margin-left: 1rem;
-    display: inline-block;
-}
-      `);
+        .ophirofox-europresse {
+            background-color: #ffc612;
+            font-family: "Roboto", sans-serif;
+            padding: 2px 1em;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-radius: 24px;
+            margin-left: 1rem;
+            display: inline-block;
+        }
+        `);
     }
 
     if ("https://www.lorientlejour.com/*".includes(hostname)) {
@@ -1976,23 +1983,23 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    font-size: 10px;
-    font-family: "AktivGrotesk-Medium", Helvetica, Arial, sans-serif;
-    text-transform: uppercase;
-    color: #8f7f54;
-    width: auto;
-    height: 26px;
-    padding-left: 8px;
-    padding-right: 8px;
-    background-color: #ffdf8a;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    margin: 0 0 0 10px;
-    line-height: 26px;
-}
-      `);
+        .ophirofox-europresse {
+            font-size: 10px;
+            font-family: "AktivGrotesk-Medium", Helvetica, Arial, sans-serif;
+            text-transform: uppercase;
+            color: #8f7f54;
+            width: auto;
+            height: 26px;
+            padding-left: 8px;
+            padding-right: 8px;
+            background-color: #ffdf8a;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 0 0 10px;
+            line-height: 26px;
+        }
+        `);
     }
 
     if ("https://www.lavenir.net/*".includes(hostname)) {
@@ -2017,18 +2024,18 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    display: inline-block;
-    margin: 0.4em 0.7em 0 -0.25em;
-    padding: 0 1em;
-    border-radius: 0.25em;
-    background-color: #ffcb00;
-    color: #000 !important;
-    font-size: small;
-    vertical-align: top;
-    line-height: 2.5;
-}
-      `);
+        .ophirofox-europresse {
+            display: inline-block;
+            margin: 0.4em 0.7em 0 -0.25em;
+            padding: 0 1em;
+            border-radius: 0.25em;
+            background-color: #ffcb00;
+            color: #000 !important;
+            font-size: small;
+            vertical-align: top;
+            line-height: 2.5;
+        }
+        `);
     }
 
     if ("https://www.dhnet.be/*".includes(hostname)) {
@@ -2055,18 +2062,18 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    display: inline-block;
-    margin: 0 0.7em 0 0.1em;
-    padding: 0 1em;
-    border-radius: 0.25rem;
-    background-color: #f7b500;
-    color: #000 !important;
-    font-size: small;
-    vertical-align: middle;
-    line-height: 2.7;
-}
-      `);
+        .ophirofox-europresse {
+            display: inline-block;
+            margin: 0 0.7em 0 0.1em;
+            padding: 0 1em;
+            border-radius: 0.25rem;
+            background-color: #f7b500;
+            color: #000 !important;
+            font-size: small;
+            vertical-align: middle;
+            line-height: 2.7;
+        }
+        `);
     }
 
     if ("https://www.sudinfo.be/*".includes(hostname)) {
@@ -2098,14 +2105,14 @@ span.mark {
         });
 
         pasteStyle(`
-.ophirofox-europresse {
-    display: inline-block;
-    padding: 3px 5px 1px 5px;
-    background-color: #ffc549;
-    color: #000;
-    vertical-align: bottom;
-    font-weight: bold;
-}
-      `);
+        .ophirofox-europresse {
+            display: inline-block;
+            padding: 3px 5px 1px 5px;
+            background-color: #ffc549;
+            color: #000;
+            vertical-align: bottom;
+            font-weight: bold;
+        }
+        `);
     }
 })();
