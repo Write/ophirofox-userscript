@@ -87,6 +87,14 @@ jobs:
         working-directory: ophirofox
         run: ./generate-userscript.sh ${{ env.OPHIROFOX_VERSION }}
 
+      - name: Install jsbeautifier via pip
+        working-directory: ophirofox
+        run: pip install jsbeautifier
+
+      - name: Beautify userscript
+        working-directory: ophirofox
+        run: js-beautify ophirofox.user.js > ophirofox.user.js
+
       - name: Get ophirofox changelog
         working-directory: ophirofox
         run: git log -1 --pretty=%B | tee /tmp/changelog.txt
