@@ -8,6 +8,12 @@ partners=$(jq -rc '.browser_specific_settings.ophirofox_metadata.partners' "$MAN
 europress_urls=$(jq -rc 'del(.optional_permissions[] | select(. == "webNavigation"))' "$MANIFEST" | jq -rc '.optional_permissions[]')
 europress_urls_count=$(jq -rc 'del(.optional_permissions[] | select(. == "webNavigation"))' "$MANIFEST" | jq -rc '.optional_permissions[]' | wc -l)
 
+indent() {
+  local indentSize=2
+  local indent=1
+  if [ -n "$1" ]; then indent=$1; fi
+  pr -to $(($indent * $indentSize))
+}
 
 SCRIPT=$(cat <<-END
 // ==UserScript==
@@ -160,7 +166,7 @@ done <<< "$europress_urls"
 # Inject europress_article.{css,js..}
 #  js_europress_article_str=$(cat ./ophirofox/content_scripts/europresse_article.js)
 # js_europress_search_str=$(cat ./ophirofox/content_scripts/europresse_search.js)
-  css_europress_str=$(cat ./ophirofox/content_scripts/europresse_article.css)
+  css_europress_str=$(command cat ./ophirofox/content_scripts/europresse_article.css | indent 4)
   SCRIPT+=$'
 
       function removeMarkElements() {
@@ -230,7 +236,9 @@ done <<< "$europress_urls"
 
       onLoad().catch(console.error);
 
-      pasteStyle(`'"$css_europress_str"'`);
+      pasteStyle(`
+'"$css_europress_str"'
+        `);
   }'
 
 
@@ -261,7 +269,7 @@ while IFS= read -r line; do
 
       # Print CSS Files if not empty
       if [ -n "$css_files" ]; then
-          css_str=$(cat ./ophirofox/"$css_files")
+          css_str=$(command cat ./ophirofox/"$css_files" | indent 4)
       fi
 
       SCRIPT+=$'
@@ -273,7 +281,7 @@ while IFS= read -r line; do
 
       pasteStyle(`
 '"$css_str"'
-      `);
+        `);
   }
 '
     fi
