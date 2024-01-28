@@ -26,25 +26,21 @@ jobs:
         with:
           repository: ${{ github.repository }}
 
-      - id: ophirofox_repo
-        uses: pozetroninc/github-action-get-latest-release@master
+      - uses: actions/checkout@master
         with:
           repository: lovasoa/ophirofox
-          excludes: "prerelease, draft"
+          path: './ophirofox'
 
-      - name: "Grab latest ophirofox version name"
-        #working-directory: ophirofox
+      - name: "Get latest ophirofox version number"
+        working-directory: ophirofox
         run: | 
-          echo OPHIROFOX_VERSION=$(cut -c2- <<< ${{ steps.ophirofox_repo.outputs.release }}) >> $GITHUB_ENV
-
-      - name: "Output latest OPHIROFOX_VERSION"
-        run: "echo OPHIROFOX_VERSION: ${{ env.OPHIROFOX_VERSION }}"
+          echo OPHIROFOX_VERSION=$(cut -c2- <<< $(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
 
       - id: update_available
         run: |
           echo CURRENT REPO RELEASE   : ${{ steps.current_repo.outputs.release }}
-          echo OPHIROFOX REPO RELEASE : ${{ steps.ophirofox_repo.outputs.release }}
-          if [[ ${{ steps.current_repo.outputs.release }} == ${{ steps.ophirofox_repo.outputs.release }} ]]; then
+          echo OPHIROFOX REPO RELEASE : ${{ env.OPHIROFOX_VERSION }}
+          if [[ ${{ steps.current_repo.outputs.release }} == ${{ env.OPHIROFOX_VERSION }} ]]; then
             echo "No release available"
             update_status=0
             echo "update_status=false" >> $GITHUB_OUTPUT
@@ -60,25 +56,17 @@ jobs:
     if: ${{ needs.check-version.outputs.update_available == 'true' }}
     steps:
 
-      - id: ophirofox_repo
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          repository: lovasoa/ophirofox
-          excludes: "prerelease, draft"
-
       - uses: actions/checkout@v3
 
-      - uses: actions/checkout@master
-        with:
-          repository: lovasoa/ophirofox
-          path: './ophirofox'
+      #- uses: actions/checkout@master
+      #  with:
+      #    repository: lovasoa/ophirofox
+      #    path: './ophirofox'
 
-      - name: "Grab latest ophirofox version name"
+      - name: "Get latest ophirofox version number"
         working-directory: ophirofox
-        run: |
-          
-          echo OPHIROFOX_VERSION=$(cut -c2- <<< ${{ steps.ophirofox_repo.outputs.release }}) >> $GITHUB_ENV
-          echo "ophiro_latest_version=${{ env.OPHIROFOX_VERSION }}" >> $GITHUB_OUTPUT
+        run: | 
+          echo OPHIROFOX_VERSION=$(cut -c2- <<< $(git describe --tags `git rev-list --tags --max-count=1`)) >> $GITHUB_ENV
 
       - name: Copy generate-userscript.sh inside ophirofox dir
         run: cp ./generate-userscript.sh ./ophirofox/generate-userscript.sh
