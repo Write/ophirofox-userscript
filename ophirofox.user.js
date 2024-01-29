@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26038.55785
+// @version 2.4.26039.64333
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -119,6 +119,7 @@
 // @include https://www.lavenir.net/*
 // @include https://www.dhnet.be/*
 // @include https://www.sudinfo.be/*
+// @include https://www.letelegramme.fr/*
 //
 // @run-at      document-start
 //
@@ -2112,6 +2113,39 @@
             color: #000;
             vertical-align: bottom;
             font-weight: bold;
+        }
+        `);
+    }
+
+    if ("https://www.letelegramme.fr/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("tlg-btn", "tlg-btn-premium");
+                return a;
+            }
+
+            function findPremiumBanner() {
+                return document.querySelector(".tlg-article-premium");
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                premiumBanner.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            margin-bottom: 24px;
         }
         `);
     }
