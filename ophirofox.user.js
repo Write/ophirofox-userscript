@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26039.64333
+// @version 2.4.26045.6023
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -120,6 +120,7 @@
 // @include https://www.dhnet.be/*
 // @include https://www.sudinfo.be/*
 // @include https://www.letelegramme.fr/*
+// @include https://www.lsa-conso.fr/*
 //
 // @run-at      document-start
 //
@@ -2146,6 +2147,65 @@
         pasteStyle(`
         .ophirofox-europresse {
             margin-bottom: 24px;
+        }
+        `);
+    }
+
+    if ("https://www.lsa-conso.fr/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document
+                    .querySelector("meta[property='og:title']")
+                    .getAttribute("content");
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
+            }
+
+            function findPremiumBanner() {
+                const anchor = document.querySelector('div.epMetaData__head-open');
+                if (!anchor) {
+                    return;
+                }
+                return anchor;
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                premiumBanner.parentElement.before(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            background-color: rgb(254, 194, 45);
+            box-sizing: border-box;
+            color: rgb(0, 0, 0);
+            display: block;
+            font-family: robotoslab-bold, Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            height: 38px;
+            line-height: 18.4px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 10px;
+            text-align: center;
+            width: 190px;
+            -webkit-user-drag: auto;
+            -webkit-user-select: text;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+        
+        .ophirofox-europresse:hover {
+            color: #ffffff;
         }
         `);
     }
