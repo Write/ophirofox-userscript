@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26045.6023
+// @version 2.4.26053.43285
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1680,20 +1680,20 @@
     if ("https://www.lexpress.fr/*".includes(hostname)) {
 
         window.addEventListener("load", function(event) {
-            const title = document.querySelector(".premium_label.label");
-
             function findPremiumBanner() {
-                if (!title) return null;
-                const elems = title.parentElement.querySelectorAll("span");
-                return [...elems].find(d => d.textContent.includes("Article réservé aux abonnés"))
+                const banner = document.querySelector('.article__premium--icon');
+                return banner;
             }
 
             async function onLoad() {
-                const head = findPremiumBanner();
-                if (!head) return;
+                const banner = findPremiumBanner();
+                if (!banner) return;
+                const anchor = document.querySelector(
+                    '.article__metas__container__info'
+                );
                 const newDiv = document.createElement('div');
                 newDiv.classList.add('europresse-button');
-                title.after(newDiv);
+                anchor.appendChild(newDiv);
                 newDiv.appendChild(await ophirofoxEuropresseLink());
             }
 
@@ -1724,6 +1724,7 @@
         	margin-left: 0px;
         	box-sizing: inherit;
         	color: #333;
+        	font-family: 'Spartan','Spartan Fallback 1','Spartan Fallback 2',system-ui,'-apple-system','Segoe UI','Roboto','Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
         }
         `);
     }
