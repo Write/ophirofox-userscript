@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26053.43285
+// @version 2.4.26058.18676
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -121,6 +121,7 @@
 // @include https://www.sudinfo.be/*
 // @include https://www.letelegramme.fr/*
 // @include https://www.lsa-conso.fr/*
+// @include https://www.leprogres.fr/*
 //
 // @run-at      document-start
 //
@@ -2207,6 +2208,79 @@
         
         .ophirofox-europresse:hover {
             color: #ffffff;
+        }
+        `);
+    }
+
+    if ("https://www.leprogres.fr/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                // Works better with keywords from url
+                return extractKeywordsFromUrl(window.location) || extractKeywordsFromTitle();
+            }
+
+            function extractKeywordsFromTitle() {
+                const titleElem = document.querySelector("head > title, article h1");
+                return titleElem && titleElem.textContent;
+            }
+
+            function extractKeywordsFromUrl(url) {
+                const source_url = new URL(url);
+                const le_progres_match = source_url.pathname.match(/([^/.]+)(_\d*_\d*\.html)?$/);
+                if (!le_progres_match) return false;
+                return le_progres_match[1];
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("btn", "bt_default");
+                return a;
+            }
+
+            function waitForElm(selector) {
+                return new Promise(resolve => {
+                    if (document.querySelector(selector)) {
+                        return resolve(document.querySelector(selector));
+                    }
+
+                    const observer = new MutationObserver(mutations => {
+                        if (document.querySelector(selector)) {
+                            observer.disconnect();
+                            resolve(document.querySelector(selector));
+                        }
+                    });
+
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
+                });
+            }
+
+            async function onLoad() {
+                const actionElement = document.querySelector(".fullDetailActions");
+                if (actionElement) {
+                    actionElement.appendChild(await createLink());
+                }
+
+                let paywallElem = await waitForElm(".p3-advanced-paywall");
+                if (!paywallElem) return;
+
+                const link = await createLink();
+                link.className = "button";
+                paywallElem.parentNode.insertBefore(link, paywallElem);
+
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            margin-left: 4px;
+            margin-top: 0px;
+        
         }
         `);
     }
