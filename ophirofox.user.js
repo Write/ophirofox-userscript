@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26058.18676
+// @version 2.4.26064.57937
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -2232,8 +2232,22 @@
                 return le_progres_match[1];
             }
 
+            function extractPublishDate() {
+                try {
+                    const script = document.querySelector("script[type='application/ld+json']")
+                    const json = JSON.parse(script.innerText)
+                    const datePublished = json[0].datePublished;
+                    return datePublished;
+                } catch {
+                    // tant pis
+                    return null;
+                }
+            }
+
             async function createLink() {
-                const a = await ophirofoxEuropresseLink(extractKeywords());
+                const a = await ophirofoxEuropresseLink(extractKeywords(), {
+                    publishedTime: extractPublishDate()
+                });
                 a.classList.add("btn", "bt_default");
                 return a;
             }
@@ -2270,7 +2284,6 @@
                 const link = await createLink();
                 link.className = "button";
                 paywallElem.parentNode.insertBefore(link, paywallElem);
-
             }
 
             onLoad().catch(console.error);
