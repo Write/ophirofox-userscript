@@ -126,24 +126,39 @@ SCRIPT+=$'//
 
   const ophirofox_config = getOphirofoxConfig();
 
-  async function setKeywords(keywords) {
-    await GM.setValue("ophirofox_keywords", keywords);
+  async function setKeywords(keywords, publishedTime) {
+      await GM.setValue("ophirofox_keywords", keywords);
+      await GM.setValue("ophirofox_published_time", publishedTime);
   }
 
-  async function ophirofoxEuropresseLink(keywords) {
-    keywords = keywords ? keywords.trim() : document.querySelector("h1").textContent;
-    const a = document.createElement("a");
-    a.textContent = "Lire sur Europresse";
-    a.className = "ophirofox-europresse";
-    a.onmousedown = setKeywords(keywords);
-    a.onclick = async function (evt) {
-      evt.preventDefault();
-      await Promise.resolve([ophirofox_config, setKeywords(keywords)])
-      const obj = await ophirofox_config;
-      window.location = obj.AUTH_URL;
-    }
-    ophirofox_config.then(({ AUTH_URL }) => { a.href = AUTH_URL });
-    return a;
+  /**
+   * Crée un lien vers Europresse avec les keywords donnés
+   * @param {string} keywords
+   * @returns {Promise<HTMLAnchorElement>}
+   */
+  async function ophirofoxEuropresseLink(keywords, { publishedTime } = {}) {
+      // Keywords is the article name
+      keywords = keywords ? keywords.trim() : document.querySelector("h1").textContent;
+      // Trying to determine published time with meta tags (Open Graph values)
+      publishedTime = publishedTime || document.querySelector( "meta[property='\''article:published_time'\''], meta[property='\''og:article:published_time'\''], meta[property='\''date:published_time'\'']")
+      ?.getAttribute("content") || '\'''\'';
+      // Creating HTML anchor element
+      const a = document.createElement("a");
+      a.textContent = "Lire sur Europresse";
+      a.className = "ophirofox-europresse";
+      a.onmousedown = setKeywords(keywords, publishedTime);
+      a.onclick = async function(evt) {
+          evt.preventDefault();
+          await Promise.resolve([ophirofox_config, setKeywords(keywords, publishedTime)])
+          const obj = await ophirofox_config;
+          window.location = obj.AUTH_URL;
+      }
+      ophirofox_config.then(({
+          AUTH_URL
+      }) => {
+          a.href = AUTH_URL
+      });
+      return a;
   }
 
 '
@@ -188,10 +203,13 @@ done <<< "$europress_urls"
       }).observe(document.body, { subtree: true, childList: true });
       */
 
-      async function consumeSearchTerms() {
-        const keywords = await GM.getValue("ophirofox_keywords");
-        await GM.deleteValue("ophirofox_keywords");
-        return keywords;
+      async function consumeReadRequest() {
+          const keywords = await GM.getValue("ophirofox_keywords");
+          const published_time = await GM.getValue("ophirofox_published_time");
+          const readRequest = { keywords, published_time };
+          await GM.deleteValue("ophirofox_keywords");
+          await GM.deleteValue("ophirofox_published_time");
+          return readRequest;
       }
 
       async function onLoad() {
@@ -204,7 +222,11 @@ done <<< "$europress_urls"
               path.startsWith("/Search/Express") ||
               path.startsWith("/Search/Simple")
           )) return;
-          const search_terms = await consumeSearchTerms();
+
+          const readRequest = await consumeReadRequest();
+          const search_terms = readRequest.keywords;
+          const published_time = readRequest.published_time;
+
           if (!search_terms) return;
           const stopwords = new Set(['\''d'\'', '\''l'\'', '\''et'\'', '\''sans'\'']);
           const keywords = search_terms
@@ -221,8 +243,54 @@ done <<< "$europress_urls"
           });
 
           onElemAvailable('\''#DateFilter_DateRange'\'').then((selector) => {
-            const date_filter = selector;
-            if (date_filter) date_filter.value = 9;
+              const date_filter = selector;
+              if (date_filter) {
+                  if (!published_time) { // Full expand the time range
+                      date_filter.value = 9;
+                  } else {
+                      const publishedDate = new Date(published_time);
+                      publishedDate.setUTCHours(0, 0, 0, 0); // Europresse saves the exact UTC date, but "depuis X jours" is based on midnight 
+                      const currentDate = new Date();
+          
+                      const timeDifference = currentDate.getTime() - publishedDate.getTime();
+                      // Rounds up for tolerance to be sure to not filtering badly
+                      const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+          
+                      let filterValue = 9;
+          
+                      switch (true) {
+                          case (daysDifference <= 1):
+                              filterValue = 2; // Depuis hier
+                              break;
+                          case (daysDifference <= 3):
+                              filterValue = 11; // Depuis 3 jours
+                              break;
+                          case (daysDifference <= 7):
+                              filterValue = 3; // Depuis 7 jours
+                              break;
+                          case (daysDifference <= 30):
+                              filterValue = 4; // Depuis 30 jours
+                              break;
+                          case (daysDifference <= 90):
+                              filterValue = 5; // Depuis 3 mois
+                              break;
+                          case (daysDifference <= 180):
+                              filterValue = 6; // Depuis 6 mois
+                              break;
+                          case (daysDifference <= 365):
+                              filterValue = 7; // Depuis 1 an
+                              break;
+                          case (daysDifference <= 730):
+                              filterValue = 8; // Depuis 2 ans
+                              break;
+                          default:
+                              filterValue = 9; // Dans toutes les archives
+                              break;
+                      }
+          
+                      date_filter.value = filterValue;
+                  }
+              }
           });
       }
 
