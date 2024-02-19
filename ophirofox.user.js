@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26067.34940
+// @version 2.4.26067.59890
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -123,6 +123,12 @@
 // @include https://www.letelegramme.fr/*
 // @include https://www.lsa-conso.fr/*
 // @include https://www.leprogres.fr/*
+// @include https://www.levif.be/*
+// @include https://trends.levif.be/*
+// @include https://www.knack.be/*
+// @include https://www.demorgen.be/*
+// @include https://www.standaard.be/*
+// @include https://www.economist.com/*
 //
 // @run-at      document-start
 //
@@ -2368,6 +2374,344 @@
             margin-left: 4px;
             margin-top: 0px;
         
+        }
+        `);
+    }
+
+    if ("https://www.levif.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const titleElem = document.querySelector("h1").childNodes[0];
+                return titleElem && titleElem.textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function addEuropresseButton() {
+                if (!buttonAdded) {
+                    const elt = document.querySelector('.datawall-wrapper .register');
+                    if (elt) {
+                        const a = await ophirofoxEuropresseLink(extractKeywords());
+                        elt.after(a);
+                        buttonAdded = true;
+                    }
+                }
+            }
+
+            async function onLoad() {
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const newClassState = mutation.target.classList.contains('is-hidden');
+                            if (classState !== newClassState) {
+                                addEuropresseButton();
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('#paywall-modal');
+                const classState = htmlElement.classList.contains('is-hidden');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ee1c24;
+            color: #ee1c24;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        `);
+    }
+
+    if ("https://trends.levif.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const titleElem = document.querySelector("h1").childNodes[0];
+                return titleElem && titleElem.textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function addEuropresseButton() {
+                if (!buttonAdded) {
+                    const elt = document.querySelector('.datawall-wrapper .login');
+                    if (elt) {
+                        const a = await ophirofoxEuropresseLink(extractKeywords());
+                        elt.after(a);
+                        buttonAdded = true;
+                    }
+                }
+            }
+
+            async function onLoad() {
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const newClassState = mutation.target.classList.contains('is-hidden');
+                            if (classState !== newClassState) {
+                                addEuropresseButton();
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('#paywall-modal');
+                const classState = htmlElement.classList.contains('is-hidden');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #5cb4ab;
+            color: #5cb4ab;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        `);
+    }
+
+    if ("https://www.knack.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const titleElem = document.querySelector("h1").childNodes[0];
+                return titleElem && titleElem.textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function addEuropresseButton() {
+                if (!buttonAdded) {
+                    const elt = document.querySelector('.datawall-wrapper .register');
+                    if (elt) {
+                        const a = await ophirofoxEuropresseLink(extractKeywords());
+                        elt.after(a);
+                        buttonAdded = true;
+                    }
+                }
+            }
+
+            async function onLoad() {
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const newClassState = mutation.target.classList.contains('is-hidden');
+                            if (classState !== newClassState) {
+                                addEuropresseButton();
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('#paywall-modal');
+                const classState = htmlElement.classList.contains('is-hidden');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ee1c24;
+            color: #ee1c24;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        `);
+    }
+
+    if ("https://www.demorgen.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const titleElem = document.querySelector("h1").childNodes[0];
+                return titleElem && titleElem.textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function addEuropresseButton() {
+                if (!buttonAdded) {
+                    const elts = document.querySelectorAll('.tm-account');
+                    if (elts) {
+                        for (let elt of elts) {
+                            const a = await ophirofoxEuropresseLink(extractKeywords());
+                            elt.after(a);
+                            buttonAdded = true;
+                        }
+                    }
+                }
+            }
+
+            async function onLoad() {
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const newClassState = mutation.target.classList.contains('js-tm-backdrop-active');
+                            if (classState !== newClassState) {
+                                addEuropresseButton();
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('body');
+                const classState = htmlElement.classList.contains('js-tm-backdrop-active');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        `);
+    }
+
+    if ("https://www.standaard.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function createLink() {
+                const subscriptionElem = document.querySelector('[data-current-screen="CtaAuthPaying"] form');
+                if (subscriptionElem && buttonAdded == false) {
+                    const a = await ophirofoxEuropresseLink(extractKeywords());
+                    subscriptionElem.after(a);
+                }
+            }
+
+            async function onLoad() {
+                // Lien Europresse dans la modale au chargement de l'article
+                createLink();
+
+                // Lien Europresse dans le corps de l'article, une fois la modale fermée
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.removedNodes.length > 0) {
+                            createLink();
+                            buttonAdded = true;
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('.cj-root');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    childList: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: block;
+            padding: 0.5rem;
+            background-color: #d90000 !important;
+            color: #fff !important;
+            text-align: center;
+            text-decoration: none !important;
+        }
+        `);
+    }
+
+    if ("https://www.economist.com/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
+            }
+
+            async function onLoad() {
+                const callback = (mutationsList, observer) => {
+                    for (const mutation of mutationsList) {
+                        if (mutation.type === 'childList') {
+                            for (let node of mutation.addedNodes) {
+                                const subscriptionElem = document.querySelector('section[data-body-id*="cp"]');
+                                if (node === subscriptionElem) {
+                                    const subtitle = document.querySelector('#new-article-template h2');
+                                    createLink().then(function(data) {
+                                        subtitle.after(data);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('#new-article-template');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            display: inline-block;
+            margin-top: 1rem;
+            color: #e3120b;
+            text-decoration: none;
+        }
+        
+        .ophirofox-europresse:hover{
+            text-decoration: underline;
         }
         `);
     }
