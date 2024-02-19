@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26064.57937
+// @version 2.4.26067.34940
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -28,6 +28,7 @@
 // @include https://nouveau-europresse-com.proxy.unice.fr/*
 // @include https://nouveau-europresse-com.acces.bibliotheque-diderot.fr/*
 // @include https://nouveau-europresse-com.scd-proxy.uha.fr/*
+// @include https://nouveau-europresse-com.ezproxy.ensta-bretagne.fr/*
 // @include https://nouveau-europresse-com.ezproxy.u-paris.fr/*
 // @include https://nouveau-europresse-com.faraway.parisnanterre.fr/*
 // @include https://nouveau-europresse-com.scd1.univ-fcomte.fr/*
@@ -209,6 +210,9 @@
     }, {
         "name": "ENSAM",
         "AUTH_URL": "https://rp1.ensam.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=AML"
+    }, {
+        "name": "ENSTA Bretagne",
+        "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=ENSTAT_1"
     }, {
         "name": "ENSTA Paris",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_9"
@@ -544,6 +548,7 @@
         "https://nouveau-europresse-com.proxy.unice.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.acces.bibliotheque-diderot.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.scd-proxy.uha.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.ensta-bretagne.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.u-paris.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.faraway.parisnanterre.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.scd1.univ-fcomte.fr/*".includes(hostname) ||
