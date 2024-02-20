@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26067.59890
+// @version 2.4.26069.5760
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -129,6 +129,11 @@
 // @include https://www.demorgen.be/*
 // @include https://www.standaard.be/*
 // @include https://www.economist.com/*
+// @include https://www.ft.com/*
+// @include https://www.washingtonpost.com/*
+// @include https://www.gva.be/*
+// @include https://www.nieuwsblad.be/*
+// @include https://www.hln.be/*
 //
 // @run-at      document-start
 //
@@ -2712,6 +2717,253 @@
         
         .ophirofox-europresse:hover{
             text-decoration: underline;
+        }
+        `);
+    }
+
+    if ("https://www.ft.com/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("#barrier-page h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
+            }
+
+            async function onLoad() {
+                const paywall = document.querySelector('#barrier-page');
+                if (paywall == null) return;
+                const title = document.querySelector("#barrier-page h1");
+                title.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.25rem 1rem;
+            border: 1px solid #fff;
+            color: #fff;
+            text-decoration: none;
+        }
+        `);
+    }
+
+    if ("https://www.washingtonpost.com/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const titleElem = document.querySelector("h1#main-content");
+                return titleElem.textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
+            }
+
+            async function onLoad() {
+                let linkAdded = false;
+                const callback = (mutationsList, observer) => {
+                    for (const mutation of mutationsList) {
+                        if (!linkAdded) {
+                            const paywall_modal = document.querySelector('[data-qa="overlay-container"]');
+                            const paywall_bottom = document.querySelector('#wall-bottom-drawer');
+                            if (paywall_modal !== null || paywall_bottom !== null) {
+                                const title_bottom = document.querySelector('h1#HEADER');
+                                createLink().then(function(data) {
+                                    title_bottom.after(data);
+                                });
+                                linkAdded = true;
+                                observer.disconnect();
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('body');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: flex;
+            justify-content: center;
+            margin: 1rem auto;
+            padding: 0.25rem 1rem;
+            width: 40%;
+            border: 1px solid #1955a5;
+        }
+        `);
+    }
+
+    if ("https://www.gva.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function createLink() {
+                const subscriptionElem = document.querySelector('[data-current-screen="StopEmailIdentification"] form');
+                if (subscriptionElem && buttonAdded == false) {
+                    const a = await ophirofoxEuropresseLink(extractKeywords());
+                    subscriptionElem.after(a);
+                }
+            }
+
+            async function onLoad() {
+                // Lien Europresse dans la modale au chargement de l'article
+                createLink();
+
+                // Lien Europresse dans le corps de l'article, une fois la modale fermée
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.removedNodes.length > 0) {
+                            createLink();
+                            buttonAdded = true;
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('.cj-root');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    childList: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: block;
+            padding: 0.5rem;
+            border: 1px solid #d21d10;
+            text-align: center;
+        }
+        `);
+    }
+
+    if ("https://www.nieuwsblad.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function createLink() {
+                const subscriptionElem = document.querySelector('[data-current-screen="StopEmailIdentification"] form');
+                if (subscriptionElem && buttonAdded == false) {
+                    const a = await ophirofoxEuropresseLink(extractKeywords());
+                    subscriptionElem.after(a);
+                }
+            }
+
+            async function onLoad() {
+                // Lien Europresse dans la modale au chargement de l'article
+                createLink();
+
+                // Lien Europresse dans le corps de l'article, une fois la modale fermée
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.removedNodes.length > 0) {
+                            createLink();
+                            buttonAdded = true;
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('.cj-root');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    childList: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: block;
+            padding: 0.5rem;
+            border: 1px solid #0071c7;
+            text-align: center;
+        }
+        `);
+    }
+
+    if ("https://www.hln.be/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const titleElem = document.querySelector("h1").childNodes[0];
+                return titleElem && titleElem.textContent;
+            }
+
+            let buttonAdded = false;
+
+            async function addEuropresseButton() {
+                if (!buttonAdded) {
+                    const elts = document.querySelectorAll('.tm-account');
+                    if (elts) {
+                        for (let elt of elts) {
+                            const a = await ophirofoxEuropresseLink(extractKeywords());
+                            elt.after(a);
+                            buttonAdded = true;
+                        }
+                    }
+                }
+            }
+
+            async function onLoad() {
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const newClassState = mutation.target.classList.contains('js-tm-backdrop-active');
+                            if (classState !== newClassState) {
+                                addEuropresseButton();
+                            }
+                        }
+                    }
+                };
+
+                const htmlElement = document.querySelector('body');
+                const classState = htmlElement.classList.contains('js-tm-backdrop-active');
+                const observer = new MutationObserver(callback);
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    subtree: true
+                });
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
         }
         `);
     }
