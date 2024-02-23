@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26069.5760
+// @version 2.4.26073.22645
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -2432,11 +2432,13 @@
         .ophirofox-europresse {
             display: inline-block;
             margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid #ee1c24;
-            color: #ee1c24;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000;
+            font-family: "Aeonik","Publica Slab","Helvetica","Arial",sans-serif;
             font-size: 1.5rem;
-            font-weight: bold;
+            text-decoration: none;
         }
         `);
     }
@@ -2490,11 +2492,12 @@
         .ophirofox-europresse {
             display: inline-block;
             margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid #5cb4ab;
-            color: #5cb4ab;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000;
+            font-family: "Aeonik","Publica Slab","Helvetica","Arial",sans-serif;
             font-size: 1.5rem;
-            font-weight: bold;
             text-decoration: none;
         }
         `);
@@ -2549,11 +2552,13 @@
         .ophirofox-europresse {
             display: inline-block;
             margin-top: 1rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid #ee1c24;
-            color: #ee1c24;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000;
+            font-family: "Aeonik","Publica Slab","Helvetica","Arial",sans-serif;
             font-size: 1.5rem;
-            font-weight: bold;
+            text-decoration: none;
         }
         `);
     }
@@ -2588,6 +2593,7 @@
                             const newClassState = mutation.target.classList.contains('js-tm-backdrop-active');
                             if (classState !== newClassState) {
                                 addEuropresseButton();
+                                observer.disconnect();
                             }
                         }
                     }
@@ -2608,8 +2614,14 @@
         pasteStyle(`
         .ophirofox-europresse {
             display: block;
-            margin-top: 1rem;
+            width: 12vw;
+            margin: 1rem auto;
+            padding: 0.25rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000 !important;
             text-align: center;
+            text-decoration: none;
         }
         `);
     }
@@ -2618,34 +2630,46 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector("header h1").textContent;
             }
 
             let buttonAdded = false;
 
-            async function createLink() {
-                const subscriptionElem = document.querySelector('[data-current-screen="CtaAuthPaying"] form');
-                if (subscriptionElem && buttonAdded == false) {
+            async function createLink(elt) {
+                if (elt && buttonAdded == false) {
                     const a = await ophirofoxEuropresseLink(extractKeywords());
-                    subscriptionElem.after(a);
+                    elt.after(a);
                 }
             }
 
             async function onLoad() {
-                // Lien Europresse dans la modale au chargement de l'article
-                createLink();
+                // Lien Europresse dans le corps de l'article
+                const paywall = document.querySelector('[data-cj-root="subscription-wall"]');
+                const article_title = document.querySelector('header h1');
 
-                // Lien Europresse dans le corps de l'article, une fois la modale fermée
+                if (paywall) {
+                    createLink(article_title);
+                }
+
+                // Lien Europresse dans la modale, au chargement
                 const callback = (mutationList, observer) => {
                     for (const mutation of mutationList) {
-                        if (mutation.removedNodes.length > 0) {
-                            createLink();
-                            buttonAdded = true;
+                        if (mutation.type === 'childList') {
+                            for (let node of mutation.addedNodes) {
+                                const paywall_modal = document.querySelector('.cj-root');
+                                if (paywall_modal) {
+                                    const subscriptionForm = document.querySelector('[data-current-screen="CtaAuthPaying"] form');
+                                    createLink(subscriptionForm);
+                                    buttonAdded = true;
+                                    subscriptionForm.nextElementSibling.classList.add('ophirofox-modal-link');
+                                    observer.disconnect();
+                                }
+                            }
                         }
                     }
                 };
 
-                const htmlElement = document.querySelector('.cj-root');
+                const htmlElement = document.querySelector('body');
                 const observer = new MutationObserver(callback);
                 observer.observe(htmlElement, {
                     childList: true
@@ -2657,12 +2681,21 @@
 
         pasteStyle(`
         .ophirofox-europresse {
-            display: block;
-            padding: 0.5rem;
-            background-color: #d90000 !important;
-            color: #fff !important;
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 1rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700 !important;
+            color: #000 !important;
             text-align: center;
             text-decoration: none !important;
+        }
+        
+        .ophirofox-modal-link {
+            display: block;
+            margin-top: 0;
+            padding: 0.5rem;
+            border-radius: 0;
         }
         `);
     }
@@ -2686,10 +2719,11 @@
                             for (let node of mutation.addedNodes) {
                                 const subscriptionElem = document.querySelector('section[data-body-id*="cp"]');
                                 if (node === subscriptionElem) {
-                                    const subtitle = document.querySelector('#new-article-template h2');
+                                    const subtitle = document.querySelector('#new-article-template h1');
                                     createLink().then(function(data) {
                                         subtitle.after(data);
                                     });
+                                    observer.disconnect();
                                 }
                             }
                         }
@@ -2711,12 +2745,11 @@
         .ophirofox-europresse{
             display: inline-block;
             margin-top: 1rem;
-            color: #e3120b;
+            padding: 0.25rem 1rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000;
             text-decoration: none;
-        }
-        
-        .ophirofox-europresse:hover{
-            text-decoration: underline;
         }
         `);
     }
@@ -2747,9 +2780,10 @@
         .ophirofox-europresse {
             display: inline-block;
             margin-bottom: 1rem;
-            padding: 0.25rem 1rem;
-            border: 1px solid #fff;
-            color: #fff;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000;
             text-decoration: none;
         }
         `);
@@ -2804,8 +2838,11 @@
             justify-content: center;
             margin: 1rem auto;
             padding: 0.25rem 1rem;
-            width: 40%;
-            border: 1px solid #1955a5;
+            width: 12vw;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000;
+            text-decoration: none;
         }
         `);
     }
@@ -2814,34 +2851,46 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector("header h1").textContent;
             }
 
             let buttonAdded = false;
 
-            async function createLink() {
-                const subscriptionElem = document.querySelector('[data-current-screen="StopEmailIdentification"] form');
-                if (subscriptionElem && buttonAdded == false) {
+            async function createLink(elt) {
+                if (elt && buttonAdded == false) {
                     const a = await ophirofoxEuropresseLink(extractKeywords());
-                    subscriptionElem.after(a);
+                    elt.after(a);
                 }
             }
 
             async function onLoad() {
-                // Lien Europresse dans la modale au chargement de l'article
-                createLink();
+                // Lien Europresse dans le corps de l'article
+                const paywall = document.querySelector('[data-cj-root="subscription-wall"]');
+                const article_title = document.querySelector('header h1');
 
-                // Lien Europresse dans le corps de l'article, une fois la modale fermée
+                if (paywall) {
+                    createLink(article_title);
+                }
+
+                // Lien Europresse dans la modale, au chargement
                 const callback = (mutationList, observer) => {
                     for (const mutation of mutationList) {
-                        if (mutation.removedNodes.length > 0) {
-                            createLink();
-                            buttonAdded = true;
+                        if (mutation.type === 'childList') {
+                            for (let node of mutation.addedNodes) {
+                                const paywall_modal = document.querySelector('.cj-root');
+                                if (paywall_modal) {
+                                    const subscriptionForm = document.querySelector('[data-current-screen="StopEmailIdentification"] form');
+                                    createLink(subscriptionForm);
+                                    buttonAdded = true;
+                                    subscriptionForm.nextElementSibling.classList.add('ophirofox-modal-link');
+                                    observer.disconnect();
+                                }
+                            }
                         }
                     }
                 };
 
-                const htmlElement = document.querySelector('.cj-root');
+                const htmlElement = document.querySelector('body');
                 const observer = new MutationObserver(callback);
                 observer.observe(htmlElement, {
                     childList: true
@@ -2853,10 +2902,21 @@
 
         pasteStyle(`
         .ophirofox-europresse {
-            display: block;
-            padding: 0.5rem;
-            border: 1px solid #d21d10;
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 1rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000 !important;
             text-align: center;
+            text-decoration: none;
+        }
+        
+        .ophirofox-modal-link {
+            display: block;
+            margin-top: 0;
+            padding: 0.5rem;
+            border-radius: 0;
         }
         `);
     }
@@ -2865,34 +2925,46 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector("header h1").textContent;
             }
 
             let buttonAdded = false;
 
-            async function createLink() {
-                const subscriptionElem = document.querySelector('[data-current-screen="StopEmailIdentification"] form');
-                if (subscriptionElem && buttonAdded == false) {
+            async function createLink(elt) {
+                if (elt && buttonAdded == false) {
                     const a = await ophirofoxEuropresseLink(extractKeywords());
-                    subscriptionElem.after(a);
+                    elt.after(a);
                 }
             }
 
             async function onLoad() {
-                // Lien Europresse dans la modale au chargement de l'article
-                createLink();
+                // Lien Europresse dans le corps de l'article
+                const paywall = document.querySelector('[data-cj-root="subscription-wall"]');
+                const article_title = document.querySelector('header h1');
 
-                // Lien Europresse dans le corps de l'article, une fois la modale fermée
+                if (paywall) {
+                    createLink(article_title);
+                }
+
+                // Lien Europresse dans la modale, au chargement
                 const callback = (mutationList, observer) => {
                     for (const mutation of mutationList) {
-                        if (mutation.removedNodes.length > 0) {
-                            createLink();
-                            buttonAdded = true;
+                        if (mutation.type === 'childList') {
+                            for (let node of mutation.addedNodes) {
+                                const paywall_modal = document.querySelector('.cj-root');
+                                if (paywall_modal) {
+                                    const subscriptionForm = document.querySelector('[data-current-screen="StopEmailIdentification"] form');
+                                    createLink(subscriptionForm);
+                                    buttonAdded = true;
+                                    subscriptionForm.nextElementSibling.classList.add('ophirofox-modal-link');
+                                    observer.disconnect();
+                                }
+                            }
                         }
                     }
                 };
 
-                const htmlElement = document.querySelector('.cj-root');
+                const htmlElement = document.querySelector('body');
                 const observer = new MutationObserver(callback);
                 observer.observe(htmlElement, {
                     childList: true
@@ -2904,10 +2976,21 @@
 
         pasteStyle(`
         .ophirofox-europresse {
-            display: block;
-            padding: 0.5rem;
-            border: 1px solid #0071c7;
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 1rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000 !important;
             text-align: center;
+            text-decoration: none;
+        }
+        
+        .ophirofox-modal-link {
+            display: block;
+            margin-top: 0;
+            padding: 0.5rem;
+            border-radius: 0;
         }
         `);
     }
@@ -2942,6 +3025,7 @@
                             const newClassState = mutation.target.classList.contains('js-tm-backdrop-active');
                             if (classState !== newClassState) {
                                 addEuropresseButton();
+                                observer.disconnect();
                             }
                         }
                     }
@@ -2962,8 +3046,14 @@
         pasteStyle(`
         .ophirofox-europresse {
             display: block;
-            margin-top: 1rem;
+            width: 12vw;
+            margin: 1rem auto;
+            padding: 0.25rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000 !important;
             text-align: center;
+            text-decoration: none !important;
         }
         `);
     }
