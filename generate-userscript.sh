@@ -23,6 +23,7 @@ SCRIPT=$(cat <<-END
 // @grant   GM.getValue
 // @grant   GM.setValue
 // @grant   GM.deleteValue
+// @include https://nouveau.europresse.com/*
 END
 )
 SCRIPT+=$'\n'
