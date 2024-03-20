@@ -5,6 +5,7 @@
 // @grant   GM.getValue
 // @grant   GM.setValue
 // @grant   GM.deleteValue
+// @include https://nouveau.europresse.com/*
 // @include https://nouveau-europresse-com.essec.idm.oclc.org/*
 // @include https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*
 // @include https://nouveau-europresse-com.ezproxy.upf.pf/*
