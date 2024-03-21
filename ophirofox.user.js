@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26073.22645
+// @version 2.4.26108.31801
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -258,6 +258,9 @@
     }, {
         "name": "Le Mans Université",
         "AUTH_URL": "https://login.doc-elec.univ-lemans.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031524T_1"
+    }, {
+        "name": "Lycée Albert de Mun à Nogent-sur-Marne",
+        "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0940880W"
     }, {
         "name": "Lycée International de l'Est Parisien",
         "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0932638M"
