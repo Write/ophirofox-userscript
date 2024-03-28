@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26108.31801
+// @version 2.4.26117.37712
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -89,6 +89,7 @@
 // @include https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/
 // @include https://nouveau-europresse-com.ezproxy.unilim.fr/*
 // @include https://nouveau-europresse-com.ezproxy.uphf.fr/*
+// @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -267,6 +268,9 @@
     }, {
         "name": "Médiathèque de Télécom SudParis & Institut Mines-Télécom Business School",
         "AUTH_URL": "http://mediaproxy.imtbs-tsp.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_8"
+    }, {
+        "name": "Rennes School of Business",
+        "AUTH_URL": "https://rennes-sb.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=RENNES2T_2"
     }, {
         "name": "SciencesPo Lyon",
         "AUTH_URL": "http://ressources.sciencespo-lyon.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_5"
@@ -622,7 +626,8 @@
         "https://nouveau-europresse-com.revproxy.escpeurope.eu/*".includes(hostname) ||
         "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
