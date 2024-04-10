@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26117.37712
+// @version 2.4.26134.63037
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -262,6 +262,9 @@
     }, {
         "name": "Lycée Albert de Mun à Nogent-sur-Marne",
         "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0940880W"
+    }, {
+        "name": "Lycée Clemenceau à Nantes",
+        "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0440021J"
     }, {
         "name": "Lycée International de l'Est Parisien",
         "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0932638M"
