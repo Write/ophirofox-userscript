@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26134.63037
+// @version 2.4.26154.18908
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -268,6 +268,9 @@
     }, {
         "name": "Lycée International de l'Est Parisien",
         "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0932638M"
+    }, {
+        "name": "Lycée la Martinière Diderot",
+        "AUTH_URL": "https://idp-auth.gar.education.fr/domaineGar?idENT=QzAw&idEtab=MDY5MDAzN1I=&idRessource=ark%3A%2F57800%2Feuropresse-cision"
     }, {
         "name": "Médiathèque de Télécom SudParis & Institut Mines-Télécom Business School",
         "AUTH_URL": "http://mediaproxy.imtbs-tsp.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_8"
