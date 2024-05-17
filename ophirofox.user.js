@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26154.18908
+// @version 2.4.26183.47052
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -90,6 +90,7 @@
 // @include https://nouveau-europresse-com.ezproxy.unilim.fr/*
 // @include https://nouveau-europresse-com.ezproxy.uphf.fr/*
 // @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/
+// @include https://nouveau-europresse-com.hub.tbs-education.fr/
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -481,6 +482,9 @@
     }, {
         "name": "University of Cambridge",
         "AUTH_URL": "https://ezp.lib.cam.ac.uk/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031883T_1"
+    }, {
+        "name": "TBS Education",
+        "AUTH_URL": "http://hub.tbs-education.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_11ip"
     }];
 
     function getOphirofoxConfigByName(search_name) {
@@ -633,7 +637,8 @@
         "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/".includes(hostname)) {
+        "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/".includes(hostname) ||
+        "https://nouveau-europresse-com.hub.tbs-education.fr/".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
