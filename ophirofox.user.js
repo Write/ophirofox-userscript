@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26183.47052
+// @version 2.4.26189.65394
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -137,6 +137,7 @@
 // @include https://www.gva.be/*
 // @include https://www.nieuwsblad.be/*
 // @include https://www.hln.be/*
+// @include https://www.challenges.fr/*
 //
 // @run-at      document-start
 //
@@ -3074,6 +3075,41 @@
             color: #000 !important;
             text-align: center;
             text-decoration: none !important;
+        }
+        `);
+    }
+
+    if ("https://www.challenges.fr/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            console.log('Ophirofox loaded');
+
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector("span.article-abo-tag");
+                if (!statusElem) return;
+                statusElem.before(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            background-color: #fcc525;
+            font-family: "DIN",Helvetica,arial,sans-serif;
+            color: #101010 !important;
+            text-transform: uppercase;
+            font-size: 11px;
+            padding: 4px 6px 1px 6px;
+            display: inline-block;
+        }
+        
+        .ophirofox-europresse:hover {
+            color: #a6a6a6 !important;
         }
         `);
     }
