@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26189.65394
+// @version 2.4.26190.14766
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1916,8 +1916,12 @@
     if ("https://www.latribune.fr/*".includes(hostname)) {
 
         window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector('h1[itemprop="Headline"]').textContent;
+            }
+
             async function createLink() {
-                const a = await ophirofoxEuropresseLink();
+                const a = await ophirofoxEuropresseLink(extractKeywords());
                 a.classList.add();
                 return a;
             }
