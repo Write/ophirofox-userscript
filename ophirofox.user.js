@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26190.14766
+// @version 2.4.26199.27938
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -486,6 +486,9 @@
     }, {
         "name": "TBS Education",
         "AUTH_URL": "http://hub.tbs-education.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_11ip"
+    }, {
+        "name": "Toulouse Métropole - MaBM",
+        "AUTH_URL": "https://mabm.toulouse-metropole.fr/Portal/ASSARedirect.ashx?url=https://nouveau.europresse.com/access/httpref/default.aspx?un=bmtoulouseAU_1"
     }];
 
     function getOphirofoxConfigByName(search_name) {
