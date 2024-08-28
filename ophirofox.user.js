@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26202.21213
+// @version 2.4.26319.23484
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -91,6 +91,7 @@
 // @include https://nouveau-europresse-com.ezproxy.uphf.fr/*
 // @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/
 // @include https://nouveau-europresse-com.hub.tbs-education.fr/
+// @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -424,6 +425,9 @@
         "name": "Université Paul-Valéry Montpellier 3",
         "AUTH_URL": "https://login.ezpupv.scdi-montpellier.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=MontpellierT_1"
     }, {
+        "name": "Université de Perpignan",
+        "AUTH_URL": "https://ezproxy.univ-perp.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=U031536T_1"
+    }, {
         "name": "Université de Picardie Jules Verne",
         "AUTH_URL": "https://merlin.u-picardie.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=BUPICARDIET_2"
     }, {
@@ -642,7 +646,8 @@
         "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/".includes(hostname) ||
-        "https://nouveau-europresse-com.hub.tbs-education.fr/".includes(hostname)) {
+        "https://nouveau-europresse-com.hub.tbs-education.fr/".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.univ-perp.fr/".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
