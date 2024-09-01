@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26324.25526
+// @version 2.4.26325.5652
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1354,15 +1354,13 @@
                 return titleElem && titleElem.textContent;
             }
 
-            let buttonAdded = false;
-
             async function addEuropresseButton() {
-                if (!buttonAdded) {
+                const ophiroBtnPresence = document.querySelector('.ophirofox-europresse');
+                if (!ophiroBtnPresence) {
                     const elt = document.querySelector("button[aria-label=Commenter]")?.parentElement?.parentElement;
                     if (elt) {
                         const a = await ophirofoxEuropresseLink(extractKeywords());
                         elt.appendChild(a);
-                        buttonAdded = true;
                     }
                 }
             }
@@ -1374,54 +1372,57 @@
                     by a new meta with name ad:postAcces) and add the button (this is the first observer).
                 2. Or a page is newly routed (for instance, when one goes from the homepage to an article) :
                     - it is detected with the second observer that watches for changes in <title> and reset the button
-                    - we wait for the end of actual loading of the new content by observing <main><meta content>.
+                    - we wait for the end of actual loading of the new content by checking if meta[name="ad:postAccess"] exist.
                 */
 
-                const isPremium = () => {
-                    if (document.querySelector("meta[name='ad:postAccess']").content == 'subscribers') {
+                const isPremium = (metaElement) => {
+                    if (metaElement.content == 'subscribers') {
                         return true;
                     }
                     return false;
                 };
 
-                const callback = (mutationList, observer) => {
-                    if (document.querySelector('meta[name="ad:postAccess"]')) {
-                        addEuropresseButton();
+                // Observer [ Direct URL Access ]
+                const callbackDirectAccess = (mutationList, observer) => {
+                    const metaElement = document.querySelector('meta[name="ad:postAccess"]');
+                    if (metaElement) {
+                        if (isPremium(metaElement)) {
+                            addEuropresseButton();
+                        }
                         observer.disconnect();
                         return;
                     }
                     for (const mutation of mutationList) {
                         for (const e of mutation.addedNodes) {
                             if (e.name == "ad:postAccess") {
-                                if (isPremium())
+                                if (isPremium(e)) {
                                     addEuropresseButton();
+                                }
+                                observer.disconnect();
+                                return;
                             }
                         }
                     }
                 };
 
-                const observer = new MutationObserver(callback);
-                observer.observe(document.body, {
-                    childList: true
-                });
-
-                const observerTitle = new MutationObserver(() => {
-                    buttonAdded = false;
-                    if (isPremium())
-                        addEuropresseButton();
-                });
-
-                const title = document.querySelector("title")
-                observerTitle.observe(title, {
+                const observerDirectAccess = new MutationObserver(callbackDirectAccess);
+                observerDirectAccess.observe(document.body, {
                     childList: true,
                     subtree: false
                 });
 
-                const observerMain = new MutationObserver(() => {
-                    addEuropresseButton();
-                });
-                const main = document.querySelector("main meta[content]")
-                observerMain.observe(main, {
+                // Observer [ Dynamic page Loading ]
+                const callbackDynamicLoading = (mutationList, observer) => {
+                    const metaElement = document.querySelector('meta[name="ad:postAccess"]');
+                    if (metaElement) {
+                        if (isPremium(metaElement)) {
+                            addEuropresseButton();
+                        }
+                    }
+                };
+
+                const observerDynamicLoading = new MutationObserver(callbackDynamicLoading);
+                observerDynamicLoading.observe(document.querySelector('title'), {
                     childList: true,
                     subtree: false
                 });
@@ -1862,17 +1863,22 @@
     if ("https://www.nouvelobs.com/*".includes(hostname)) {
 
         window.addEventListener("load", function(event) {
-            function findPremiumBanner() {
-                const title = document.querySelector(".article-page-header");
-                if (!title) return null;
-                const elems = title.parentElement.querySelectorAll("a");
-                return [...elems].find(d => d.href.includes("ph-abo"))
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
             }
 
+            const isPremium = () => {
+                const metaElement = document.querySelector('meta[name="ad:teaser"]');
+                if (metaElement) {
+                    if (metaElement.content === 'true')
+                        return true;
+                }
+                return false;
+            };
+
             async function onLoad() {
-                const head = findPremiumBanner();
-                if (!head) return;
-                head.after(await ophirofoxEuropresseLink());
+                if (!isPremium()) return;
+                document.querySelector("h1").after(await ophirofoxEuropresseLink(extractKeywords()));
             }
 
             onLoad().catch(console.error);
@@ -1890,13 +1896,16 @@
             font-family: "Karla",ff-karla,sans-serif;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 2rem!important;
-            
+            display: block;
+            width: 200px;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        
         }
         
         .ophirofox-europresse:hover, .ophirofox-europresse:active {
-        	background-color: #000000;
-        	color: #ffffff;
+            background-color: #000000;
+            color: #ffffff;
         }
         `);
     }
