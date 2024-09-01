@@ -696,7 +696,7 @@
             const published_time = readRequest.published_time;
 
             if (!search_terms) return;
-            const stopwords = new Set(['d', 'l', 'et', 'sans']);
+            const stopwords = new Set(['d', 'l', 'et', 'sans', 'or']);
             const keywords = search_terms
                 .replace(/œ/g, 'oe')
                 .split(/[^\p{L}]+/u)
