@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26325.5652
+// @version 2.4.26325.9032
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -151,7 +151,7 @@
      * ----------------
      * */
 
-    // Changer la variable par le de votre université. Voir la liste ci-dessous dans ophirofox_config_list.
+    // Changer la variable par le nom de votre université. Voir la liste ci-dessous dans ophirofox_config_list.
     const universityName = "Bibliotheque nationale et universitaire de Strasbourg"
 
     /* ----------------
