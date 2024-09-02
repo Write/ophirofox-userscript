@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26325.65219
+// @version 2.4.26326.30329
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -98,6 +98,7 @@
 // @include https://www.lefigaro.fr/*
 // @include https://leparticulier.lefigaro.fr/*
 // @include https://www.monde-diplomatique.fr/*
+// @include https://www.courrierdesmaires.fr/*
 // @include https://www.la-croix.com/*
 // @include https://www.courrierinternational.com/*
 // @include https://www.lamontagne.fr/*
@@ -1142,6 +1143,40 @@
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
+        }
+        `);
+    }
+
+    if ("https://www.courrierdesmaires.fr/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector(".encartEssai");
+                const abo = document.querySelector(".etiquetteArt");
+                if (!statusElem || !abo) return;
+                statusElem.before(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            background-color: #fec22d;
+            padding: 1rem 1.5rem;
+            color: #262626;
+            text-align: center;
+            display: block;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ophirofox-europresse:hover {
+            background-color: #e5ae29;
         }
         `);
     }
