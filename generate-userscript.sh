@@ -221,7 +221,8 @@ done <<< "$europress_urls"
               path.startsWith("/Search/Advanced") ||
               path.startsWith("/Search/AdvancedMobile") ||
               path.startsWith("/Search/Express") ||
-              path.startsWith("/Search/Simple")
+    	        path.startsWith("/Search/Simple") ||
+              path.startsWith("/Search/Result")
           )) return;
 
           const readRequest = await consumeReadRequest();
@@ -236,8 +237,9 @@ done <<< "$europress_urls"
               .filter(w => !stopwords.has(w))
               .join('\'' '\'');
 
+          const keyword_field_id = path.startsWith("/Search/Result") ? "NativeQuery" : "Keywords";
 
-          onElemAvailable('\''#Keywords'\'').then((selector) => {
+          onElemAvailable('\''#'\'' + keyword_field_id).then((selector) => {
             const keyword_field = selector;
             keyword_field.value = '\''TIT_HEAD='\'' + keywords;
             keyword_field.form.submit();
