@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26326.30329
+// @version 2.4.26327.43782
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1703,10 +1703,10 @@
 
 
             function findPremiumBanner() {
-                const title = document.querySelector(".header-article-premium__stamp");
-                if (!title) return null;
-                const elems = title.parentElement.querySelectorAll("span");
-                return [...elems].find(d => d.textContent.includes("Article réservé aux abonnés"))
+                const array = document.querySelectorAll(".rev-margin-0.rev-text-xs-bold");
+                const reserve = Array.from(array).find(p => p.textContent.includes("Article réservé aux abonnés"));
+                if (!reserve) return null;
+                return reserve
             }
 
             async function onLoad() {
