@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26329.50904
+// @version 2.4.26333.53069
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -134,9 +134,7 @@
 // @include https://www.knack.be/*
 // @include https://www.demorgen.be/*
 // @include https://www.standaard.be/*
-// @include https://www.economist.com/*
 // @include https://www.ft.com/*
-// @include https://www.washingtonpost.com/*
 // @include https://www.gva.be/*
 // @include https://www.nieuwsblad.be/*
 // @include https://www.hln.be/*
@@ -2874,60 +2872,6 @@
         `);
     }
 
-    if ("https://www.economist.com/*".includes(hostname)) {
-
-        window.addEventListener("load", function(event) {
-            function extractKeywords() {
-                return document.querySelector("h1").textContent;
-            }
-
-            async function createLink() {
-                const a = await ophirofoxEuropresseLink(extractKeywords());
-                return a;
-            }
-
-            async function onLoad() {
-                const callback = (mutationsList, observer) => {
-                    for (const mutation of mutationsList) {
-                        if (mutation.type === 'childList') {
-                            for (let node of mutation.addedNodes) {
-                                const subscriptionElem = document.querySelector('section[data-body-id*="cp"]');
-                                if (node === subscriptionElem) {
-                                    const subtitle = document.querySelector('#new-article-template h1');
-                                    createLink().then(function(data) {
-                                        subtitle.after(data);
-                                    });
-                                    observer.disconnect();
-                                }
-                            }
-                        }
-                    }
-                };
-
-                const htmlElement = document.querySelector('#new-article-template');
-                const observer = new MutationObserver(callback);
-                observer.observe(htmlElement, {
-                    childList: true,
-                    subtree: true
-                });
-            }
-
-            onLoad().catch(console.error);
-        });
-
-        pasteStyle(`
-        .ophirofox-europresse{
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.25rem 1rem;
-            border-radius: 0.3rem;
-            background-color: #ffc700;
-            color: #000;
-            text-decoration: none;
-        }
-        `);
-    }
-
     if ("https://www.ft.com/*".includes(hostname)) {
 
         window.addEventListener("load", function(event) {
@@ -2955,64 +2899,6 @@
             display: inline-block;
             margin-bottom: 1rem;
             padding: 0.5rem 1.5rem;
-            border-radius: 0.3rem;
-            background-color: #ffc700;
-            color: #000;
-            text-decoration: none;
-        }
-        `);
-    }
-
-    if ("https://www.washingtonpost.com/*".includes(hostname)) {
-
-        window.addEventListener("load", function(event) {
-            function extractKeywords() {
-                const titleElem = document.querySelector("h1#main-content");
-                return titleElem.textContent;
-            }
-
-            async function createLink() {
-                const a = await ophirofoxEuropresseLink(extractKeywords());
-                return a;
-            }
-
-            async function onLoad() {
-                let linkAdded = false;
-                const callback = (mutationsList, observer) => {
-                    for (const mutation of mutationsList) {
-                        if (!linkAdded) {
-                            const paywall_modal = document.querySelector('[data-qa="overlay-container"]');
-                            const paywall_bottom = document.querySelector('#wall-bottom-drawer');
-                            if (paywall_modal !== null || paywall_bottom !== null) {
-                                const title_bottom = document.querySelector('h1#HEADER');
-                                createLink().then(function(data) {
-                                    title_bottom.after(data);
-                                });
-                                linkAdded = true;
-                                observer.disconnect();
-                            }
-                        }
-                    }
-                };
-
-                const htmlElement = document.querySelector('body');
-                const observer = new MutationObserver(callback);
-                observer.observe(htmlElement, {
-                    attributes: true,
-                    subtree: true
-                });
-            }
-
-            onLoad().catch(console.error);
-        });
-
-        pasteStyle(`
-        .ophirofox-europresse {
-            display: flex;
-            justify-content: center;
-            margin: 1rem auto;
-            padding: 0.25rem 1rem;
-            width: 12vw;
             border-radius: 0.3rem;
             background-color: #ffc700;
             color: #000;
