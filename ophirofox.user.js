@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26333.53069
+// @version 2.4.26336.56903
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -92,6 +92,7 @@
 // @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/
 // @include https://nouveau-europresse-com.hub.tbs-education.fr/
 // @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/
+// @include https://nouveau-europresse-com.ezproxy.normandie-univ.fr/Search/Reading
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -455,6 +456,9 @@
         "name": "Université Rennes 2",
         "AUTH_URL": "https://distant.bu.univ-rennes2.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=RENNES22T_1"
     }, {
+        "name": "Université de Rouen Normandie",
+        "AUTH_URL": "http://ezproxy.normandie-univ.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031221T_4"
+    }, {
         "name": "Université Sorbonne Nouvelle Paris 3",
         "AUTH_URL": "http://ezproxy.univ-paris3.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=pantheonT_1"
     }, {
@@ -647,7 +651,8 @@
         "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/".includes(hostname) ||
         "https://nouveau-europresse-com.hub.tbs-education.fr/".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-perp.fr/".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.univ-perp.fr/".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.normandie-univ.fr/Search/Reading".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
