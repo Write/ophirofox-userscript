@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26336.56903
+// @version 2.4.26361.60728
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -497,6 +497,9 @@
     }, {
         "name": "Toulouse Métropole - MaBM",
         "AUTH_URL": "https://mabm.toulouse-metropole.fr/Portal/ASSARedirect.ashx?url=https://nouveau.europresse.com/access/httpref/default.aspx?un=bmtoulouseAU_1"
+    }, {
+        "name": "Métropole de Grenoble - Numothèque",
+        "AUTH_URL": "https://numotheque.grenoblealpesmetropole.fr/plateforme-redirect/BIB?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fhttpref%2Fdefault.aspx?un=GRENOBLEU_2"
     }];
 
     function getOphirofoxConfigByName(search_name) {
