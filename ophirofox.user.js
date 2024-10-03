@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26361.60728
+// @version 2.4.26367.31730
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -86,13 +86,13 @@
 // @include https://nouveau-europresse-com.proxy.utt.fr/*
 // @include https://nouveau-europresse-com.proxy.bnl.lu/*
 // @include https://nouveau-europresse-com.revproxy.escpeurope.eu/*
-// @include https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/
+// @include https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/*
 // @include https://nouveau-europresse-com.ezproxy.unilim.fr/*
 // @include https://nouveau-europresse-com.ezproxy.uphf.fr/*
-// @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/
-// @include https://nouveau-europresse-com.hub.tbs-education.fr/
-// @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/
-// @include https://nouveau-europresse-com.ezproxy.normandie-univ.fr/Search/Reading
+// @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*
+// @include https://nouveau-europresse-com.hub.tbs-education.fr/*
+// @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/*
+// @include https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -500,6 +500,9 @@
     }, {
         "name": "Métropole de Grenoble - Numothèque",
         "AUTH_URL": "https://numotheque.grenoblealpesmetropole.fr/plateforme-redirect/BIB?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fhttpref%2Fdefault.aspx?un=GRENOBLEU_2"
+    }, {
+        "name": "VetAgro Sup",
+        "AUTH_URL": "https://ezproxy.vetagro-sup.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U032869T_1"
     }];
 
     function getOphirofoxConfigByName(search_name) {
@@ -649,13 +652,13 @@
         "https://nouveau-europresse-com.proxy.utt.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.proxy.bnl.lu/*".includes(hostname) ||
         "https://nouveau-europresse-com.revproxy.escpeurope.eu/*".includes(hostname) ||
-        "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/".includes(hostname) ||
+        "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/".includes(hostname) ||
-        "https://nouveau-europresse-com.hub.tbs-education.fr/".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-perp.fr/".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.normandie-univ.fr/Search/Reading".includes(hostname)) {
+        "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*".includes(hostname) ||
+        "https://nouveau-europresse-com.hub.tbs-education.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
