@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26367.31730
+// @version 2.4.26371.34
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -93,6 +93,7 @@
 // @include https://nouveau-europresse-com.hub.tbs-education.fr/*
 // @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/*
 // @include https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*
+// @include https://nouveau-europresse-com.ezproxy.utc.fr/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -474,6 +475,9 @@
         "name": "Université de Technologie de Belfort-Montbéliard",
         "AUTH_URL": "https://ezproxy.utbm.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=UTBMT_2"
     }, {
+        "name": "Université de Technologie de Compiègne",
+        "AUTH_URL": "https://ezproxy.utc.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=BUCOMPIEGNET_2"
+    }, {
         "name": "Université de Technologie de Troyes",
         "AUTH_URL": "http://proxy.utt.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=BUTROYEST_2"
     }, {
@@ -658,7 +662,8 @@
         "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*".includes(hostname) ||
         "https://nouveau-europresse-com.hub.tbs-education.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
