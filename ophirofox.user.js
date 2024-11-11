@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26371.34
+// @version 2.4.26418.31591
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -94,6 +94,7 @@
 // @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/*
 // @include https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*
 // @include https://nouveau-europresse-com.ezproxy.utc.fr/*
+// @include https://nouveau-europresse-com.ezproxy.ulb.ac.be/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -372,6 +373,9 @@
     }, {
         "name": "Université de Liège",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=U031558T_1"
+    }, {
+        "name": "Université Libre de Bruxelles",
+        "AUTH_URL": "http://nouveau.europresse.com.ezproxy.ulb.ac.be/access/ip/default.aspx?un=LIBRET_1"
     }, {
         "name": "Université de Lille",
         "AUTH_URL": "https://ressources-electroniques.univ-lille.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=TourcoingT_1"
@@ -663,7 +667,8 @@
         "https://nouveau-europresse-com.hub.tbs-education.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
