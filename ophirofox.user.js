@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26471.41076
+// @version 2.4.26471.42509
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -95,6 +95,7 @@
 // @include https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*
 // @include https://nouveau-europresse-com.ezproxy.utc.fr/*
 // @include https://nouveau-europresse-com.ezproxy.ulb.ac.be/*
+// @include https://nouveau-europresse-com.gutenberg.univ-lr.fr/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -215,6 +216,9 @@
         "name": "BNF",
         "AUTH_URL": "https://bnf.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=D000067U_1"
     }, {
+        "name": "Centrale Lyon",
+        "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
+    }, {
         "name": "CY Cergy Paris Université",
         "AUTH_URL": "https://bibdocs.u-cergy.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031547T_1"
     }, {
@@ -265,6 +269,9 @@
     }, {
         "name": "INSA Rennes",
         "AUTH_URL": "http://rproxy.insa-rennes.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=INSAT_1"
+    }, {
+        "name": "La Rochelle Université",
+        "AUTH_URL": "https://gutenberg.univ-lr.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ROCHELLET_1"
     }, {
         "name": "Le Mans Université",
         "AUTH_URL": "https://login.doc-elec.univ-lemans.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031524T_1"
@@ -477,7 +484,7 @@
         "AUTH_URL": "https://login.ezproxy.univ-paris13.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=paris13"
     }, {
         "name": "Université Savoie Mont Blanc",
-        "AUTH_URL": "http://univ-smb.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=savoieT_1"
+        "AUTH_URL": "https://univ-smb.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=savoieT_1"
     }, {
         "name": "Université de Technologie de Belfort-Montbéliard",
         "AUTH_URL": "https://ezproxy.utbm.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=UTBMT_2"
@@ -671,7 +678,8 @@
         "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname) ||
+        "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
