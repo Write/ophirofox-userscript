@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26444.10764
+// @version 2.4.26471.41076
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -217,6 +217,9 @@
     }, {
         "name": "CY Cergy Paris Université",
         "AUTH_URL": "https://bibdocs.u-cergy.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031547T_1"
+    }, {
+        "name": "École Centrale de Lyon (ECL)",
+        "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
     }, {
         "name": "École normale supérieure de Lyon (ENS Lyon)",
         "AUTH_URL": "https://acces.bibliotheque-diderot.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ENSLYONT_1"
@@ -2075,10 +2078,12 @@
 
         pasteStyle(`
         .ophirofox-europresse {
-            background-color: #fed500;
+            background-color: #FEEB6F;
             padding: 1rem 1.5rem;
             color: #000;
             border: none;
+            border-radius: 3.6rem;
+            text-decoration: none;
             box-shadow: none;
             text-transform: uppercase;
             font-size: 1.2rem;
@@ -2093,8 +2098,7 @@
         }
         
         .ophirofox-europresse:hover, .ophirofox-europresse:active {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: #FFC70F;
         }
         `);
     }
