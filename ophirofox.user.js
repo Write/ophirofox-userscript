@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26471.42509
+// @version 2.4.26474.25843
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -96,6 +96,7 @@
 // @include https://nouveau-europresse-com.ezproxy.utc.fr/*
 // @include https://nouveau-europresse-com.ezproxy.ulb.ac.be/*
 // @include https://nouveau-europresse-com.gutenberg.univ-lr.fr/*
+// @include https://nouveau-europresse-com.bpi.idm.oclc.org/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -215,6 +216,9 @@
     }, {
         "name": "BNF",
         "AUTH_URL": "https://bnf.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=D000067U_1"
+    }, {
+        "name": "Bibliothèque Publique d'Information (BPI)",
+        "AUTH_URL": "https://bpi.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=pompi"
     }, {
         "name": "Centrale Lyon",
         "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
@@ -679,7 +683,8 @@
         "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname) ||
-        "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname)) {
+        "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.bpi.idm.oclc.org/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
