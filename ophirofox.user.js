@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26474.25843
+// @version 2.4.26495.29353
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -40,7 +40,7 @@
 // @include https://nouveau-europresse-com.portail.psl.eu/*
 // @include https://nouveau-europresse-com.passerelle.univ-rennes1.fr/*
 // @include https://nouveau-europresse-com.ressources-electroniques.univ-lille.fr/*
-// @include https://nouveau-europresse-com.acces-distant.sciencespo.fr/*
+// @include https://nouveau-europresse-com.scpo.idm.oclc.org/*
 // @include https://nouveau-europresse-com.ressources.univ-poitiers.fr/*
 // @include https://nouveau-europresse-com.bibelec.univ-lyon2.fr/*
 // @include https://nouveau-europresse-com.gorgone.univ-toulouse.fr/*
@@ -298,11 +298,12 @@
         "name": "Rennes School of Business",
         "AUTH_URL": "https://rennes-sb.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=RENNES2T_2"
     }, {
-        "name": "SciencesPo Lyon",
+        "name": "Sciences Po Lyon",
         "AUTH_URL": "http://ressources.sciencespo-lyon.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_5"
     }, {
         "name": "Sciences Po Paris",
-        "AUTH_URL": "https://acces-distant.sciencespo.fr/fork?https://nouveau.europresse.com/access/ip/default.aspx?un=politique2T_1"
+        "AUTH_URL": "https://catalogue-bibliotheque.sciencespo.fr/view/action/uresolver.do?operation=resolveService&package_service_id=20109524480005808&institutionId=5808&customerId=5800&VE=true",
+        "PROXY_URL": "https://nouveau-europresse-com.scpo.idm.oclc.org/*"
     }, {
         "name": "Télécom Paris",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1"
@@ -628,7 +629,7 @@
         "https://nouveau-europresse-com.portail.psl.eu/*".includes(hostname) ||
         "https://nouveau-europresse-com.passerelle.univ-rennes1.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ressources-electroniques.univ-lille.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.acces-distant.sciencespo.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.scpo.idm.oclc.org/*".includes(hostname) ||
         "https://nouveau-europresse-com.ressources.univ-poitiers.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.bibelec.univ-lyon2.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.gorgone.univ-toulouse.fr/*".includes(hostname) ||
