@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26511.12775
+// @version 2.4.26520.18239
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -145,6 +145,7 @@
 // @include https://www.hln.be/*
 // @include https://www.challenges.fr/*
 // @include https://www.arretsurimages.net/*
+// @include https://www.pressreader.com/*
 //
 // @run-at      document-start
 //
@@ -217,7 +218,8 @@
     }, {
         "name": "BNF",
         "AUTH_URL": "https://bnf.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=D000067U_1",
-        "AUTH_URL_ARRETSURIMAGES": "www-arretsurimages-net.bnf.idm.oclc.org"
+        "AUTH_URL_ARRETSURIMAGES": "www-arretsurimages-net.bnf.idm.oclc.org",
+        "AUTH_URL_PRESSREADER": "www-pressreader-com.bnf.idm.oclc.org"
     }, {
         "name": "Bibliothèque Publique d'Information (BPI)",
         "AUTH_URL": "https://bpi.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=pompi"
@@ -3341,6 +3343,57 @@
             font-weight: 900 !important;
             font-style: italic !important;
             text-transform: none !important;
+        }
+        `);
+    }
+
+    if ("https://www.pressreader.com/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink(AUTH_URL) {
+                const div = document.createElement("div");
+                div.className = "ophirofox-europresse"
+                const a = document.createElement("a");
+                a.textContent = "Cliquez pour lire avec BNF"
+                var newUrl = new URL(window.location); //current page
+                newUrl.host = AUTH_URL //change only the domain name
+                a.href = newUrl;
+
+                div.appendChild(a);
+                return div;
+            }
+
+            /**
+             * @description website navigation without window reload.
+             */
+            async function onLoad() {
+                const config = await configurationsSpecifiques(['BNF'])
+                if (!config) return;
+                //too much js dom updates everywere to choose a more specific DOM.element.
+                const element = document.querySelector('body');
+                if (!element) return;
+                element.insertAdjacentElement('beforeend', await createLink(config.AUTH_URL_PRESSREADER));
+            }
+
+            onLoad().catch(console.error)
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+          visibility: visible !important;
+          position: fixed;
+          text-align: center;
+          width: 100%;
+          top: 0px;
+          left: 0px;
+          z-index: 50;
+        }
+        .ophirofox-europresse > a {
+          color: #fff !important;
+          padding: 1px 20px;
+          font-weight: 600;
+          background-color: #2bc48c;
+          border-radius: 25px;
         }
         `);
     }
