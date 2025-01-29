@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26520.18239
+// @version 2.4.26521.55204
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -97,6 +97,7 @@
 // @include https://nouveau-europresse-com.ezproxy.ulb.ac.be/*
 // @include https://nouveau-europresse-com.gutenberg.univ-lr.fr/*
 // @include https://nouveau-europresse-com.bpi.idm.oclc.org/*
+// @include https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -444,6 +445,9 @@
         "name": "Université Paris-Saclay",
         "AUTH_URL": "https://ezproxy.universite-paris-saclay.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=U031535T_9"
     }, {
+        "name": "Université Paris-Saclay (etu)",
+        "AUTH_URL": "https://eztest.biblio.univ-evry.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031535T_9"
+    }, {
         "name": "Université Paul Sabatier, Toulouse III",
         "AUTH_URL": "https://docadis.univ-tlse3.fr/https/nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_6"
     }, {
@@ -689,7 +693,8 @@
         "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname) ||
         "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bpi.idm.oclc.org/*".includes(hostname)) {
+        "https://nouveau-europresse-com.bpi.idm.oclc.org/*".includes(hostname) ||
+        "https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
