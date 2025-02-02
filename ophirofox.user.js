@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26524.2674
+// @version 2.4.26527.62968
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -117,6 +117,7 @@
 // @include https://www.lalibre.be/*
 // @include https://www.lavoixdunord.fr/*
 // @include https://www.mediapart.fr/*
+// @include https://www-mediapart-fr.bnf.idm.oclc.org/*
 // @include https://www.ouest-france.fr/*
 // @include https://www.sudouest.fr/*
 // @include https://www.laprovence.com/*
@@ -221,7 +222,7 @@
         "name": "BNF",
         "AUTH_URL": "https://bnf.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=D000067U_1",
         "AUTH_URL_ARRETSURIMAGES": "www-arretsurimages-net.bnf.idm.oclc.org",
-        "AUTH_URL_MEDIAPART": "https://bnf.idm.oclc.org/login?url=http://www.mediapart.fr/licence",
+        "AUTH_URL_MEDIAPART": "www-mediapart-fr.bnf.idm.oclc.org",
         "AUTH_URL_PRESSREADER": "www-pressreader-com.bnf.idm.oclc.org"
     }, {
         "name": "Bibliothèque Publique d'Information (BPI)",
@@ -1803,7 +1804,6 @@
     if ("https://www.mediapart.fr/*".includes(hostname)) {
 
         window.addEventListener("load", function(event) {
-
             /**
              * @description create link <a> to BNF mirror
              * @param {string} AUTH_URL_MEDIAPART
@@ -1813,44 +1813,156 @@
                 span.textContent = "Lire avec BNF";
 
                 const a = document.createElement("a");
-                a.href = new URL(AUTH_URL_MEDIAPART);
+                a.href = new URL(window.location);
+                a.host = AUTH_URL_MEDIAPART;
                 a.appendChild(span);
-
                 return a;
             }
 
             /**
-             * @description check DOM for article under paywall 
+             * @description check DOM for article under paywall
              * @return {HTMLElement} DOM Premium Banner and head of the article
              */
             function findPremiumBanner() {
                 const article = document.querySelector(".news__body__center__container");
                 if (!article) return null;
                 const elems = article.querySelectorAll(".paywall-message");
-                console.log("elements", elems)
                 //labels not the same for mobile or PC display
-                const textToFind = ["réservée aux abonné·es", "réservé aux abonné·es"]
+                const textToFind = ["réservée aux abonné·es", "réservé aux abonné·es"];
 
-                return [...elems].filter((balise) => textToFind.some((text) => balise.textContent.toLowerCase().includes(text)))
-
+                return [...elems].filter((balise) =>
+                    textToFind.some((text) => balise.textContent.toLowerCase().includes(text))
+                );
             }
 
-            /**@description check for BNF users. If yes, create link button */
-            async function onLoad() {
+            /**
+             * @description if not properly logged on the mirror website, fetch the login page
+             */
+            function handleMediapartMirror(config) {
+                const navBar = document.querySelector("ul.nav__actions");
+                const spans = navBar.querySelectorAll("span");
 
-                const config = await configurationsSpecifiques(['BNF'])
-                if (!config) return;
+                let isNotConnected = Array.from(spans).find(
+                    (elem) => elem.textContent == "Se connecter"
+                );
+                if (isNotConnected) {
+                    //account name not found. fetch login page
+                    const LOGIN_PAGE = new URL(
+                        "licence",
+                        "https://" + config.AUTH_URL_MEDIAPART
+                    );
+                    fetch(LOGIN_PAGE).then(() => window.location.reload());
+                }
+            }
+
+            async function handleMediapart(config) {
                 const reserve = findPremiumBanner();
                 if (!reserve) return;
 
                 for (const balise of reserve) {
-                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART))
+                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART));
                 }
             }
 
-            setTimeout(function() {
-                onLoad().catch(console.error);
-            }, 1000);
+            /**@description check for users with mediapart access. If yes, create link button */
+            async function onLoad() {
+                const config = await configurationsSpecifiques(["BNF"]);
+                if (!config) return;
+                const currentPage = new URL(window.location);
+                if (currentPage.host == config.AUTH_URL_MEDIAPART) {
+                    handleMediapartMirror(config);
+                } else {
+                    handleMediapart(config);
+                }
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        `);
+    }
+
+    if ("https://www-mediapart-fr.bnf.idm.oclc.org/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            /**
+             * @description create link <a> to BNF mirror
+             * @param {string} AUTH_URL_MEDIAPART
+             */
+            async function createLink(AUTH_URL_MEDIAPART) {
+                const span = document.createElement("span");
+                span.textContent = "Lire avec BNF";
+
+                const a = document.createElement("a");
+                a.href = new URL(window.location);
+                a.host = AUTH_URL_MEDIAPART;
+                a.appendChild(span);
+                return a;
+            }
+
+            /**
+             * @description check DOM for article under paywall
+             * @return {HTMLElement} DOM Premium Banner and head of the article
+             */
+            function findPremiumBanner() {
+                const article = document.querySelector(".news__body__center__container");
+                if (!article) return null;
+                const elems = article.querySelectorAll(".paywall-message");
+                //labels not the same for mobile or PC display
+                const textToFind = ["réservée aux abonné·es", "réservé aux abonné·es"];
+
+                return [...elems].filter((balise) =>
+                    textToFind.some((text) => balise.textContent.toLowerCase().includes(text))
+                );
+            }
+
+            /**
+             * @description if not properly logged on the mirror website, fetch the login page
+             */
+            function handleMediapartMirror(config) {
+                const navBar = document.querySelector("ul.nav__actions");
+                const spans = navBar.querySelectorAll("span");
+
+                let isNotConnected = Array.from(spans).find(
+                    (elem) => elem.textContent == "Se connecter"
+                );
+                if (isNotConnected) {
+                    //account name not found. fetch login page
+                    const LOGIN_PAGE = new URL(
+                        "licence",
+                        "https://" + config.AUTH_URL_MEDIAPART
+                    );
+                    fetch(LOGIN_PAGE).then(() => window.location.reload());
+                }
+            }
+
+            async function handleMediapart(config) {
+                const reserve = findPremiumBanner();
+                if (!reserve) return;
+
+                for (const balise of reserve) {
+                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART));
+                }
+            }
+
+            /**@description check for users with mediapart access. If yes, create link button */
+            async function onLoad() {
+                const config = await configurationsSpecifiques(["BNF"]);
+                if (!config) return;
+                const currentPage = new URL(window.location);
+                if (currentPage.host == config.AUTH_URL_MEDIAPART) {
+                    handleMediapartMirror(config);
+                } else {
+                    handleMediapart(config);
+                }
+            }
+
+            onLoad().catch(console.error);
         });
 
         pasteStyle(`
