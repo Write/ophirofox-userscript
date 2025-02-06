@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26527.62968
+// @version 2.4.26533.44883
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -98,6 +98,7 @@
 // @include https://nouveau-europresse-com.gutenberg.univ-lr.fr/*
 // @include https://nouveau-europresse-com.bpi.idm.oclc.org/*
 // @include https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*
+// @include https://nouveau-europresse-com.ezproxy.uclouvain.be/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -537,6 +538,9 @@
     }, {
         "name": "VetAgro Sup",
         "AUTH_URL": "https://ezproxy.vetagro-sup.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U032869T_1"
+    }, {
+        "name": "UCLouvain",
+        "AUTH_URL": "https://nouveau-europresse-com.proxy.bib.uclouvain.be:2443"
     }];
 
     function getOphirofoxConfigByName(search_name) {
@@ -697,7 +701,8 @@
         "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname) ||
         "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.bpi.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*".includes(hostname)) {
+        "https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.ezproxy.uclouvain.be/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
