@@ -9,7 +9,7 @@ N'oubliez pas de modifier la constante universityName à chaque mise à jour de 
 
 # Installation sur iOS 
 
-**1er méthode**
+**1er méthode**  
 Télécharger l'extension Safari : [apps.apple.com/fr/app/userscripts/id1463298887](https://apps.apple.com/fr/app/userscripts/id1463298887)  
 Puis définir un dossier, et enfin glisser le ophirofox.user.js dedans.
 
