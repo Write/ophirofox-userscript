@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26533.44883
+// @version 2.4.26533.45512
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -534,7 +534,7 @@
         "AUTH_URL": "https://mabm.toulouse-metropole.fr/Portal/ASSARedirect.ashx?url=https://nouveau.europresse.com/access/httpref/default.aspx?un=bmtoulouseAU_1"
     }, {
         "name": "Métropole de Grenoble - Numothèque",
-        "AUTH_URL": "https://numotheque.grenoblealpesmetropole.fr/plateforme-redirect/BIB?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fhttpref%2Fdefault.aspx?un=GRENOBLEU_2"
+        "AUTH_URL": "https://numotheque.grenoblealpesmetropole.fr/Default/redirection-contenu-europresse.aspx"
     }, {
         "name": "VetAgro Sup",
         "AUTH_URL": "https://ezproxy.vetagro-sup.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U032869T_1"
