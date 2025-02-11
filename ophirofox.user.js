@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26533.45512
+// @version 2.4.26540.15142
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -541,6 +541,9 @@
     }, {
         "name": "UCLouvain",
         "AUTH_URL": "https://nouveau-europresse-com.proxy.bib.uclouvain.be:2443"
+    }, {
+        "name": "E-medi@s Savoie Mont Blanc",
+        "AUTH_URL": "https://e-medias.biblio7374.fr/Portal/ASSARedirect.ashx?url=https://nouveau.europresse.com/access/httpref/default.aspx?un=PringyU_2"
     }];
 
     function getOphirofoxConfigByName(search_name) {
