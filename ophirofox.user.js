@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26540.15142
+// @version 2.4.26546.33907
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -150,6 +150,7 @@
 // @include https://www.challenges.fr/*
 // @include https://www.arretsurimages.net/*
 // @include https://www.pressreader.com/*
+// @include https://www.usinenouvelle.com/*
 //
 // @run-at      document-start
 //
@@ -3564,6 +3565,56 @@
             }
 
             onLoad().catch(console.error)
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+          visibility: visible !important;
+          position: fixed;
+          text-align: center;
+          width: 100%;
+          top: 0px;
+          left: 0px;
+          z-index: 50;
+        }
+        .ophirofox-europresse > a {
+          color: #fff !important;
+          padding: 1px 20px;
+          font-weight: 600;
+          background-color: #2bc48c;
+          border-radius: 25px;
+        }
+        `);
+    }
+
+    if ("https://www.usinenouvelle.com/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector(".editoSocialBar__item[data-title]").dataset.title
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.style = 'font-family: "arimo-bold",Arial,Helvetica,sans-serif; border-bottom: 2px solid #000; margin-left : 1rem'
+                return a;
+            }
+
+            function findPremiumBanner() {
+                const div = document.querySelector(".epPayWallTop");
+                if (!div) return null;
+                console.log('all div', div)
+                console.log('last child', div.lastElementChild)
+                return elem = div.lastElementChild;
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                premiumBanner.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
         });
 
         pasteStyle(`
