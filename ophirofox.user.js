@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26567.16370
+// @version 2.4.26567.37140
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -455,9 +455,6 @@
     }, {
         "name": "Université Paris-Saclay (etu)",
         "AUTH_URL": "https://eztest.biblio.univ-evry.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031535T_9"
-    }, {
-        "name": "Université Paul Sabatier, Toulouse III",
-        "AUTH_URL": "https://docadis.univ-tlse3.fr/https/nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_6"
     }, {
         "name": "Université Paul-Valéry Montpellier 3",
         "AUTH_URL": "https://login.ezpupv.scdi-montpellier.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=MontpellierT_1"
