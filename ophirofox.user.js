@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26558.25081
+// @version 2.4.26567.16370
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -99,6 +99,8 @@
 // @include https://nouveau-europresse-com.bpi.idm.oclc.org/*
 // @include https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*
 // @include https://nouveau-europresse-com.ezproxy.uclouvain.be/*
+// @include https://nouveau-europresse-com.iepnomade-2.grenet.fr/*
+// @include https://nouveau-europresse-com.eu1.proxy.openathens.net/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -514,8 +516,38 @@
         "name": "Université de Technologie de Troyes",
         "AUTH_URL": "http://proxy.utt.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=BUTROYEST_2"
     }, {
-        "name": "Université de Toulouse",
+        "name": "Université Toulouse 1 Capitole",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_1"
+    }, {
+        "name": "Institut National Universitaire Champollion",
         "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_2"
+    }, {
+        "name": "Institut national des sciences appliquées de Toulouse",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_3"
+    }, {
+        "name": "Ecole nationale de l'aviation civile",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_4"
+    }, {
+        "name": "Université Toulouse Jean Jaurès",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_5"
+    }, {
+        "name": "Université de Toulouse",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_6"
+    }, {
+        "name": "Institut national polytechnique de Toulouse",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_7"
+    }, {
+        "name": "Institut supérieur de l'aéronautique et de l'espace",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_8"
+    }, {
+        "name": "Ecole des mines d'Albi-Carmaux",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_9"
+    }, {
+        "name": "Service Interétablissements de Coopération Documentaire",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_13"
+    }, {
+        "name": "Ecole nationale supérieure d'architecture de Toulouse",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_14"
     }, {
         "name": "Université de Toulon",
         "AUTH_URL": "http://ezproxy.univ-tln.fr:2048/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=ToulonT_1"
@@ -546,6 +578,12 @@
     }, {
         "name": "E-medi@s Savoie Mont Blanc",
         "AUTH_URL": "https://e-medias.biblio7374.fr/Portal/ASSARedirect.ashx?url=https://nouveau.europresse.com/access/httpref/default.aspx?un=PringyU_2"
+    }, {
+        "name": "Science Po Grenoble",
+        "AUTH_URL": "http://iepnomade.grenet.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=IEPT_1"
+    }, {
+        "name": "ENTPE",
+        "AUTH_URL": "https://login.openathens.net/saml/2/sso/entpe.fr/o/81387240/c/proxy.openathens.net?SAMLRequest=jZJRb9owFIX%2FiuX3xI6JSWIRKlY0DanbUEn7sDfjXIqlYGe%2BTlf%2B%2FQIMqZW6qu%2F3nnN0vjO7eTl05BkCWu9qmqWcEnDGt9Y91fSh%2BZqUlGDUrtWdd1BT5%2BnNfIb60PVqMcS9u4ffA2AkC0QIcVS59Q6HA4QNhGdr4OH%2Brqb7GHtUjHX%2Bybq0D%2F7lmPoenI57cJg6iOwkyQTTBhloI4q2hERAO0lyucuTkhd5wrdSm2mb7yZaUrIcXe2ocA7%2B1uB9aUTPwMUe0l1gnpXZpCxEzplh7wWiZLWs6dZk00Ia3mY7k8tWVkIK3kJlSs7LTFbjFeIAK3fqKNZUcCETPkl43nCh5FTJKhVV8YuSdfDRG999se5S7hCc8hotKqcPgCoatVl8v1Mi5Wp7OUL1rWnWyfrnpqHk8QpJnCCN2ByqM4ePpfp%2FvvRCTZ3zhlf%2FH7%2FrK1Y6v3b8f3xjuzYeP8Vvxl6luQ7qx2i%2FWq59Z82RLLrO%2F7kNoOM4u4yy%2BeXl7ezmfwE%3D&RelayState=https%3A%2F%2Fnouveau-europresse-com.proxy.openathens.net%2Faccess%2Fip%2Fdefault.aspx%3Fun%3DENTPET_1"
     }];
 
     function getOphirofoxConfigByName(search_name) {
@@ -707,7 +745,9 @@
         "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname) ||
         "https://nouveau-europresse-com.bpi.idm.oclc.org/*".includes(hostname) ||
         "https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.uclouvain.be/*".includes(hostname)) {
+        "https://nouveau-europresse-com.ezproxy.uclouvain.be/*".includes(hostname) ||
+        "https://nouveau-europresse-com.iepnomade-2.grenet.fr/*".includes(hostname) ||
+        "https://nouveau-europresse-com.eu1.proxy.openathens.net/*".includes(hostname)) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
