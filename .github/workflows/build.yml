@@ -82,6 +82,12 @@ jobs:
         working-directory: ophirofox
         run: ./generate-userscript.sh ${{ env.OPHIROFOX_VERSION }}
 
+      - name: Debug file existence
+        run: |
+          ls -la ./ophirofox/
+          echo "Does file exist?"
+          if [ -f "./ophirofox/ophirofox.user.js" ]; then echo "Yes"; else echo "No"; fi
+
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -101,7 +107,8 @@ jobs:
 
       - name: Push to main
         run: |
-          cp ./ophirofox/ophirofox.user.js .
+          cp ./ophirofox/ophirofox.user.js . || { echo "File not found!"; exit 1; }
+          ls -la
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ophirofox.user.js
