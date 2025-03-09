@@ -805,9 +805,9 @@
                     path.startsWith("/Search/Express") ||
                     path.startsWith("/Search/Simple") ||
                     path.startsWith("/Search/Result") ||
-                    path.startsWith("/Search/ResultMobile") || 
+                    path.startsWith("/Search/ResultMobile") ||
                     path === "/Pdf"
-            )) return;
+                )) return;
 
             /* Fix une issue avec le proxy BNF qui redirige vers /Pdf */
             if (path === '/Pdf' && await hasConsumable()) {
