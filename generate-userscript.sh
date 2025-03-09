@@ -239,8 +239,10 @@ done <<< "$europress_urls"
               path.startsWith("/Search/Advanced") ||
               path.startsWith("/Search/AdvancedMobile") ||
               path.startsWith("/Search/Express") ||
-    	        path.startsWith("/Search/Simple") ||
-              path.startsWith("/Search/Result")
+              path.startsWith("/Search/Simple") ||
+              path.startsWith("/Search/Result") ||
+              path.startsWith("/Search/ResultMobile") || 
+              path === "/Pdf"
           )) return;
 
           /* Fix une issue avec le proxy BNF qui redirige vers /Pdf */
