@@ -213,6 +213,24 @@ done <<< "$europress_urls"
           return readRequest;
       }
 
+      async function hasConsumable() {
+            try {
+                // Récupérer les valeurs stockées avec GM.getValue (équivalent de chrome.storage.local)
+                const requestType = await GM.getValue("ophirofox_request_type");
+                const keywords = await GM.getValue("ophirofox_keywords");
+
+                // Vérifier si l'\''une des deux clés existe et contient une valeur
+                const hasRequestType = requestType !== undefined;
+                const hasKeywords = keywords !== undefined;
+
+                // Retourner true si au moins une des clés existe avec une valeur
+                return hasRequestType || hasKeywords;
+            } catch (error) {
+                console.error("Erreur lors de la vérification des consommables:", error);
+                return false;
+            }
+      }
+
       async function onLoad() {
           ophirofoxRealoadOnExpired();
           const path = window.location.pathname;
@@ -224,6 +242,12 @@ done <<< "$europress_urls"
     	        path.startsWith("/Search/Simple") ||
               path.startsWith("/Search/Result")
           )) return;
+
+          /* Fix une issue avec le proxy BNF qui redirige vers /Pdf */
+          if (path === '\''/Pdf'\'' && await hasConsumable()) {
+              window.location.pathname = '\''/Search/Reading'\'';
+              return;
+          }
 
           const readRequest = await consumeReadRequest();
           const search_terms = readRequest.keywords;
