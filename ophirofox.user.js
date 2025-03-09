@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.4.26569.3348
+// @version 2.4.26574.453
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -2327,7 +2327,7 @@
             font-size: 0.75rem;
             cursor: pointer;
             padding: 10px 14px;
-            font-family: Spartan, Spartan Fallback\1, Spartan Fallback\2, system-ui,
+            font-family: Spartan, Spartan Fallback 1, Spartan Fallback 2, system-ui,
                 -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans,
                 sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol,
                 Noto Color Emoji;
