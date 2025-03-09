@@ -107,14 +107,17 @@ jobs:
 
       - name: Push to main
         run: |
-          cp ./ophirofox/ophirofox.user.js . || { echo "File not found!"; exit 1; }
-          ls -la
+          cp ./ophirofox/ophirofox.user.js .
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ophirofox.user.js
-          git commit -m "Release from Ophirofox v${{ env.OPHIROFOX_VERSION }}"
-          git push
-
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Release from Ophirofox v${{ env.OPHIROFOX_VERSION }}"
+            git push
+          fi
+          
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
