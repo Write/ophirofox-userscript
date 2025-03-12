@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250310.1030
+// @version 2.5.250312.1859
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -154,6 +154,7 @@
 // @include https://www.pressreader.com/*
 // @include https://www.usinenouvelle.com/*
 // @include https://elpais.com/*
+// @include https://acteurspublics.fr/*
 //
 // @run-at      document-start
 //
@@ -3796,6 +3797,69 @@
           background: #f7cf3c;
           font-weight: 700;
           font-family: MarcinAntB,sans-serif;
+        }
+        `);
+    }
+
+    if ("https://acteurspublics.fr/*".includes(hostname)) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("fig-premium-mark-article__text");
+                return a;
+            }
+
+            function findPremiumBanner() {
+                const elem = document.querySelector("#qiota-paywall");
+                return elem;
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                document.querySelector('.thematics-list__item').after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            margin-left: 10px;
+            display: -ms-inline-flexbox;
+            display: -webkit-inline-flex;
+            display: inline-flex;
+            -ms-flex-align: center;
+            align-items: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            height: 30px;
+            padding: 0 20px;
+            border: 2px solid transparent;
+            border-radius: 100px;
+            font-size: 16px;
+            line-height: 13px;
+            font-weight: 500;
+            background: var(--color-primary-base);
+            border-color: var(--color-primary-base);
+            color: var(--color-white-base);
+            -webkit-transition: border-color var(--carousel-transition) ease, background var(--carousel-transition) ease;
+            transition: border-color var(--carousel-transition) ease, background var(--carousel-transition) ease;
+            background: var(--color-primary-base);
+            border-color: var(--color-primary-base);
+            color: var(--color-white-base);
+            -webkit-transition: border-color var(--carousel-transition) ease, background var(--carousel-transition) ease;
+            transition: border-color var(--carousel-transition) ease, background var(--carousel-transition) ease;
+        }
+        
+        .ophirofox-europresse:hover {
+            border-color: var(--color-secondary-base);
+            background: var(--color-secondary-base);
         }
         `);
     }
