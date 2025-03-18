@@ -178,8 +178,18 @@
     const hostname = window.location.hostname;
 
     function match(str, rule) {
-        var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-        return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
+        // Extract domain pattern from the rule (ignore https:// and /*)
+        var domainRule = rule.replace(/^https?:\/\//, '').replace(/\/\*$/, '');
+
+        // Convert the wildcard pattern to a proper regex
+        var regexPattern = "^" + domainRule.split('*').map(function(part) {
+            // Escape special regex characters in each part
+            return part.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        }).join('.*') + "$";
+
+        // Create and test the regex against the input string
+        var regex = new RegExp(regexPattern);
+        return regex.test(str);
     }
 
     function pasteStyle(str) {
@@ -650,101 +660,101 @@
     }
 
     if (
-        "https://nouveau-europresse-com.essec.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.upf.pf/*".includes(hostname) ||
-        "https://nouveau-eureka-cc.res.banq.qc.ca/*".includes(hostname) ||
-        "https://nouveau-europresse-com.budistant.univ-nantes.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.rubens.ens.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.rp1.ensam.eu/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.universite-paris-saclay.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezpaarse.univ-paris1.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.accesdistant.bu.univ-paris8.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.docelec.insa-lyon.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.rproxy.insa-rennes.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bnf.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.docelec.univ-lyon1.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezpum.scdi-montpellier.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezpupv.scdi-montpellier.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.sid2nomade-2.grenet.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.u-bordeaux-montaigne.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.docelec.u-bordeaux.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.sciencespobordeaux.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.unice.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.acces.bibliotheque-diderot.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.scd-proxy.uha.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.ensta-bretagne.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.u-paris.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.faraway.parisnanterre.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.scd1.univ-fcomte.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.rproxy.univ-pau.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-artois.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.doc-elec.univ-lemans.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.lama.univ-amu.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.portail.psl.eu/*".includes(hostname) ||
-        "https://nouveau-europresse-com.passerelle.univ-rennes1.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ressources-electroniques.univ-lille.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.scpo.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ressources.univ-poitiers.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bibelec.univ-lyon2.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.gorgone.univ-toulouse.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezscd.univ-lyon3.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.u-pec.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.univ-smb.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-paris13.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.campus-condorcet.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.mediaproxy.imtbs-tsp.eu/*".includes(hostname) ||
-        "https://nouveau-europresse-com.buadistant.univ-angers.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.accesdistant.sorbonne-universite.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.docelec-u-paris2.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.esc-clermont.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.acces-distant.bnu.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bu-services.univ-antilles.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxybib-pp.cnam.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.srvext.uco.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.urca.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.merlin.u-picardie.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-littoral.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bases-doc.univ-lorraine.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.utbm.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.distant.bu.univ-rennes2.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.hec.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy-bu1.u-bourgogne.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.normandie-univ.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bibdocs.u-cergy.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-tln.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-paris3.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.scd.univ-tours.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.federation.unimes.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezp.lib.cam.ac.uk/*".includes(hostname) ||
-        "https://nouveau-europresse-com.extranet.enpc.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.scd-proxy.univ-brest.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com-s.docadis.univ-tlse3.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-orleans.fr/*".includes(hostname) ||
-        "https://europresse.ezproxy.univ-ubs.fr/*".includes(hostname) ||
-        "https://nouveau.europresse.com.elgebar.univ-reunion.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.uca.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ressources.sciencespo-lyon.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.univ-nc.nc/*".includes(hostname) ||
-        "https://nouveau-europresse-com.buproxy2.univ-avignon.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.utt.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.proxy.bnl.lu/*".includes(hostname) ||
-        "https://nouveau-europresse-com.revproxy.escpeurope.eu/*".includes(hostname) ||
-        "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.unilim.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.uphf.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.hub.tbs-education.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.utc.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*".includes(hostname) ||
-        "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.bpi.idm.oclc.org/*".includes(hostname) ||
-        "https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.ezproxy.uclouvain.be/*".includes(hostname) ||
-        "https://nouveau-europresse-com.iepnomade-2.grenet.fr/*".includes(hostname) ||
-        "https://nouveau-europresse-com.eu1.proxy.openathens.net/*".includes(hostname)) {
+        match(hostname, "https://nouveau-europresse-com.essec.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.upf.pf/*") ||
+        match(hostname, "https://nouveau-eureka-cc.res.banq.qc.ca/*") ||
+        match(hostname, "https://nouveau-europresse-com.budistant.univ-nantes.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.rubens.ens.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.rp1.ensam.eu/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.universite-paris-saclay.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezpaarse.univ-paris1.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.accesdistant.bu.univ-paris8.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.docelec.insa-lyon.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.rproxy.insa-rennes.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bnf.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.docelec.univ-lyon1.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezpum.scdi-montpellier.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezpupv.scdi-montpellier.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.sid2nomade-2.grenet.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.u-bordeaux-montaigne.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.docelec.u-bordeaux.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.sciencespobordeaux.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.unice.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.acces.bibliotheque-diderot.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.scd-proxy.uha.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.ensta-bretagne.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.u-paris.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.faraway.parisnanterre.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.scd1.univ-fcomte.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.rproxy.univ-pau.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-artois.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.doc-elec.univ-lemans.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.lama.univ-amu.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.portail.psl.eu/*") ||
+        match(hostname, "https://nouveau-europresse-com.passerelle.univ-rennes1.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ressources-electroniques.univ-lille.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.scpo.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.ressources.univ-poitiers.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bibelec.univ-lyon2.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.gorgone.univ-toulouse.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezscd.univ-lyon3.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.u-pec.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.univ-smb.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-paris13.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.campus-condorcet.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.mediaproxy.imtbs-tsp.eu/*") ||
+        match(hostname, "https://nouveau-europresse-com.buadistant.univ-angers.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.accesdistant.sorbonne-universite.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.docelec-u-paris2.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.esc-clermont.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.acces-distant.bnu.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bu-services.univ-antilles.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxybib-pp.cnam.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.srvext.uco.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.urca.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.merlin.u-picardie.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-littoral.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bases-doc.univ-lorraine.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.utbm.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.distant.bu.univ-rennes2.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.hec.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy-bu1.u-bourgogne.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.normandie-univ.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bibdocs.u-cergy.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-tln.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-paris3.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.scd.univ-tours.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.federation.unimes.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezp.lib.cam.ac.uk/*") ||
+        match(hostname, "https://nouveau-europresse-com.extranet.enpc.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.scd-proxy.univ-brest.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com-s.docadis.univ-tlse3.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-orleans.fr/*") ||
+        match(hostname, "https://europresse.ezproxy.univ-ubs.fr/*") ||
+        match(hostname, "https://nouveau.europresse.com.elgebar.univ-reunion.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.uca.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ressources.sciencespo-lyon.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.univ-nc.nc/*") ||
+        match(hostname, "https://nouveau-europresse-com.buproxy2.univ-avignon.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.utt.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.proxy.bnl.lu/*") ||
+        match(hostname, "https://nouveau-europresse-com.revproxy.escpeurope.eu/*") ||
+        match(hostname, "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.unilim.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.uphf.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.hub.tbs-education.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.vetagro-sup.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.utc.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.ulb.ac.be/*") ||
+        match(hostname, "https://nouveau-europresse-com.gutenberg.univ-lr.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bpi.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.eztest.biblio.univ-evry.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxy.uclouvain.be/*") ||
+        match(hostname, "https://nouveau-europresse-com.iepnomade-2.grenet.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.eu1.proxy.openathens.net/*")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
@@ -917,7 +927,7 @@
         }
         `);
     }
-    if ("https://www.lemonde.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lemonde.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -970,7 +980,7 @@
         `);
     }
 
-    if ("https://www.liberation.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.liberation.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1101,7 +1111,7 @@
         `);
     }
 
-    if ("https://next.liberation.fr/*".includes(hostname)) {
+    if (match(hostname, "https://next.liberation.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1232,7 +1242,7 @@
         `);
     }
 
-    if ("https://*.lefigaro.fr/*".includes(hostname)) {
+    if (match(hostname, "https://*.lefigaro.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1273,7 +1283,7 @@
         `);
     }
 
-    if ("https://www.monde-diplomatique.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.monde-diplomatique.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1320,7 +1330,7 @@
         `);
     }
 
-    if ("https://www.courrierdesmaires.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.courrierdesmaires.fr/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -1354,7 +1364,7 @@
         `);
     }
 
-    if ("https://www.la-croix.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.la-croix.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -1399,7 +1409,7 @@
         `);
     }
 
-    if ("https://www.telerama.fr/kiosque/telerama".includes(hostname)) {
+    if (match(hostname, "https://www.telerama.fr/kiosque/telerama")) {
 
         window.addEventListener("load", function(event) {
             // Function to format date to "YYYY-MM-DD"
@@ -1477,7 +1487,7 @@
         `);
     }
 
-    if ("https://www.courrierinternational.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.courrierinternational.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -1502,7 +1512,7 @@
         `);
     }
 
-    if ("https://www.lamontagne.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lamontagne.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1539,7 +1549,7 @@
         `);
     }
 
-    if ("https://www.humanite.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.humanite.fr/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -1568,7 +1578,7 @@
         `);
     }
 
-    if ("https://www.lepoint.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lepoint.fr/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -1595,7 +1605,7 @@
         `);
     }
 
-    if ("https://www.lesoir.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.lesoir.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1632,7 +1642,7 @@
         `);
     }
 
-    if ("https://www.lesechos.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lesechos.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1731,7 +1741,7 @@
         `);
     }
 
-    if ("https://www.letemps.ch/*".includes(hostname)) {
+    if (match(hostname, "https://www.letemps.ch/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1768,7 +1778,7 @@
         `);
     }
 
-    if ("https://www.lalibre.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.lalibre.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1806,7 +1816,7 @@
         `);
     }
 
-    if ("https://www.lavoixdunord.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lavoixdunord.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1845,7 +1855,7 @@
         `);
     }
 
-    if ("https://www.mediapart.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.mediapart.fr/*")) {
 
         window.addEventListener("load", function(event) {
             /**
@@ -1931,7 +1941,7 @@
         `);
     }
 
-    if ("https://www-mediapart-fr.bnf.idm.oclc.org/*".includes(hostname)) {
+    if (match(hostname, "https://www-mediapart-fr.bnf.idm.oclc.org/*")) {
 
         window.addEventListener("load", function(event) {
             /**
@@ -2017,7 +2027,7 @@
         `);
     }
 
-    if ("https://www.ouest-france.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.ouest-france.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2064,7 +2074,7 @@
         `);
     }
 
-    if ("https://www.sudouest.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.sudouest.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2113,7 +2123,7 @@
         `);
     }
 
-    if ("https://www.laprovence.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.laprovence.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2149,7 +2159,7 @@
         `);
     }
 
-    if ("https://www.ladepeche.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.ladepeche.fr/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2188,7 +2198,7 @@
         `);
     }
 
-    if ("https://www.leparisien.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.leparisien.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2266,7 +2276,7 @@
         `);
     }
 
-    if ("https://www.lexpress.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lexpress.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function findPremiumBanner() {
@@ -2346,7 +2356,7 @@
         `);
     }
 
-    if ("https://www.nouvelobs.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.nouvelobs.com/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2397,7 +2407,7 @@
         `);
     }
 
-    if ("https://www.estrepublicain.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.estrepublicain.fr/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2432,7 +2442,7 @@
         `);
     }
 
-    if ("https://www.latribune.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.latribune.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2474,7 +2484,7 @@
         `);
     }
 
-    if ("https://www.lopinion.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lopinion.fr/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2514,7 +2524,7 @@
         `);
     }
 
-    if ("https://www.nicematin.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.nicematin.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2552,7 +2562,7 @@
         `);
     }
 
-    if ("https://www.corsematin.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.corsematin.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2590,7 +2600,7 @@
         `);
     }
 
-    if ("https://www.lorientlejour.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.lorientlejour.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink() {
@@ -2635,7 +2645,7 @@
         `);
     }
 
-    if ("https://www.lavenir.net/*".includes(hostname)) {
+    if (match(hostname, "https://www.lavenir.net/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2671,7 +2681,7 @@
         `);
     }
 
-    if ("https://www.dhnet.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.dhnet.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2709,7 +2719,7 @@
         `);
     }
 
-    if ("https://www.sudinfo.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.sudinfo.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2749,7 +2759,7 @@
         `);
     }
 
-    if ("https://www.letelegramme.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.letelegramme.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2782,7 +2792,7 @@
         `);
     }
 
-    if ("https://www.lsa-conso.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.lsa-conso.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2841,7 +2851,7 @@
         `);
     }
 
-    if ("https://www.leprogres.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.leprogres.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2927,7 +2937,7 @@
         `);
     }
 
-    if ("https://www.levif.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.levif.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -2987,7 +2997,7 @@
         `);
     }
 
-    if ("https://trends.levif.be/*".includes(hostname)) {
+    if (match(hostname, "https://trends.levif.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -3047,7 +3057,7 @@
         `);
     }
 
-    if ("https://www.knack.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.knack.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -3107,7 +3117,7 @@
         `);
     }
 
-    if ("https://www.demorgen.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.demorgen.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -3170,7 +3180,7 @@
         `);
     }
 
-    if ("https://www.standaard.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.standaard.be/*")) {
 
         window.addEventListener("load", function(event) {
             let buttonAdded = false;
@@ -3245,7 +3255,7 @@
         `);
     }
 
-    if ("https://www.ft.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.ft.com/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -3280,7 +3290,7 @@
         `);
     }
 
-    if ("https://www.gva.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.gva.be/*")) {
 
         window.addEventListener("load", function(event) {
             let buttonAdded = false;
@@ -3355,7 +3365,7 @@
         `);
     }
 
-    if ("https://www.nieuwsblad.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.nieuwsblad.be/*")) {
 
         window.addEventListener("load", function(event) {
             let buttonAdded = false;
@@ -3430,7 +3440,7 @@
         `);
     }
 
-    if ("https://www.hln.be/*".includes(hostname)) {
+    if (match(hostname, "https://www.hln.be/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -3493,7 +3503,7 @@
         `);
     }
 
-    if ("https://www.challenges.fr/*".includes(hostname)) {
+    if (match(hostname, "https://www.challenges.fr/*")) {
 
         window.addEventListener("load", function(event) {
             console.log('Ophirofox loaded');
@@ -3674,7 +3684,7 @@
         `);
     }
 
-    if ("https://www.arretsurimages.net/*".includes(hostname)) {
+    if (match(hostname, "https://www.arretsurimages.net/*")) {
 
         window.addEventListener("load", function(event) {
             //Aknowledgment : arret-sur-images feature found already mostly done on https://github.com/Rohirrim03/ profile.
@@ -3745,7 +3755,7 @@
         `);
     }
 
-    if ("https://www.pressreader.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.pressreader.com/*")) {
 
         window.addEventListener("load", function(event) {
             async function createLink(AUTH_URL) {
@@ -3796,7 +3806,7 @@
         `);
     }
 
-    if ("https://www.usinenouvelle.com/*".includes(hostname)) {
+    if (match(hostname, "https://www.usinenouvelle.com/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -3846,7 +3856,7 @@
         `);
     }
 
-    if ("https://elpais.com/*".includes(hostname)) {
+    if (match(hostname, "https://elpais.com/*")) {
 
         window.addEventListener("load", function(event) {
             let buttonAdded = false;
@@ -3917,7 +3927,7 @@
         `);
     }
 
-    if ("https://acteurspublics.fr/*".includes(hostname)) {
+    if (match(hostname, "https://acteurspublics.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
