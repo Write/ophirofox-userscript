@@ -28,7 +28,6 @@ END
 )
 SCRIPT+=$'\n'
 
-
 # Loop to add @include entries
 while IFS= read -r europress_single_url; do
   SCRIPT+="// @include $europress_single_url"$'\n'
@@ -70,8 +69,18 @@ SCRIPT+=$'//
   const hostname = window.location.hostname;
 
   function match(str, rule) {
-      var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-      return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
+      // Extract domain pattern from the rule (ignore https:// and /*)
+      var domainRule = rule.replace(/^https?:\/\//, '\'''\'').replace(/\/\*$/, '\'''\'');
+      
+      // Convert the wildcard pattern to a proper regex
+      var regexPattern = "^" + domainRule.split('\''*'\'').map(function(part) {
+          // Escape special regex characters in each part
+          return part.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+      }).join('\''.*'\'') + "$";
+  
+      // Create and test the regex against the input string
+      var regex = new RegExp(regexPattern);
+      return regex.test(str);
   }
 
   function pasteStyle(str) {
@@ -171,10 +180,10 @@ while IFS= read -r europress_single_url; do
   if [[ "$counter" -eq "$europress_urls_count" ]]; then
       # last element, close the parenthesis.
         SCRIPT+=$'
-  "'"$europress_single_url"'".includes(hostname)) {'
+  match(hostname, "'"$europress_single_url"'")) {'
   else
         SCRIPT+=$'
-  "'"$europress_single_url"'".includes(hostname) ||'
+  match(hostname, "'"$europress_single_url"'") ||'
   fi
   ((counter++))
 done <<< "$europress_urls"
@@ -370,7 +379,7 @@ while IFS= read -r line; do
       fi
 
       SCRIPT+=$'
-  if ("'"$matches"'".includes(hostname)) {
+  if (match(hostname, "'"$matches"'")) {
 
       window.addEventListener("load", function(event) {
       '"$js_str"'
