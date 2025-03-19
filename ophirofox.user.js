@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250318.2132
+// @version 2.5.250319.1643
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -104,7 +104,8 @@
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
-// @include https://*.lefigaro.fr/*
+// @include https://www.lefigaro.fr/*
+// @include https://leparticulier.lefigaro.fr/*
 // @include https://www.monde-diplomatique.fr/*
 // @include https://www.courrierdesmaires.fr/*
 // @include https://www.la-croix.com/*
@@ -1242,7 +1243,7 @@
         `);
     }
 
-    if (match(hostname, "https://*.lefigaro.fr/*")) {
+    if (match(hostname, "https://www.lefigaro.fr/*")) {
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
@@ -1276,10 +1277,43 @@
         .ophirofox-europresse {
             margin-left: 10px;
         }
-        
-        .appconsent_noscroll {
-            overflow: unset !important;
-          }
+        `);
+    }
+
+    if (match(hostname, "https://leparticulier.lefigaro.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("fig-premium-mark-article__text");
+                return a;
+            }
+
+
+            function findPremiumBanner() {
+                const title = document.querySelector("h1");
+                if (!title) return null;
+                const elems = title.parentElement.querySelectorAll("span");
+                return [...elems].find(d => d.textContent.includes("Réservé aux abonnés"))
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                premiumBanner.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            margin-left: 10px;
+        }
         `);
     }
 
@@ -1323,10 +1357,6 @@
         .ophirofox-europresse {
             margin-left: 10px;
         }
-        
-        .appconsent_noscroll {
-            overflow: unset !important;
-          }
         `);
     }
 
