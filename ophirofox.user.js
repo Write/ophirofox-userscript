@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250403.2109
+// @version 2.5.250407.2020
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1406,7 +1406,7 @@
             }
 
             async function onLoad() {
-                const statusElem = document.querySelector(".tag-subscriber");
+                const statusElem = document.querySelector(".article-premium");
                 if (!statusElem) return;
                 statusElem.appendChild(await createLink());
             }
