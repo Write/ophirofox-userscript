@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250425.1414
+// @version 2.5.250521.1619
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -157,6 +157,8 @@
 // @include https://www.usinenouvelle.com/*
 // @include https://elpais.com/*
 // @include https://acteurspublics.fr/*
+// @include https://www.sciencesetavenir.fr/*
+// @include https://www.larecherche.fr/*
 //
 // @run-at      document-start
 //
@@ -4024,6 +4026,67 @@
         .ophirofox-europresse:hover {
             border-color: var(--color-secondary-base);
             background: var(--color-secondary-base);
+        }
+        `);
+    }
+
+    if (match(hostname, "https://www.sciencesetavenir.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector(".article-abo-tag");
+                if (!statusElem) return;
+                statusElem.appendChild(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            display: inline-block;
+            padding: 3px 5px 1px 5px;
+            color: #000000!important;
+            border: #f05246 1px solid;
+         }
+        `);
+    }
+
+    if (match(hostname, "https://www.larecherche.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink(extractKeywordsFromTitle());
+            }
+
+            function extractKeywordsFromTitle() {
+                const titleElem = document.querySelector('h1.title.title1');
+                return titleElem.querySelector('span').textContent;
+            }
+
+            function findPremiumBanner() {
+                return document.querySelector('i.ico.ico-lock-round');
+            }
+
+            async function onLoad() {
+                const head = document.querySelector('h1.title.title1');
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                head.before(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: #f05246 1px solid;
         }
         `);
     }
