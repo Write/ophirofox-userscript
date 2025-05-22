@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250521.1619
+// @version 2.5.250522.1547
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -159,6 +159,8 @@
 // @include https://acteurspublics.fr/*
 // @include https://www.sciencesetavenir.fr/*
 // @include https://www.larecherche.fr/*
+// @include https://www.larepubliquedespyrenees.fr/*
+// @include https://www.journaldunet.com/*
 //
 // @run-at      document-start
 //
@@ -4088,6 +4090,57 @@
             border-radius: 8px;
             border: #f05246 1px solid;
         }
+        `);
+    }
+
+    if (match(hostname, "https://www.larepubliquedespyrenees.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector(".tag.color-premium.uppercase");
+                if (!statusElem) return;
+                statusElem.appendChild(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            display: inline-block;
+            padding: 3px 5px 1px 5px;
+            border: #f05246 1px solid;
+         }
+        `);
+    }
+
+    if (match(hostname, "https://www.journaldunet.com/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector(".entry.entry_reg_wall");
+                if (!statusElem) return;
+                document.querySelector('h1').appendChild(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            display: inline-block;
+            padding: 3px 5px 1px 5px;
+            border: #f05246 1px solid;
+            font-size: small;
+         }
         `);
     }
 })();
