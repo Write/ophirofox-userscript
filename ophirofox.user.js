@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250522.1547
+// @version 2.5.250523.1515
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -161,6 +161,8 @@
 // @include https://www.larecherche.fr/*
 // @include https://www.larepubliquedespyrenees.fr/*
 // @include https://www.journaldunet.com/*
+// @include https://www.science-et-vie.com/*
+// @include https://investir.lesechos.fr/*
 //
 // @run-at      document-start
 //
@@ -4140,6 +4142,60 @@
             padding: 3px 5px 1px 5px;
             border: #f05246 1px solid;
             font-size: small;
+         }
+        `);
+    }
+
+    if (match(hostname, "https://www.science-et-vie.com/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector(".tag_aboone");
+                if (!statusElem) return;
+                statusElem.appendChild(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            padding: 0 5px 0 5px;
+            color: #000000!important;
+            border: #f05246 1px solid;
+         }
+        `);
+    }
+
+    if (match(hostname, "https://investir.lesechos.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                return await ophirofoxEuropresseLink();
+            }
+
+            async function onLoad() {
+                const statusElem = document.querySelector(".post-subscriber-badge");
+                if (!statusElem) return;
+                statusElem.appendChild(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            padding: 0 5px 0 5px;
+            color: #000000!important;
+            border: #f05246 1px solid;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
          }
         `);
     }
