@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250523.1515
+// @version 2.5.250528.1612
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
