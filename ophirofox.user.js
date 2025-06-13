@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250607.1756
+// @version 2.5.250613.2023
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1023,7 +1023,7 @@
             }
 
             function findPremiumBanner() {
-                const anchor = document.querySelector('div.TypologyArticle__BlockPremium-sc-1vro4tp-2');
+                const anchor = document.querySelector('div.TypologyArticle__BlockPremium-sc-1vro4tp-2 , div.jahSgQ');
                 if (!anchor) {
                     return;
                 }
@@ -1154,7 +1154,7 @@
             }
 
             function findPremiumBanner() {
-                const anchor = document.querySelector('div.TypologyArticle__BlockPremium-sc-1vro4tp-2');
+                const anchor = document.querySelector('div.TypologyArticle__BlockPremium-sc-1vro4tp-2 , div.jahSgQ');
                 if (!anchor) {
                     return;
                 }
