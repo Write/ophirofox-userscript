@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.250620.2136
+// @version 2.5.250628.2313
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -163,6 +163,7 @@
 // @include https://www.journaldunet.com/*
 // @include https://www.science-et-vie.com/*
 // @include https://investir.lesechos.fr/*
+// @include https://www.jeuneafrique.com/*
 //
 // @run-at      document-start
 //
@@ -4302,6 +4303,37 @@
             margin-right: auto;
             text-align: center;
          }
+        `);
+    }
+
+    if (match(hostname, "https://www.jeuneafrique.com/*")) {
+
+        window.addEventListener("load", function(event) {
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink();
+                a.className = "ophirofox-europresse";
+                return a;
+            }
+
+            async function onLoad() {
+                const header = document.querySelector(".article__header");
+                if (!header) return;
+                header.appendChild(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 0.3rem;
+            background-color: #ffc700;
+            color: #000 !important;
+            text-align: center;
+            text-decoration: none;
+        }
         `);
     }
 })();
