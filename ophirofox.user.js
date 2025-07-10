@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.5.77.1848
+// @version 2.5.710.1157
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -265,6 +265,9 @@
     }, {
         "name": "École Centrale de Lyon (ECL)",
         "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
+    }, {
+        "name": "École Centrale d'Electronique (ECE)",
+        "AUTH_URL": "https://go.openathens.net/redirector/omneseducation.com?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fip%2Fdefault.aspx%3Fun%3DU032932T_1"
     }, {
         "name": "École normale supérieure de Lyon (ENS Lyon)",
         "AUTH_URL": "https://acces.bibliotheque-diderot.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ENSLYONT_1"
