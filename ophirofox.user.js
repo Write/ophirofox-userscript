@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.713.1825
+// @version 2.6.84.179
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -123,6 +123,7 @@
 // @include https://www.lavoixdunord.fr/*
 // @include https://www.mediapart.fr/*
 // @include https://www-mediapart-fr.bnf.idm.oclc.org/*
+// @include https://www-mediapart-fr.acces-distant.bnu.fr/*
 // @include https://www.ouest-france.fr/*
 // @include https://www.sudouest.fr/*
 // @include https://www.laprovence.com/*
@@ -240,7 +241,8 @@
         "AUTH_URL": "http://res.banq.qc.ca/login?url=https://nouveau.eureka.cc/access/ip/default.aspx?un=bnat1"
     }, {
         "name": "Bibliotheque nationale et universitaire de Strasbourg",
-        "AUTH_URL": "https://acces-distant.bnu.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=bnus"
+        "AUTH_URL": "https://acces-distant.bnu.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=bnus",
+        "AUTH_URL_MEDIAPART": "www-mediapart-fr.acces-distant.bnu.fr"
     }, {
         "name": "Bibliotheque municipale de Lyon",
         "AUTH_URL": "https://connect.bm-lyon.fr/get/login?&access_list=LVAw&url=aHR0cHM6Ly9ub3V2ZWF1LmV1cm9wcmVzc2UuY29tL2FjY2Vzcy9odHRwcmVmL2RlZmF1bHQuYXNweD91bj1CTUxZT05BVV8x"
@@ -1914,12 +1916,13 @@
 
         window.addEventListener("load", function(event) {
             /**
-             * @description create link <a> to BNF mirror
+             * @description create link <a> to a mirror
              * @param {string} AUTH_URL_MEDIAPART
+             * @param {string} name
              */
-            async function createLink(AUTH_URL_MEDIAPART) {
+            async function createLink(AUTH_URL_MEDIAPART, name) {
                 const span = document.createElement("span");
-                span.textContent = "Lire avec BNF";
+                span.textContent = "Lire avec " + name;
 
                 const a = document.createElement("a");
                 a.href = new URL(window.location);
@@ -1969,13 +1972,13 @@
                 if (!reserve) return;
 
                 for (const balise of reserve) {
-                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART));
+                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART, config.name));
                 }
             }
 
             /**@description check for users with mediapart access. If yes, create link button */
             async function onLoad() {
-                const config = await configurationsSpecifiques(["BNF"]);
+                const config = await configurationsSpecifiques(["BNF", "Bibliotheque nationale et universitaire de Strasbourg"]);
                 if (!config) return;
                 const currentPage = new URL(window.location);
                 if (currentPage.host == config.AUTH_URL_MEDIAPART) {
@@ -2000,12 +2003,13 @@
 
         window.addEventListener("load", function(event) {
             /**
-             * @description create link <a> to BNF mirror
+             * @description create link <a> to a mirror
              * @param {string} AUTH_URL_MEDIAPART
+             * @param {string} name
              */
-            async function createLink(AUTH_URL_MEDIAPART) {
+            async function createLink(AUTH_URL_MEDIAPART, name) {
                 const span = document.createElement("span");
-                span.textContent = "Lire avec BNF";
+                span.textContent = "Lire avec " + name;
 
                 const a = document.createElement("a");
                 a.href = new URL(window.location);
@@ -2055,13 +2059,100 @@
                 if (!reserve) return;
 
                 for (const balise of reserve) {
-                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART));
+                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART, config.name));
                 }
             }
 
             /**@description check for users with mediapart access. If yes, create link button */
             async function onLoad() {
-                const config = await configurationsSpecifiques(["BNF"]);
+                const config = await configurationsSpecifiques(["BNF", "Bibliotheque nationale et universitaire de Strasbourg"]);
+                if (!config) return;
+                const currentPage = new URL(window.location);
+                if (currentPage.host == config.AUTH_URL_MEDIAPART) {
+                    handleMediapartMirror(config);
+                } else {
+                    handleMediapart(config);
+                }
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        `);
+    }
+
+    if (match(hostname, "https://www-mediapart-fr.acces-distant.bnu.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            /**
+             * @description create link <a> to a mirror
+             * @param {string} AUTH_URL_MEDIAPART
+             * @param {string} name
+             */
+            async function createLink(AUTH_URL_MEDIAPART, name) {
+                const span = document.createElement("span");
+                span.textContent = "Lire avec " + name;
+
+                const a = document.createElement("a");
+                a.href = new URL(window.location);
+                a.host = AUTH_URL_MEDIAPART;
+                a.appendChild(span);
+                return a;
+            }
+
+            /**
+             * @description check DOM for article under paywall
+             * @return {HTMLElement} DOM Premium Banner and head of the article
+             */
+            function findPremiumBanner() {
+                const article = document.querySelector(".news__body__center__container");
+                if (!article) return null;
+                const elems = article.querySelectorAll(".paywall-message");
+                //labels not the same for mobile or PC display
+                const textToFind = ["réservée aux abonné·es", "réservé aux abonné·es"];
+
+                return [...elems].filter((balise) =>
+                    textToFind.some((text) => balise.textContent.toLowerCase().includes(text))
+                );
+            }
+
+            /**
+             * @description if not properly logged on the mirror website, fetch the login page
+             */
+            function handleMediapartMirror(config) {
+                const navBar = document.querySelector("ul.nav__actions");
+                const spans = navBar.querySelectorAll("span");
+
+                let isNotConnected = Array.from(spans).find(
+                    (elem) => elem.textContent == "Se connecter"
+                );
+                if (isNotConnected) {
+                    //account name not found. fetch login page
+                    const LOGIN_PAGE = new URL(
+                        "licence",
+                        "https://" + config.AUTH_URL_MEDIAPART
+                    );
+                    fetch(LOGIN_PAGE).then(() => window.location.reload());
+                }
+            }
+
+            async function handleMediapart(config) {
+                const reserve = findPremiumBanner();
+                if (!reserve) return;
+
+                for (const balise of reserve) {
+                    balise.appendChild(await createLink(config.AUTH_URL_MEDIAPART, config.name));
+                }
+            }
+
+            /**@description check for users with mediapart access. If yes, create link button */
+            async function onLoad() {
+                const config = await configurationsSpecifiques(["BNF", "Bibliotheque nationale et universitaire de Strasbourg"]);
                 if (!config) return;
                 const currentPage = new URL(window.location);
                 if (currentPage.host == config.AUTH_URL_MEDIAPART) {
