@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.815.1917
+// @version 2.6.825.1645
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -442,8 +442,8 @@
         "name": "Université de Limoges",
         "AUTH_URL": "https://ezproxy.unilim.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031697T_1"
     }, {
-        "name": "Université du Littoral Côte d'Opale (UCLO)",
-        "AUTH_URL": "http://ezproxy.univ-littoral.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=dunkerqueT_1"
+        "name": "Université du Littoral Côte d'Opale (ULCO)",
+        "AUTH_URL": "https://ezproxy.univ-littoral.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=dunkerqueT_1"
     }, {
         "name": "Université de Lorraine",
         "AUTH_URL": "https://login.bases-doc.univ-lorraine.fr/login?qurl=http://nouveau.europresse.com/access/ip/default.aspx?un=NANCY2"
