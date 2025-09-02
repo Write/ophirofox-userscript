@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.825.1645
+// @version 2.6.92.69
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -103,6 +103,7 @@
 // @include https://nouveau-europresse-com.bsg-ezproxy.univ-paris3.fr/*
 // @include https://nouveau-europresse-com.eu1.proxy.openathens.net/*
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1
+// @include http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -275,6 +276,9 @@
     }, {
         "name": "École normale supérieure de Paris (ENS ULM)",
         "AUTH_URL": "https://proxy.rubens.ens.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=PSLT_1"
+    }, {
+        "name": "École nationale supérieure des sciences de l'information et des bibliothèques (ENSSIB)",
+        "AUTH_URL": "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1"
     }, {
         "name": "École polytechnique",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1"
@@ -781,7 +785,8 @@
         match(hostname, "https://nouveau-europresse-com.iepnomade-2.grenet.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.bsg-ezproxy.univ-paris3.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.eu1.proxy.openathens.net/*") ||
-        match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1")) {
+        match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1") ||
+        match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
