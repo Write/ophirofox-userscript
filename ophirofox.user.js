@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.92.69
+// @version 2.6.92.204
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -104,6 +104,7 @@
 // @include https://nouveau-europresse-com.eu1.proxy.openathens.net/*
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1
 // @include http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1
+// @include https://nouveau-europresse-com.ujm.idm.oclc.org/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -423,7 +424,7 @@
         "AUTH_URL": "https://scd-proxy.uha.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=ALSACET_1"
     }, {
         "name": "Université Jean Monnet Saint-Étienne",
-        "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=MONNETT_1"
+        "AUTH_URL": "https://ujm.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=MONNETT_1"
     }, {
         "name": "Université Jean Moulin Lyon 3",
         "AUTH_URL": "http://ezscd.univ-lyon3.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=MOULINT_1"
@@ -786,7 +787,8 @@
         match(hostname, "https://nouveau-europresse-com.bsg-ezproxy.univ-paris3.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.eu1.proxy.openathens.net/*") ||
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1") ||
-        match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1")) {
+        match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1") ||
+        match(hostname, "https://nouveau-europresse-com.ujm.idm.oclc.org/*")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
