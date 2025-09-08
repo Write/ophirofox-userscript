@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.92.204
+// @version 2.6.98.937
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -105,6 +105,7 @@
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1
 // @include http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1
 // @include https://nouveau-europresse-com.ujm.idm.oclc.org/*
+// @include https://nouveau-europresse-com.em-lyon.idm.oclc.org/
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -286,6 +287,9 @@
     }, {
         "name": "Conservatoire national des arts et métiers",
         "AUTH_URL": "https://proxybib-pp.cnam.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CNAM"
+    }, {
+        "name": "EM Lyon",
+        "AUTH_URL": "https://em-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=EMLYONT_1"
     }, {
         "name": "ENSAM",
         "AUTH_URL": "https://rp1.ensam.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=AML"
@@ -788,7 +792,8 @@
         match(hostname, "https://nouveau-europresse-com.eu1.proxy.openathens.net/*") ||
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1") ||
         match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1") ||
-        match(hostname, "https://nouveau-europresse-com.ujm.idm.oclc.org/*")) {
+        match(hostname, "https://nouveau-europresse-com.ujm.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.em-lyon.idm.oclc.org/")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
