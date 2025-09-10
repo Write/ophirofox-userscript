@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.98.937
+// @version 2.6.910.1130
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -168,6 +168,7 @@
 // @include https://investir.lesechos.fr/*
 // @include https://www.jeuneafrique.com/*
 // @include https://www.leberry.fr/*
+// @include https://www.economist.com/*
 //
 // @run-at      document-start
 //
@@ -4533,6 +4534,50 @@
             text-align: center;
             text-decoration: none;
         }
+        `);
+    }
+
+    if (match(hostname, "https://www.economist.com/*")) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document
+                    .querySelector("meta[property='og:title']")
+                    .getAttribute("content");
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
+            }
+
+            function findPremiumBanner() {
+                const anchor = document.querySelector('#regwall-container');
+                if (!anchor) {
+                    return;
+                }
+                return anchor;
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                premiumBanner.parentElement.before(await createLink());
+                document.querySelector('h1').after(await createLink())
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse{
+            background: #1f2e7a;
+            color: #fff;
+            border: 0.125rem solid transparent;
+            border-radius: 1.25rem;
+            align-items: center;
+            padding: 0.375rem 1rem;
+         }
         `);
     }
 })();
