@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.910.1130
+// @version 2.6.912.1541
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -10,7 +10,7 @@
 // @include https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*
 // @include https://nouveau-europresse-com.ezproxy.upf.pf/*
 // @include https://nouveau-eureka-cc.res.banq.qc.ca/*
-// @include https://nouveau-europresse-com.budistant.univ-nantes.fr/*
+// @include https://nouveau-europresse-com.bunantes.idm.oclc.org/*
 // @include https://nouveau-europresse-com.proxy.rubens.ens.fr/*
 // @include https://nouveau-europresse-com.rp1.ensam.eu/*
 // @include https://nouveau-europresse-com.ezproxy.universite-paris-saclay.fr/*
@@ -464,8 +464,8 @@
         "name": "Université de Montpellier",
         "AUTH_URL": "https://login.ezpum.scdi-montpellier.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=MontpellierT_1"
     }, {
-        "name": "Université de Nantes",
-        "AUTH_URL": "https://budistant.univ-nantes.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=NANTEST_1"
+        "name": "Nantes Université",
+        "AUTH_URL": "https://bunantes.idm.oclc.org/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=NANTEST_1"
     }, {
         "name": "Université de Nîmes",
         "AUTH_URL": "https://federation.unimes.fr/login?url=http://nouveau.europresse.com/access/ip/default.aspx?un=NimesT_1"
@@ -699,7 +699,7 @@
         match(hostname, "https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.upf.pf/*") ||
         match(hostname, "https://nouveau-eureka-cc.res.banq.qc.ca/*") ||
-        match(hostname, "https://nouveau-europresse-com.budistant.univ-nantes.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bunantes.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.proxy.rubens.ens.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.rp1.ensam.eu/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.universite-paris-saclay.fr/*") ||
