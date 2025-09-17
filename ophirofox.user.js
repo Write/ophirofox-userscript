@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.912.1541
+// @version 2.6.917.1525
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -106,6 +106,7 @@
 // @include http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1
 // @include https://nouveau-europresse-com.ujm.idm.oclc.org/*
 // @include https://nouveau-europresse-com.em-lyon.idm.oclc.org/
+// @include https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -270,6 +271,9 @@
     }, {
         "name": "École Centrale de Lyon (ECL)",
         "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
+    }, {
+        "name": "École Centrale de Nantes",
+        "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1"
     }, {
         "name": "École Centrale d'Electronique (ECE)",
         "AUTH_URL": "https://go.openathens.net/redirector/omneseducation.com?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fip%2Fdefault.aspx%3Fun%3DU032932T_1"
@@ -794,7 +798,8 @@
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1") ||
         match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1") ||
         match(hostname, "https://nouveau-europresse-com.ujm.idm.oclc.org/*") ||
-        match(hostname, "https://nouveau-europresse-com.em-lyon.idm.oclc.org/")) {
+        match(hostname, "https://nouveau-europresse-com.em-lyon.idm.oclc.org/") ||
+        match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
