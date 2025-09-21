@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.917.1525
+// @version 2.6.921.1547
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -630,6 +630,10 @@
         "name": "Blibliothèques du Val d'Oise / RéVOdoc",
         "HTTP_REFERER": "https://revodoc.valdoise.fr/",
         "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=VALDOISEU_2"
+    }, {
+        "name": "Médiathèques d'Antony (92)",
+        "HTTP_REFERER": "https://mediatheque.ville-antony.fr/",
+        "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=antonyU_2"
     }];
 
     function getOphirofoxConfigByName(search_name) {
