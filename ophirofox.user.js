@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.1014.46
+// @version 2.6.1016.1447
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -107,6 +107,7 @@
 // @include https://nouveau-europresse-com.ujm.idm.oclc.org/*
 // @include https://nouveau-europresse-com.em-lyon.idm.oclc.org/
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1
+// @include https://nouveau-europresse-com.ehesp.idm.oclc.org/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -277,6 +278,10 @@
     }, {
         "name": "École Centrale d'Electronique (ECE)",
         "AUTH_URL": "https://go.openathens.net/redirector/omneseducation.com?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fip%2Fdefault.aspx%3Fun%3DU032932T_1"
+    }, {
+        "name": "École des Hautes Études en Santé Publique (EHESP)",
+        "HTTP_REFERER": "https://www.ehesp.fr/",
+        "AUTH_URL": "https://login.ehesp.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U032196T_1"
     }, {
         "name": "École normale supérieure de Lyon (ENS Lyon)",
         "AUTH_URL": "https://acces.bibliotheque-diderot.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ENSLYONT_1"
@@ -576,7 +581,7 @@
         "name": "Université de Toulouse",
         "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_6"
     }, {
-        "name": "Institut national polytechnique de Toulouse",
+        "name": "Institut national polytechnique de Toulouse et ENVT",
         "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_7"
     }, {
         "name": "Institut supérieur de l'aéronautique et de l'espace",
@@ -803,7 +808,8 @@
         match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1") ||
         match(hostname, "https://nouveau-europresse-com.ujm.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.em-lyon.idm.oclc.org/") ||
-        match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1")) {
+        match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1") ||
+        match(hostname, "https://nouveau-europresse-com.ehesp.idm.oclc.org/*")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
