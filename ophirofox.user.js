@@ -1,11 +1,12 @@
 // ==UserScript==
-// @version 2.6.1016.1541
+// @version 2.6.1117.1722
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
 // @grant   GM.setValue
 // @grant   GM.deleteValue
 // @include https://nouveau.europresse.com/*
+// @include https://2160010m-cas.esidoc.fr/*
 // @include https://nouveau-europresse-com.essec.idm.oclc.org/*
 // @include https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*
 // @include https://nouveau-europresse-com.ezproxy.upf.pf/*
@@ -108,6 +109,8 @@
 // @include https://nouveau-europresse-com.em-lyon.idm.oclc.org/
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1
 // @include https://nouveau-europresse-com.ehesp.idm.oclc.org/*
+// @include https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1
+// @include https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -115,7 +118,7 @@
 // @include https://www.monde-diplomatique.fr/*
 // @include https://www.courrierdesmaires.fr/*
 // @include https://www.la-croix.com/*
-// @include https://www.telerama.fr/kiosque/telerama
+// @include https://www.telerama.fr/*
 // @include https://www.courrierinternational.com/*
 // @include https://www.lamontagne.fr/*
 // @include https://www.humanite.fr/*
@@ -133,6 +136,7 @@
 // @include https://www.laprovence.com/*
 // @include https://www.ladepeche.fr/*
 // @include https://www.leparisien.fr/*
+// @include https://lettreaudiovisuel.com/*
 // @include https://www.lexpress.fr/*
 // @include https://www.nouvelobs.com/*
 // @include https://www.estrepublicain.fr/*
@@ -171,6 +175,7 @@
 // @include https://www.jeuneafrique.com/*
 // @include https://www.leberry.fr/*
 // @include https://www.economist.com/*
+// @include https://www.lanouvellerepublique.fr/*
 //
 // @run-at      document-start
 //
@@ -261,6 +266,9 @@
         "name": "Bibliothèque Publique d'Information (BPI)",
         "AUTH_URL": "https://bpi.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=pompi"
     }, {
+        "name": "Bibliothèque publique d'Ottawa",
+        "AUTH_URL": "https://ezproxy.biblioottawalibrary.ca/login?qurl=https://nouveau.eureka.cc/access/ip/default.aspx?un=opladminU_1"
+    }, {
         "name": "Bibliothèque Sainte-Geneviève (BSG)",
         "AUTH_URL": "http://bsg-ezproxy.univ-paris3.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=pantheonT_1"
     }, {
@@ -269,6 +277,9 @@
     }, {
         "name": "CY Cergy Paris Université",
         "AUTH_URL": "https://bibdocs.u-cergy.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031547T_1"
+    }, {
+        "name": "E-SIDOC LFS (Lycée Français de Shanghai)",
+        "AUTH_URL": "https://2160010m-cas.esidoc.fr/cas/login?service=http%3a%2f%2fnouveau.europresse.com%2fLogin%2fEsidoc%3fsso_id%3d2160010M"
     }, {
         "name": "École Centrale de Lyon (ECL)",
         "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
@@ -632,9 +643,13 @@
         "name": "ENTPE",
         "AUTH_URL": "https://login.openathens.net/saml/2/sso/entpe.fr/o/81387240/c/proxy.openathens.net?SAMLRequest=jZJRb9owFIX%2FiuX3xI6JSWIRKlY0DanbUEn7sDfjXIqlYGe%2BTlf%2B%2FQIMqZW6qu%2F3nnN0vjO7eTl05BkCWu9qmqWcEnDGt9Y91fSh%2BZqUlGDUrtWdd1BT5%2BnNfIb60PVqMcS9u4ffA2AkC0QIcVS59Q6HA4QNhGdr4OH%2Brqb7GHtUjHX%2Bybq0D%2F7lmPoenI57cJg6iOwkyQTTBhloI4q2hERAO0lyucuTkhd5wrdSm2mb7yZaUrIcXe2ocA7%2B1uB9aUTPwMUe0l1gnpXZpCxEzplh7wWiZLWs6dZk00Ia3mY7k8tWVkIK3kJlSs7LTFbjFeIAK3fqKNZUcCETPkl43nCh5FTJKhVV8YuSdfDRG999se5S7hCc8hotKqcPgCoatVl8v1Mi5Wp7OUL1rWnWyfrnpqHk8QpJnCCN2ByqM4ePpfp%2FvvRCTZ3zhlf%2FH7%2FrK1Y6v3b8f3xjuzYeP8Vvxl6luQ7qx2i%2FWq59Z82RLLrO%2F7kNoOM4u4yy%2BeXl7ezmfwE%3D&RelayState=https%3A%2F%2Fnouveau-europresse-com.proxy.openathens.net%2Faccess%2Fip%2Fdefault.aspx%3Fun%3DENTPET_1"
     }, {
-        "name": "Blibliothèques du Val d'Oise / RéVOdoc",
+        "name": "Bibliothèques du Val d'Oise / RéVOdoc",
         "HTTP_REFERER": "https://revodoc.valdoise.fr/",
         "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=VALDOISEU_2"
+    }, {
+        "name": "Eduvaud",
+        "HTTP_REFERER": "https://eduvaud.ch/",
+        "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1"
     }, {
         "name": "Médiathèques d'Antony (92)",
         "HTTP_REFERER": "https://mediatheque.ville-antony.fr/",
@@ -708,6 +723,7 @@
     }
 
     if (
+        match(hostname, "https://2160010m-cas.esidoc.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.essec.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.univ-catholille.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.upf.pf/*") ||
@@ -809,7 +825,9 @@
         match(hostname, "https://nouveau-europresse-com.ujm.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.em-lyon.idm.oclc.org/") ||
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1") ||
-        match(hostname, "https://nouveau-europresse-com.ehesp.idm.oclc.org/*")) {
+        match(hostname, "https://nouveau-europresse-com.ehesp.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1") ||
+        match(hostname, "https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
@@ -1454,7 +1472,7 @@
         `);
     }
 
-    if (match(hostname, "https://www.telerama.fr/kiosque/telerama")) {
+    if (match(hostname, "https://www.telerama.fr/*")) {
 
         window.addEventListener("load", function(event) {
             // Function to format date to "YYYY-MM-DD"
@@ -1472,31 +1490,46 @@
                 return result;
             }
 
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                return await ophirofoxEuropresseLink(extractKeywords());
+            }
+
             async function onLoad() {
-                // Get articles
-                const articles = document.querySelectorAll('#liste-magazine-telerama article');
+                // Check if we're on the kiosque page
+                if (window.location.href.endsWith('kiosque/telerama')) {
+                    // Get articles
+                    const articles = document.querySelectorAll('#liste-magazine-telerama article');
 
-                for (const article of articles) {
-                    const linkElement = article.querySelector('a.popin-link');
-                    const tagName = linkElement.getAttribute('data-tagname');
-                    const datePattern = /clic_magazine_(\d{4}-\d{2}-\d{2})/;
-                    const match = tagName.match(datePattern);
-                    const articleDate = new Date(match[1]);
-                    // Check if the date object is valid
-                    if (isNaN(articleDate.getTime())) {
-                        console.error(`Invalid date: ${year}-${month + 1}-${day}`);
-                        return;
+                    for (const article of articles) {
+                        const linkElement = article.querySelector('a.popin-link');
+                        const tagName = linkElement.getAttribute('data-tagname');
+                        const datePattern = /clic_magazine_(\d{4}-\d{2}-\d{2})/;
+                        const match = tagName.match(datePattern);
+                        const articleDate = new Date(match[1]);
+                        // Check if the date object is valid
+                        if (isNaN(articleDate.getTime())) {
+                            console.error(`Invalid date: ${year}-${month + 1}-${day}`);
+                            return;
+                        }
+                        // Calculate the new date + 3 days
+                        const newDate = addDays(articleDate, 3);
+                        const formattedDate = formatDate(newDate);
+
+                        // Generate the link
+                        const a = await ophirofoxEuropressePDFLink("TA_P", formattedDate);
+                        a.classList.add("btn", "btn--premium");
+
+                        // Inject the link into the article
+                        article.appendChild(a);
                     }
-                    // Calculate the new date + 3 days
-                    const newDate = addDays(articleDate, 3);
-                    const formattedDate = formatDate(newDate);
 
-                    // Generate the link
-                    const a = await ophirofoxEuropressePDFLink("TA_P", formattedDate);
-                    a.classList.add("btn", "btn--premium");
-
-                    // Inject the link into the article
-                    article.appendChild(a);
+                } else {
+                    const msg_abo = document.querySelector(".article__subscriber-container");
+                    msg_abo.after(await createLink());
                 }
             }
 
@@ -1505,29 +1538,22 @@
 
         pasteStyle(`
         .ophirofox-europresse {
-            -webkit-font-smoothing: antialiased;
-            align-items: center;
-            background-color: #ef7c03;
-            color: #fff !important;
-            display: inline-flex;
-            font-family: Public Sans,sans-serif;
-            font-size: 12px;
-            font-weight: 500;
-            height: 15px;
-            hyphens: none;
-            justify-content: center;
-            letter-spacing: 0;
-            line-height: 1.35;
-            margin: 0 5px;
-            position: relative;
-            text-align: center;
-            top: 50%;
-            vertical-align: middle;
-            width: 120px;
-        }
-        
-        .above-image-wrapper {
-            align-items: center;
+            background-color: #ffe047;
+            color: #16141e;
+            align-items: baseline;
+            display: inline-block;
+            margin-top: 2.4rem;
+            max-width: 46.3rem;
+            padding: .76rem 1.6rem;
+            padding-top: 1.16rem;
+            padding-bottom: 1.16rem;
+            border-radius: 6.4rem;
+            white-space: normal;
+            white-space: initial;
+            line-height: 1.3;
+            font-size: 1.6rem;
+            font-weight: 600;
+            font-family: GraphikCompact_Regular, Helvetica, Arial, Roboto, sans-serif;
         }
         `);
     }
@@ -2442,6 +2468,44 @@
             margin-bottom: 10px;
             display: block;
             width: 135px;
+        }
+        `);
+    }
+
+    if (match(hostname, "https://lettreaudiovisuel.com/*")) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("is-btn");
+                return a;
+            }
+
+            async function onLoad() {
+                const paywall = document.querySelector(".mepr-unauthorized-message");
+                paywall.before(await createLink());
+
+                const header = document.querySelector("h1");
+                header.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+          background: #2b4c96;
+          color: #fff;
+          font-weight: 600;
+          padding: 6px 16px 6px 16px;
+          border-radius: 5px;
+          text-decoration: none;
+          font-size: 0.98em;
+          display: inline-block;
         }
         `);
     }
@@ -4591,6 +4655,36 @@
             align-items: center;
             padding: 0.375rem 1rem;
          }
+        `);
+    }
+
+    if (match(hostname, "https://www.lanouvellerepublique.fr/*")) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector('h1').textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
+            }
+
+            async function onLoad() {
+                const head = document.querySelector('.nr-abo-container');
+                head.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+          background-color: #f1c84b;
+          padding: 3px 15px;
+          border-radius: 2px;
+          margin-right: 5px;
+        }
         `);
     }
 })();
