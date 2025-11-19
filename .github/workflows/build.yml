@@ -31,6 +31,7 @@ jobs:
 
       - name: "Get latest ophirofox version from 'current' tag"
         id: get_ophirofox_version
+        continue-on-error: true
         run: |
           # Get the release info for the 'current' tag
           RELEASE_INFO=$(curl -s https://api.github.com/repos/lovasoa/ophirofox/releases/tags/current)
@@ -43,8 +44,9 @@ jobs:
           echo "version=$OPHIROFOX_VERSION" >> $GITHUB_OUTPUT
           
           echo "Found Ophirofox version: $OPHIROFOX_VERSION_RAW ($OPHIROFOX_VERSION)"
-
+    
       - id: update_available
+        if: steps.get_ophirofox_version.outcome == 'success'
         run: |
           echo CURRENT REPO RELEASE   : ${{ steps.current_repo.outputs.release }}
           echo OPHIROFOX REPO RELEASE : ${{ steps.get_ophirofox_version.outputs.version_raw }}
