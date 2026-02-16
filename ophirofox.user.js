@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10216.1805
+// @version 2.6.10216.1856
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -343,7 +343,7 @@
         "name": "INSA Lyon",
         "AUTH_URL": "https://docelec.insa-lyon.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=INSAT_3"
     }, {
-        "name": "École des Ponts ParisTech",
+        "name": "Ecole nationale des ponts et chaussées - Institut Polytechnique de Paris",
         "AUTH_URL": "https://extranet.enpc.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=umiv"
     }, {
         "name": "INSA Rennes",
