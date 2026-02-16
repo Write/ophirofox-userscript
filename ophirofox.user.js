@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.1117.1722
+// @version 2.6.10216.1805
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -111,6 +111,7 @@
 // @include https://nouveau-europresse-com.ehesp.idm.oclc.org/*
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1
 // @include https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*
+// @include https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -654,6 +655,13 @@
         "name": "Médiathèques d'Antony (92)",
         "HTTP_REFERER": "https://mediatheque.ville-antony.fr/",
         "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=antonyU_2"
+    }, {
+        "name": "Bibliothèque Ville de Genève",
+        "AUTH_URL": "https://ville-geneve.idm.oclc.org/login?&url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033084T_1"
+    }, {
+        "name": "Médiathèques de Rennes Métropole",
+        "HTTP_REFERER": "https://www.lesmediatheques-rennesmetropole.fr/",
+        "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=CARMU_2"
     }];
 
     function getOphirofoxConfigByName(search_name) {
@@ -827,7 +835,8 @@
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1") ||
         match(hostname, "https://nouveau-europresse-com.ehesp.idm.oclc.org/*") ||
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1") ||
-        match(hostname, "https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*")) {
+        match(hostname, "https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*") ||
+        match(hostname, "https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*")) {
 
         function removeMarkElements() {
             // Remove all the <mark> elements, but keep their contents
@@ -1853,7 +1862,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector('.ap-Title span:last-child').textContent;
             }
 
             async function createLink() {
@@ -1862,11 +1871,10 @@
             }
 
             async function onLoad() {
-                const statusElem = document.getElementsByClassName("ap-PaidPicto");
-                if (statusElem.length == 0) return;
-                statusElem[0].after(await createLink());
+                const statusElem = document.querySelector("body:not(.HOMEPAGE-Page) .ap-PaidPicto");
+                if (statusElem === null) return;
+                statusElem.after(await createLink());
             }
-
 
             onLoad().catch(console.error);
         });
@@ -1876,10 +1884,9 @@
         	margin-left: 0.25em;
         	background-color: #f7b500;
         	border-radius: 0.25rem;
-        	color: #5d3c10 !important;
+        	color: #000 !important;
         	margin-right: 0.25em;
         	font-size: medium;
-        	font-family: Libre Franklin,Helvetica Neue,Helvetica,Arial,sans-serif;
         	vertical-align: middle;
         	line-height: 2.5rem;
         	padding: 0.5rem 1rem 0.2rem;
@@ -2988,7 +2995,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector(".ap-Title span:last-child").textContent;
             }
 
             async function createLink() {
@@ -2997,9 +3004,9 @@
             }
 
             async function onLoad() {
-                const statusElem = document.getElementsByClassName("ap-PaidPicto");
-                if (statusElem.length == 0) return;
-                statusElem[0].after(await createLink());
+                const statusElem = document.querySelector("body.STORY-Page .ap-PaidPicto");
+                if (statusElem === null) return;
+                statusElem.after(await createLink());
             }
 
             onLoad().catch(console.error);
@@ -3024,7 +3031,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector(".ap-Title span:last-child").textContent;
             }
 
             async function createLink() {
@@ -3033,14 +3040,12 @@
             }
 
             async function onLoad() {
-                const statusElem = document.getElementsByClassName("ap-PaidPicto");
-                if (statusElem.length == 0) return;
-                statusElem[0].after(await createLink());
+                const statusElem = document.querySelector("body:not(.HOMEPAGE-Page) .ap-PaidPicto");
+                if (statusElem === null) return;
+                statusElem.after(await createLink());
             }
 
             onLoad().catch(console.error);
-
-            //OK
         });
 
         pasteStyle(`
@@ -3062,7 +3067,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector("header h1").textContent;
             }
 
             async function createLink() {
@@ -3070,15 +3075,8 @@
                 return a;
             }
 
-            function findPremiumBanner() {
-                const title = document.querySelector("h1");
-                if (!title) return null;
-                const elems = title.parentElement.querySelectorAll("span");
-                return [...elems].find(d => d.classList.contains("r-article--payant"));
-            }
-
             async function onLoad() {
-                const premiumBanner = findPremiumBanner();
+                const premiumBanner = document.querySelector('.r-article--payant');
                 if (!premiumBanner) return;
                 premiumBanner.after(await createLink());
             }
@@ -3280,7 +3278,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                const titleElem = document.querySelector("h1").childNodes[0];
+                const titleElem = document.querySelector(".c-paywall__header-title");
                 return titleElem && titleElem.textContent;
             }
 
@@ -3288,7 +3286,7 @@
 
             async function addEuropresseButton() {
                 if (!buttonAdded) {
-                    const elt = document.querySelector('.datawall-wrapper .register');
+                    const elt = document.querySelector('.c-paywall__inner form button');
                     if (elt) {
                         const a = await ophirofoxEuropresseLink(extractKeywords());
                         elt.after(a);
@@ -3309,10 +3307,10 @@
                     }
                 };
 
-                const htmlElement = document.querySelector('#paywall-modal');
-                const classState = htmlElement.classList.contains('is-hidden');
+                const paywallModal = document.querySelector('#paywall-modal');
+                const classState = paywallModal.classList.contains('is-hidden');
                 const observer = new MutationObserver(callback);
-                observer.observe(htmlElement, {
+                observer.observe(paywallModal, {
                     attributes: true,
                     subtree: true
                 });
@@ -3348,7 +3346,7 @@
 
             async function addEuropresseButton() {
                 if (!buttonAdded) {
-                    const elt = document.querySelector('.datawall-wrapper .login');
+                    const elt = document.querySelector('.c-paywall__inner form button');
                     if (elt) {
                         const a = await ophirofoxEuropresseLink(extractKeywords());
                         elt.after(a);
@@ -3400,7 +3398,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                const titleElem = document.querySelector("h1").childNodes[0];
+                const titleElem = document.querySelector(".c-paywall__header-title");
                 return titleElem && titleElem.textContent;
             }
 
@@ -3408,7 +3406,7 @@
 
             async function addEuropresseButton() {
                 if (!buttonAdded) {
-                    const elt = document.querySelector('.datawall-wrapper .register');
+                    const elt = document.querySelector('.c-paywall__inner form button');
                     if (elt) {
                         const a = await ophirofoxEuropresseLink(extractKeywords());
                         elt.after(a);
@@ -3443,8 +3441,9 @@
 
         pasteStyle(`
         .ophirofox-europresse {
-            display: inline-block;
-            margin-top: 1rem;
+            display: block;
+            width: 9vw;
+            margin: 1rem auto;
             padding: 0.5rem 1.5rem;
             border-radius: 0.3rem;
             background-color: #ffc700;
@@ -3452,6 +3451,7 @@
             font-family: "Aeonik","Publica Slab","Helvetica","Arial",sans-serif;
             font-size: 1.5rem;
             text-decoration: none;
+            text-align: center;
         }
         `);
     }
@@ -3522,59 +3522,22 @@
     if (match(hostname, "https://www.standaard.be/*")) {
 
         window.addEventListener("load", function(event) {
-            let buttonAdded = false;
-            const article_title = document.querySelector('header[data-testid="article-header"] h1');
+            const article_title = document.querySelector('article.premium-content h1');
 
             function extractKeywords() {
                 return article_title.textContent;
             }
 
-            async function createLink(elt) {
-                if (elt && buttonAdded == false) {
-                    const a = await ophirofoxEuropresseLink(extractKeywords());
-                    elt.after(a);
-                    console.log(elt);
-                    if (elt !== article_title) {
-                        //second link is in shadow dom context -> no access to stylesheet
-                        a.style.display = "block"
-                        a.style.width = "35%";
-                        a.style.margin = "0.5rem auto";
-                        a.style.padding = "0.5rem 0";
-                        a.style.borderRadius = "0.3rem";
-                        a.style.backgroundColor = "#ffc700";
-                        a.style.color = "#000";
-                        a.style.textDecoration = "none";
-                        a.style.textAlign = "center";
-                    }
-                }
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
             }
 
             async function onLoad() {
-                const callback = (mutationList, observer) => {
-                    for (const mutation of mutationList) {
-                        if (mutation.type === 'childList') {
-                            for (let node of mutation.addedNodes) {
-                                const paywall_modal = document.querySelector('.PSAPAG_root');
-                                if (paywall_modal) {
-                                    ;
-                                    const shadow_content = document.querySelector('.PSAPAG_root').shadowRoot;
-                                    const modal_content = shadow_content.firstChild.lastChild;
-                                    createLink(article_title);
-                                    createLink(modal_content);
+                const btnPremium = document.querySelector("img[class*='premiumIcon']");
+                if (!btnPremium) return;
 
-                                    buttonAdded = true;
-                                    observer.disconnect();
-                                }
-                            }
-                        }
-                    }
-                };
-
-                const htmlElement = document.querySelector('body');
-                const observer = new MutationObserver(callback);
-                observer.observe(htmlElement, {
-                    childList: true
-                });
+                btnPremium.after(await createLink());
             }
 
             onLoad().catch(console.error);
@@ -3583,13 +3546,13 @@
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
-            margin-top: 1rem;
-            padding: 0.25rem 1rem;
+            margin: 0 0.25rem;
+            padding: 0.25rem 1rem 0 1rem;
             border-radius: 0.3rem;
             background-color: #ffc700 !important;
             color: #000 !important;
-            text-align: center;
             text-decoration: none !important;
+            font-size: 1.3rem;
         }
         `);
     }
@@ -3632,59 +3595,22 @@
     if (match(hostname, "https://www.gva.be/*")) {
 
         window.addEventListener("load", function(event) {
-            let buttonAdded = false;
-            const article_title = document.querySelector('header[data-testid="article-header"] h1');
+            const article_title = document.querySelector('article.premium-content h1');
 
             function extractKeywords() {
                 return article_title.textContent;
             }
 
-            async function createLink(elt) {
-                if (elt && buttonAdded == false) {
-                    const a = await ophirofoxEuropresseLink(extractKeywords());
-                    elt.after(a);
-                    console.log(elt);
-                    if (elt !== article_title) {
-                        //second link is in shadow dom context -> no access to stylesheet
-                        a.style.display = "block"
-                        a.style.width = "35%";
-                        a.style.margin = "0.5rem auto";
-                        a.style.padding = "0.5rem 0";
-                        a.style.borderRadius = "0.3rem";
-                        a.style.backgroundColor = "#ffc700";
-                        a.style.color = "#000";
-                        a.style.textDecoration = "none";
-                        a.style.textAlign = "center";
-                    }
-                }
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
             }
 
             async function onLoad() {
-                const callback = (mutationList, observer) => {
-                    for (const mutation of mutationList) {
-                        if (mutation.type === 'childList') {
-                            for (let node of mutation.addedNodes) {
-                                const paywall_modal = document.querySelector('.PSAPAG_root');
-                                if (paywall_modal) {
-                                    ;
-                                    const shadow_content = document.querySelector('.PSAPAG_root').shadowRoot;
-                                    const modal_content = shadow_content.firstChild.lastChild;
-                                    createLink(article_title);
-                                    createLink(modal_content);
+                const btnPremium = document.querySelector("img[class*='premiumIcon']");
+                if (!btnPremium) return;
 
-                                    buttonAdded = true;
-                                    observer.disconnect();
-                                }
-                            }
-                        }
-                    }
-                };
-
-                const htmlElement = document.querySelector('body');
-                const observer = new MutationObserver(callback);
-                observer.observe(htmlElement, {
-                    childList: true
-                });
+                btnPremium.after(await createLink());
             }
 
             onLoad().catch(console.error);
@@ -3693,13 +3619,13 @@
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
-            margin-top: 1rem;
+            margin: 0 0.5rem;
             padding: 0.25rem 1rem;
             border-radius: 0.3rem;
-            background-color: #ffc700;
+            background-color: #ffc700 !important;
             color: #000 !important;
-            text-align: center;
-            text-decoration: none;
+            text-decoration: none !important;
+            font-size: 1.3rem;
         }
         `);
     }
@@ -3707,59 +3633,22 @@
     if (match(hostname, "https://www.nieuwsblad.be/*")) {
 
         window.addEventListener("load", function(event) {
-            let buttonAdded = false;
-            const article_title = document.querySelector('header[data-testid="article-header"] h1');
+            const article_title = document.querySelector('article.premium-content h1');
 
             function extractKeywords() {
                 return article_title.textContent;
             }
 
-            async function createLink(elt) {
-                if (elt && buttonAdded == false) {
-                    const a = await ophirofoxEuropresseLink(extractKeywords());
-                    elt.after(a);
-                    console.log(elt);
-                    if (elt !== article_title) {
-                        //second link is in shadow dom context -> no access to stylesheet
-                        a.style.display = "block"
-                        a.style.width = "35%";
-                        a.style.margin = "0.5rem auto";
-                        a.style.padding = "0.5rem 0";
-                        a.style.borderRadius = "0.3rem";
-                        a.style.backgroundColor = "#ffc700";
-                        a.style.color = "#000";
-                        a.style.textDecoration = "none";
-                        a.style.textAlign = "center";
-                    }
-                }
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                return a;
             }
 
             async function onLoad() {
-                const callback = (mutationList, observer) => {
-                    for (const mutation of mutationList) {
-                        if (mutation.type === 'childList') {
-                            for (let node of mutation.addedNodes) {
-                                const paywall_modal = document.querySelector('.PSAPAG_root');
-                                if (paywall_modal) {
-                                    ;
-                                    const shadow_content = document.querySelector('.PSAPAG_root').shadowRoot;
-                                    const modal_content = shadow_content.firstChild.lastChild;
-                                    createLink(article_title);
-                                    createLink(modal_content);
+                const btnPremium = document.querySelector("img[class*='premiumIcon']");
+                if (!btnPremium) return;
 
-                                    buttonAdded = true;
-                                    observer.disconnect();
-                                }
-                            }
-                        }
-                    }
-                };
-
-                const htmlElement = document.querySelector('body');
-                const observer = new MutationObserver(callback);
-                observer.observe(htmlElement, {
-                    childList: true
-                });
+                btnPremium.after(await createLink());
             }
 
             onLoad().catch(console.error);
@@ -3768,13 +3657,12 @@
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
-            margin-top: 1rem;
+            margin: 0 0.25rem;
             padding: 0.25rem 1rem;
             border-radius: 0.3rem;
             background-color: #ffc700;
             color: #000 !important;
-            text-align: center;
-            text-decoration: none;
+            font-size: 1.2rem;
         }
         `);
     }
