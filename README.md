@@ -4,8 +4,7 @@ Génère automatiquement un userscript à chaque release d'une nouvelle version 
 
 Lien vers le projet : https://github.com/lovasoa/ophirofox
 
-N'oubliez pas de modifier la constante universityName à chaque mise à jour de l'userscript.
-
+Après le premier chargement d'une page d'article, mais avant l'utilisation du lien, il faut aller modifier la variable de script universityName (Voir https://github.com/lovasoa/ophirofox/blob/master/ophirofox/manifest.json#L851 pour la liste des valeurs). Contrairement à l'ancienne façon de faire, cette opération n'a pas à être refaite à chaque mise à jour du userscript.
 
 # Installation sur iOS 
 
