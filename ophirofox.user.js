@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10217.2208
+// @version 2.6.10310.126
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -344,7 +344,7 @@
         "AUTH_URL": "https://docelec.insa-lyon.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=INSAT_3"
     }, {
         "name": "Ecole nationale des ponts et chaussées - Institut Polytechnique de Paris",
-        "AUTH_URL": "https://extranet.enpc.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=umiv"
+        "AUTH_URL": "https://extranet.enpc.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_12"
     }, {
         "name": "INSA Rennes",
         "AUTH_URL": "http://rproxy.insa-rennes.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=INSAT_1"
