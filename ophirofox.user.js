@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10310.126
+// @version 2.6.10312.1200
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1862,7 +1862,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector('.ap-Title span:last-child').textContent;
+                return document.querySelector('.ap-Title > span:last-of-type').textContent;
             }
 
             async function createLink() {
@@ -2995,7 +2995,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector(".ap-Title span:last-child").textContent;
+                return document.querySelector(".ap-Title > span:last-of-type").textContent;
             }
 
             async function createLink() {
@@ -3010,6 +3010,7 @@
             }
 
             onLoad().catch(console.error);
+
         });
 
         pasteStyle(`
@@ -3031,7 +3032,7 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector(".ap-Title span:last-child").textContent;
+                return document.querySelector(".ap-Title > span:last-of-type").textContent;
             }
 
             async function createLink() {
@@ -3046,6 +3047,7 @@
             }
 
             onLoad().catch(console.error);
+
         });
 
         pasteStyle(`
