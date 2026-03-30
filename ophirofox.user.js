@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10326.238
+// @version 2.6.10330.954
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -2377,12 +2377,8 @@
                 return a;
             }
 
-
             function findPremiumBanner() {
-                const title = document.querySelector(".article-full__media.article__media--premium.ratio-target");
-                if (!title) return null;
-                const elems = title.parentElement.querySelectorAll("span");
-                return [...elems].find(d => d.classList.contains("article--premium__label"))
+                return !!document.querySelector(".article__media--premium");
             }
 
             async function onLoad() {
