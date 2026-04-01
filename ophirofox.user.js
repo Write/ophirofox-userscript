@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10330.954
+// @version 2.6.10401.1218
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -2252,7 +2252,7 @@
 
 
             function findPremiumBanner() {
-                const title = document.querySelector(".su-premium-info");
+                const title = document.querySelector(".su-premium.payant");
                 if (!title) return null;
                 const elems = title.parentElement.querySelectorAll("span");
                 return [...elems].find(d => d.textContent.includes("Article premium"))
