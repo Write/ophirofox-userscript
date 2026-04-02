@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10401.1218
+// @version 2.6.10402.1538
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -177,6 +177,7 @@
 // @include https://www.leberry.fr/*
 // @include https://www.economist.com/*
 // @include https://www.lanouvellerepublique.fr/*
+// @include https://www.lagazettedescommunes.com/*
 //
 // @run-at      document-start
 //
@@ -4570,6 +4571,41 @@
           padding: 3px 15px;
           border-radius: 2px;
           margin-right: 5px;
+        }
+        `);
+    }
+
+    if (match(hostname, "https://www.lagazettedescommunes.com/*")) {
+
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                return document.querySelector("h1").textContent;
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("buttonTypeA", "buttonTypeA--1");
+                return a;
+            }
+
+            function findPremiumBanner() {
+                const title = document.querySelector("h1");
+                if (!title) return null;
+                return title.parentElement.querySelector(".notYet") ? title : null;
+            }
+
+            async function onLoad() {
+                const premiumBanner = findPremiumBanner();
+                if (!premiumBanner) return;
+                premiumBanner.after(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+
+        pasteStyle(`
+        .ophirofox-europresse {
+            line-height: 50px;
         }
         `);
     }
