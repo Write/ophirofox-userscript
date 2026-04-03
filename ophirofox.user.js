@@ -186,17 +186,15 @@
     'use strict';
 
     /* ----------------
-     *   CONFIG
-     * ----------------
-     * */
-
-    // Changer la variable par le nom de votre université. Voir la liste ci-dessous dans ophirofox_config_list.
-    const universityName = "Bibliotheque nationale et universitaire de Strasbourg"
-
-    /* ----------------
      *   HELPERS
      * ----------------
      * */
+
+    if (!(GM_getValue("universityName", null))) {
+        GM_setValue("universityName", "Bibliotheque nationale et universitaire de Strasbourg");
+    }
+
+    const universityName = GM_getValue("universityName");
 
     const current = window.location.href;
     const hostname = window.location.hostname;
