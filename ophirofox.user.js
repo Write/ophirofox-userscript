@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10403.1420
+// @version 2.6.10403.1738
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1597,30 +1597,24 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector("h1").textContent;
+                return document.querySelector("h1")?.textContent;
             }
 
-            async function createLink() {
-                const span = document.createElement("span");
-                span.textContent = "Lire sur Europresse";
-                span.className = "premium-message ophirofox-europresse";
-
+            async function injectButton() {
+                if (document.querySelector('.ophirofox-europresse')) return;
+                const reserved = document.querySelector(".typo-p2-paragraph p");
+                if (!reserved || reserved.textContent.trim() !== "Article réservé aux abonnés") return;
                 const a = await ophirofoxEuropresseLink(extractKeywords());
-                a.classList.add("btn", "btn--premium");
-                a.innerHTML = "";
-                a.appendChild(span);
-
-                return a;
+                a.classList.add("ophirofox-europresse", "btn", "relative", "btn-outline", "btn-primary", "btn-sm", "typo-caption-important", "self-start", "px-4", "py-1");
+                reserved.closest(".typo-p2-paragraph").after(a);
             }
 
-            async function onLoad() {
-                const reserve = document.querySelector(".premium-message");
-                if (!reserve) return;
-
-                reserve.parentElement.appendChild(await createLink());
-            }
-
-            onLoad().catch(console.error);
+            const observer = new MutationObserver(() => injectButton().catch(console.error));
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+            injectButton().catch(console.error);
         });
 
         pasteStyle(`
@@ -2306,7 +2300,7 @@
             }
 
             async function onLoad() {
-                const head = document.querySelector(".article-premium-header");
+                const head = document.querySelector(".badge-premium");
                 if (!head) return;
                 head.appendChild(await createLink());
             }
@@ -2788,30 +2782,41 @@
     if (match(hostname, "https://www.latribune.fr/*")) {
 
         window.addEventListener("load", function(event) {
-            function extractKeywords() {
-                return document.querySelector('h1').textContent;
-            }
-
-            async function createLink() {
-                const a = await ophirofoxEuropresseLink(extractKeywords());
-                a.classList.add();
-                return a;
-            }
-
-            function findPremiumBanner() {
-                const title = document.querySelector('.rev-premium-tag-article-lt__container');
-                if (!title) return null;
-                const elems = title.querySelectorAll('p');
-                return [...elems].find((d) => d.textContent === 'Ce contenu est réservé aux abonnés');
-            }
-
-            async function onLoad() {
-                const premiumBanner = findPremiumBanner();
+            function injectButton() {
+                const banner = document.querySelector('.bg-premium-10');
+                if (!banner) return;
+                if (banner.querySelector('.ophirofox-europresse')) return;
+                const premiumBanner = [...banner.querySelectorAll('p')]
+                    .find(p => p.textContent === 'Ce contenu est réservé aux abonnés');
                 if (!premiumBanner) return;
-                premiumBanner.after(await createLink());
+                ophirofoxEuropresseLink(document.querySelector('h1')?.textContent)
+                    .then(a => premiumBanner.after(a));
             }
 
-            onLoad().catch(console.error);
+            function watchPage(callback) {
+                // Navigation SPA via History API
+                const origPush = history.pushState.bind(history);
+                const origReplace = history.replaceState.bind(history);
+                history.pushState = (...args) => {
+                    origPush(...args);
+                    callback();
+                };
+                history.replaceState = (...args) => {
+                    origReplace(...args);
+                    callback();
+                };
+                window.addEventListener('popstate', callback);
+
+                // MutationObserver pour le rendu dynamique
+                const observer = new MutationObserver(callback);
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+
+            watchPage(() => injectButton());
+            injectButton();
         });
 
         pasteStyle(`
@@ -2877,7 +2882,7 @@
             }
 
             function findPremiumBanner() {
-                const title = document.querySelector('div.header-subscriber');
+                const title = document.querySelector('.tag-premium');
                 if (!title) return null;
                 return title;
             }
@@ -4036,29 +4041,31 @@
 
         window.addEventListener("load", function(event) {
             function extractKeywords() {
-                return document.querySelector(".editoSocialBar__item[data-title]").dataset.title
+                return document.querySelector("h1")?.textContent;
             }
-
             async function createLink() {
                 const a = await ophirofoxEuropresseLink(extractKeywords());
-                a.style = 'font-family: "arimo-bold",Arial,Helvetica,sans-serif; border-bottom: 2px solid #000; margin-left : 1rem'
+                a.style.cssText = `
+        font-family: "arimo-bold",Arial,Helvetica,sans-serif;
+        border-bottom: 2px solid #000;
+        float: right;
+        margin-left: 10px;
+
+        font-weight: 600;
+    `;
                 return a;
             }
 
             function findPremiumBanner() {
-                const div = document.querySelector(".epPayWallTop");
+                const div = document.querySelector(".c-paywall-label");
                 if (!div) return null;
-                console.log('all div', div)
-                console.log('last child', div.lastElementChild)
-                return elem = div.lastElementChild;
+                return div.lastElementChild;
             }
-
             async function onLoad() {
                 const premiumBanner = findPremiumBanner();
                 if (!premiumBanner) return;
                 premiumBanner.after(await createLink());
             }
-
             onLoad().catch(console.error);
         });
 
