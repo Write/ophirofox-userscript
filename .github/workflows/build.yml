@@ -82,7 +82,7 @@ jobs:
 
       - name: Run generate-userscript.sh
         working-directory: ophirofox
-        run: ./generate-userscript.sh ${{ needs.check-version.outputs.ophirofox_version }}
+        run: bash ./generate-userscript.sh ${{ needs.check-version.outputs.ophirofox_version }}
 
       - name: Debug file existence
         run: |
