@@ -5,6 +5,8 @@
 // @grant   GM.getValue
 // @grant   GM.setValue
 // @grant   GM.deleteValue
+// @grant   GM.registerMenuCommand
+// @grant   unsafeWindow
 // @include https://nouveau.europresse.com/*
 // @include https://2160010m-cas.esidoc.fr/*
 // @include https://nouveau-europresse-com.essec.idm.oclc.org/*
@@ -182,34 +184,43 @@
 // @run-at      document-start
 //
 // ==/UserScript==
-(function() {
+
+/*
+ * ╔══════════════════════════════════════════════════════╗
+ * ║                   CONFIGURATION                      ║
+ * ╠══════════════════════════════════════════════════════╣
+ * ║  Au premier lancement, un popup vous demande de      ║
+ * ║  choisir votre universite dans la liste.             ║
+ * ║                                                      ║
+ * ║  Pour changer ensuite, deux options :                ║
+ * ║                                                      ║
+ * ║  1. Menu de l'extension (icone dans la barre)   ║
+ * ║     → clic sur le script                             ║
+ * ║     → "Changer l'universite"                    ║
+ * ║                                                      ║
+ * ║  2. Console JS (F12), sur un site ou le script       ║
+ * ║     est actif :                                      ║
+ * ║     setUniversityName("Mon universite")              ║
+ * ║     ou setUniversityName("") pour reinitialiser      ║
+ * ║     puis rechargez la page                           ║
+ * ╚══════════════════════════════════════════════════════╝
+ */
+
+(async function() {
     'use strict';
 
     /* ----------------
      *   HELPERS
-     * ----------------
-     * */
-
-    if (!(GM_getValue("universityName", null))) {
-        GM_setValue("universityName", "Bibliotheque nationale et universitaire de Strasbourg");
-    }
-
-    const universityName = GM_getValue("universityName");
+     * ---------------- */
 
     const current = window.location.href;
     const hostname = window.location.hostname;
 
     function match(str, rule) {
-        // Extract domain pattern from the rule (ignore https:// and /*)
         var domainRule = rule.replace(/^https?:\/\//, '').replace(/\/\*$/, '');
-
-        // Convert the wildcard pattern to a proper regex
         var regexPattern = "^" + domainRule.split('*').map(function(part) {
-            // Escape special regex characters in each part
             return part.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
         }).join('.*') + "$";
-
-        // Create and test the regex against the input string
         var regex = new RegExp(regexPattern);
         return regex.test(str);
     }
@@ -218,11 +229,7 @@
         var node = document.createElement('style');
         node.type = 'text/css';
         node.appendChild(document.createTextNode(str.replace(/;/g, ' !important;')));
-        if (document.head !== null) {
-            document.head.appendChild(node);
-        } else {
-            document.documentElement.appendChild(node);
-        }
+        (document.head ?? document.documentElement).appendChild(node);
     }
 
     const onElemAvailable = async selector => {
@@ -233,10 +240,8 @@
     };
 
     /* ----------------
-     *   CODE
-     * ----------------
-     * */
-
+     *   CONFIG
+     * ---------------- */
     const ophirofox_config_list = [{
         "name": "Pas d'intermédiaire",
         "AUTH_URL": "https://nouveau.europresse.com/Login"
@@ -663,6 +668,87 @@
         "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=CARMU_2"
     }];
 
+    function showUniversityPicker() {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+              position: fixed; inset: 0; z-index: 2147483647;
+              background: rgba(0,0,0,0.7);
+              display: flex; align-items: center; justify-content: center;
+              font-family: sans-serif;
+          `;
+            const box = document.createElement('div');
+            box.style.cssText = `
+              background: #fff; border-radius: 10px; padding: 24px;
+              max-width: 480px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+          `;
+            const title = document.createElement('h2');
+            title.textContent = 'Choisissez votre universite';
+            title.style.cssText = 'margin: 0 0 8px; font-size: 18px; color: #222;';
+            const subtitle = document.createElement('p');
+            subtitle.textContent = 'Ce choix sera sauvegarde. Vous pourrez le modifier via le menu de l\'extension.';
+            subtitle.style.cssText = 'margin: 0 0 16px; font-size: 13px; color: #666;';
+            const select = document.createElement('select');
+            select.style.cssText = `
+              width: 100%; padding: 8px; font-size: 14px;
+              border: 1px solid #ccc; border-radius: 6px;
+              margin-bottom: 16px; box-sizing: border-box;
+          `;
+            ophirofox_config_list.forEach((uni, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = uni.name;
+                select.appendChild(opt);
+            });
+            const btn = document.createElement('button');
+            btn.textContent = 'Confirmer';
+            btn.style.cssText = `
+              width: 100%; padding: 10px; font-size: 15px; font-weight: bold;
+              background: #1a73e8; color: #fff; border: none;
+              border-radius: 6px; cursor: pointer;
+          `;
+            btn.addEventListener('click', async () => {
+                const chosen = ophirofox_config_list[parseInt(select.value)];
+                await GM.setValue("universityName", chosen.name);
+                overlay.remove();
+                resolve(chosen.name);
+            });
+            box.append(title, subtitle, select, btn);
+            overlay.appendChild(box);
+            document.documentElement.appendChild(overlay);
+        });
+    }
+    let universityName = await GM.getValue("universityName", null);
+    if (universityName === null) {
+        universityName = await showUniversityPicker();
+    }
+
+    GM.registerMenuCommand("Changer l'universite", async () => {
+        universityName = await showUniversityPicker();
+        location.reload();
+    });
+
+    try {
+        unsafeWindow.setUniversityName = async (name) => {
+            if (name === undefined) {
+                console.error("Usage: setUniversityName(nom) ou setUniversityName('') pour reinitialiser");
+                return;
+            }
+            if (name === "") {
+                await GM.setValue("universityName", null);
+                console.log("Reinitialise — rechargez la page, le picker reapparaitra.");
+                return;
+            }
+            const found = ophirofox_config_list.find(u => u.name === name);
+            if (!found) {
+                console.error("Universite introuvable dans la liste");
+                return;
+            }
+            await GM.setValue("universityName", found.name);
+            console.log("Sauvegarde : " + found.name + " — rechargez la page.");
+        };
+    } catch (e) {}
+
     function getOphirofoxConfigByName(search_name) {
         return ophirofox_config_list.find(({
             name
@@ -676,18 +762,14 @@
     let current_settings = DEFAULT_SETTINGS;
 
     async function getOphirofoxConfig() {
-        const url = new URL(window.location);
         try {
             const partner_name = universityName;
             const name_match = getOphirofoxConfigByName(partner_name);
             if (name_match) return name_match;
         } catch (err) {
-            console.warn(
-                `No ophirofox domain found, using the default ${fallback.name}: ${err}`
-            );
+            console.warn("No ophirofox domain found: " + err);
         }
-        const fallback = ophirofox_config_list[0];
-        return fallback;
+        return ophirofox_config_list[0];
     }
 
     const ophirofox_config = getOphirofoxConfig();
@@ -697,38 +779,30 @@
         await GM.setValue("ophirofox_published_time", publishedTime);
     }
 
-    /**
-     * Crée un lien vers Europresse avec les keywords donnés
-     * @param {string} keywords
-     * @returns {Promise<HTMLAnchorElement>}
-     */
     async function ophirofoxEuropresseLink(keywords, {
         publishedTime
     } = {}) {
-        // Keywords is the article name
         keywords = keywords ? keywords.trim() : document.querySelector("h1").textContent;
-        // Trying to determine published time with meta tags (Open Graph values)
-        publishedTime = publishedTime || document.querySelector("meta[property='article:published_time'], meta[property='og:article:published_time'], meta[property='date:published_time']")
-            ?.getAttribute("content") || '';
-        // Creating HTML anchor element
+        publishedTime = publishedTime || document.querySelector(
+            "meta[property='article:published_time'], meta[property='og:article:published_time'], meta[property='date:published_time']"
+        )?.getAttribute("content") || '';
         const a = document.createElement("a");
         a.textContent = "Lire sur Europresse";
         a.className = "ophirofox-europresse";
         a.onmousedown = setKeywords(keywords, publishedTime);
         a.onclick = async function(evt) {
             evt.preventDefault();
-            await Promise.resolve([ophirofox_config, setKeywords(keywords, publishedTime)])
+            await Promise.resolve([ophirofox_config, setKeywords(keywords, publishedTime)]);
             const obj = await ophirofox_config;
             window.location = obj.AUTH_URL;
         }
         ophirofox_config.then(({
             AUTH_URL
         }) => {
-            a.href = AUTH_URL
+            a.href = AUTH_URL;
         });
         return a;
     }
-
     if (
         match(hostname, "https://2160010m-cas.esidoc.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.essec.idm.oclc.org/*") ||
@@ -836,9 +910,7 @@
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1") ||
         match(hostname, "https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*") ||
         match(hostname, "https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*")) {
-
         function removeMarkElements() {
-            // Remove all the <mark> elements, but keep their contents
             Array.from(document.querySelectorAll("article mark")).forEach(mark => {
                 const repl = document.createElement("span");
                 repl.className = "mark";
@@ -846,15 +918,6 @@
                 mark.parentNode.replaceChild(repl, mark);
             });
         }
-
-        // Remove <mark> elements each time the page is updated 
-        /*
-        let nextOp = null;
-        new MutationObserver(() => {
-            if (nextOp) clearTimeout(nextOp);
-            nextOp = setTimeout(removeMarkElements, 500);
-        }).observe(document.body, { subtree: true, childList: true });
-        */
 
         async function consumeReadRequest() {
             const keywords = await GM.getValue("ophirofox_keywords");
@@ -870,18 +933,11 @@
 
         async function hasConsumable() {
             try {
-                // Récupérer les valeurs stockées avec GM.getValue (équivalent de chrome.storage.local)
                 const requestType = await GM.getValue("ophirofox_request_type");
                 const keywords = await GM.getValue("ophirofox_keywords");
-
-                // Vérifier si l'une des deux clés existe et contient une valeur
-                const hasRequestType = requestType !== undefined;
-                const hasKeywords = keywords !== undefined;
-
-                // Retourner true si au moins une des clés existe avec une valeur
-                return hasRequestType || hasKeywords;
+                return requestType !== undefined || keywords !== undefined;
             } catch (error) {
-                console.error("Erreur lors de la vérification des consommables:", error);
+                console.error("Erreur lors de la verification des consommables:", error);
                 return false;
             }
         }
@@ -900,7 +956,6 @@
                     path === "/Pdf"
                 )) return;
 
-            /* Fix une issue avec le proxy BNF qui redirige vers /Pdf */
             if (path === '/Pdf' && await hasConsumable()) {
                 window.location.pathname = '/Search/Reading';
                 return;
@@ -921,73 +976,64 @@
             const keyword_field_id = path.startsWith("/Search/Result") ? "NativeQuery" : "Keywords";
 
             onElemAvailable('#' + keyword_field_id).then((selector) => {
-                const keyword_field = selector;
-                keyword_field.value = 'TIT_HEAD=' + keywords;
-                keyword_field.form.submit();
+                selector.value = 'TIT_HEAD=' + keywords;
+                selector.form.submit();
             });
 
             onElemAvailable('#DateFilter_DateRange').then((selector) => {
-                const date_filter = selector;
-                if (date_filter) {
-                    if (!published_time) { // Full expand the time range
-                        date_filter.value = 9;
+                if (selector) {
+                    if (!published_time) {
+                        selector.value = 9;
                     } else {
                         const publishedDate = new Date(published_time);
-                        publishedDate.setUTCHours(0, 0, 0, 0); // Europresse saves the exact UTC date, but "depuis X jours" is based on midnight 
+                        publishedDate.setUTCHours(0, 0, 0, 0);
                         const currentDate = new Date();
-
                         const timeDifference = currentDate.getTime() - publishedDate.getTime();
-                        // Rounds up for tolerance to be sure to not filtering badly
                         const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-
                         let filterValue = 9;
-
                         switch (true) {
                             case (daysDifference <= 1):
-                                filterValue = 2; // Depuis hier
+                                filterValue = 2;
                                 break;
                             case (daysDifference <= 3):
-                                filterValue = 11; // Depuis 3 jours
+                                filterValue = 11;
                                 break;
                             case (daysDifference <= 7):
-                                filterValue = 3; // Depuis 7 jours
+                                filterValue = 3;
                                 break;
                             case (daysDifference <= 30):
-                                filterValue = 4; // Depuis 30 jours
+                                filterValue = 4;
                                 break;
                             case (daysDifference <= 90):
-                                filterValue = 5; // Depuis 3 mois
+                                filterValue = 5;
                                 break;
                             case (daysDifference <= 180):
-                                filterValue = 6; // Depuis 6 mois
+                                filterValue = 6;
                                 break;
                             case (daysDifference <= 365):
-                                filterValue = 7; // Depuis 1 an
+                                filterValue = 7;
                                 break;
                             case (daysDifference <= 730):
-                                filterValue = 8; // Depuis 2 ans
+                                filterValue = 8;
                                 break;
                             default:
-                                filterValue = 9; // Dans toutes les archives
+                                filterValue = 9;
                                 break;
                         }
-
-                        date_filter.value = filterValue;
+                        selector.value = filterValue;
                     }
                 }
             });
         }
 
         function ophirofoxRealoadOnExpired() {
-            const params = new URLSearchParams(window.location.search)
+            const params = new URLSearchParams(window.location.search);
             if (params.get("ErrorCode") == "4000112") {
-                // session expirée
                 window.history.back();
             }
         }
 
         onLoad().catch(console.error);
-
         pasteStyle(`
         mark,
         span.mark {
@@ -1006,10 +1052,9 @@
             background-color: transparent;
           }
         }
-        `);
+      `);
     }
     if (match(hostname, "https://www.lemonde.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return extractKeywordsFromTitle() || extractKeywordsFromUrl(window.location);
@@ -1048,7 +1093,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             color: black;
@@ -1060,9 +1104,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.liberation.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document
@@ -1170,7 +1212,6 @@
                 onLoad(premiumBanner);
             });
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             font-size: 0.875rem;
@@ -1190,9 +1231,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://next.liberation.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document
@@ -1300,7 +1339,6 @@
                 onLoad(premiumBanner);
             });
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             font-size: 0.875rem;
@@ -1320,9 +1358,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://*.lefigaro.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -1350,16 +1386,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
         }
         `);
     }
-
     if (match(hostname, "https://www.monde-diplomatique.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return extractKeywordsFromTitle();
@@ -1393,16 +1426,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
         }
         `);
     }
-
     if (match(hostname, "https://www.courrierdesmaires.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -1417,7 +1447,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #fec22d;
@@ -1434,9 +1463,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.la-croix.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -1450,7 +1477,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             -webkit-font-smoothing: antialiased;
@@ -1479,9 +1505,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.telerama.fr/*")) {
-
         window.addEventListener("load", function(event) {
             // Function to format date to "YYYY-MM-DD"
             function formatDate(date) {
@@ -1543,7 +1567,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #ffe047;
@@ -1565,9 +1588,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.courrierinternational.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -1583,16 +1604,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
         }
         `);
     }
-
     if (match(hostname, "https://www.lamontagne.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1")?.textContent;
@@ -1614,16 +1632,13 @@
             });
             injectButton().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 10px !important;
         }
         `);
     }
-
     if (match(hostname, "https://www.humanite.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -1643,16 +1658,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 10px !important;
         }
         `);
     }
-
     if (match(hostname, "https://www.lepoint.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -1669,7 +1681,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
@@ -1677,9 +1688,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lesoir.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -1707,16 +1716,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
         }
         `);
     }
-
     if (match(hostname, "https://www.lesechos.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 const titleElem = document.querySelector("h1").childNodes[0];
@@ -1799,7 +1805,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #faec70;
@@ -1813,9 +1818,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.letemps.ch/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -1843,16 +1846,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
         }
         `);
     }
-
     if (match(hostname, "https://www.lalibre.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector('.ap-Title > span:last-of-type').textContent;
@@ -1871,7 +1871,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
         	margin-left: 0.25em;
@@ -1886,9 +1885,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lavoixdunord.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -1917,7 +1914,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 8px 12px;
@@ -1925,9 +1921,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.mediapart.fr/*")) {
-
         window.addEventListener("load", function(event) {
             /**
              * @description create link <a> to a mirror
@@ -2018,7 +2012,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 8px 12px;
@@ -2026,9 +2019,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www-mediapart-fr.bnf.idm.oclc.org/*")) {
-
         window.addEventListener("load", function(event) {
             /**
              * @description create link <a> to a mirror
@@ -2119,7 +2110,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 8px 12px;
@@ -2127,9 +2117,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www-mediapart-fr.acces-distant.bnu.fr/*")) {
-
         window.addEventListener("load", function(event) {
             /**
              * @description create link <a> to a mirror
@@ -2220,7 +2208,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 8px 12px;
@@ -2228,9 +2215,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.ouest-france.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -2260,7 +2245,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background: #cba200;
@@ -2275,9 +2259,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.sudouest.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -2305,7 +2287,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             color: black;
@@ -2324,9 +2305,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.laprovence.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2350,7 +2329,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             color: black;
@@ -2360,9 +2338,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.ladepeche.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2383,7 +2359,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #f2c94c;
@@ -2395,9 +2370,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.leparisien.fr/*")) {
-
         window.addEventListener("load", function(event) {
 
             function extractKeywords() {
@@ -2448,7 +2421,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #fc3;
@@ -2467,9 +2439,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://lettreaudiovisuel.com/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -2491,7 +2461,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
           background: #2b4c96;
@@ -2505,9 +2474,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lexpress.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function findPremiumBanner() {
                 const banner = document.querySelector('.article__premium--icon');
@@ -2625,7 +2592,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             text-decoration: none;
@@ -2682,9 +2648,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.nouvelobs.com/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -2714,7 +2678,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #FEEB6F;
@@ -2741,9 +2704,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.estrepublicain.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2768,7 +2729,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             border-radius: 3px;
@@ -2776,9 +2736,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.latribune.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function injectButton() {
                 const banner = document.querySelector('.bg-premium-10');
@@ -2816,7 +2774,6 @@
             watchPage(() => injectButton());
             injectButton();
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #ffc612;
@@ -2829,9 +2786,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lopinion.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2854,7 +2809,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #ffc612;
@@ -2869,9 +2823,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.nicematin.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2893,7 +2845,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #faec70;
@@ -2907,9 +2858,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.corsematin.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2931,7 +2880,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #ffc612;
@@ -2945,9 +2893,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lorientlejour.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -2970,7 +2916,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             font-size: 10px;
@@ -2990,9 +2935,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lavenir.net/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector(".ap-Title > span:last-of-type").textContent;
@@ -3012,7 +2955,6 @@
             onLoad().catch(console.error);
 
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3027,9 +2969,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.dhnet.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector(".ap-Title > span:last-of-type").textContent;
@@ -3049,7 +2989,6 @@
             onLoad().catch(console.error);
 
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3064,9 +3003,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.sudinfo.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("header h1").textContent;
@@ -3085,7 +3022,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3097,9 +3033,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.letelegramme.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -3123,16 +3057,13 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-bottom: 24px;
         }
         `);
     }
-
     if (match(hostname, "https://www.lsa-conso.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document
@@ -3161,7 +3092,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: rgb(254, 194, 45);
@@ -3189,9 +3119,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.leprogres.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 // Works better with keywords from url
@@ -3266,7 +3194,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 4px;
@@ -3275,9 +3202,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.levif.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 const titleElem = document.querySelector(".c-paywall__header-title");
@@ -3320,7 +3245,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3335,9 +3259,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://trends.levif.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 const titleElem = document.querySelector("h1").childNodes[0];
@@ -3380,7 +3302,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3395,9 +3316,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.knack.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 const titleElem = document.querySelector(".c-paywall__header-title");
@@ -3440,7 +3359,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: block;
@@ -3457,9 +3375,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.demorgen.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 const titleElem = document.querySelector("h1").childNodes[0];
@@ -3505,7 +3421,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: block;
@@ -3520,9 +3435,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.standaard.be/*")) {
-
         window.addEventListener("load", function(event) {
             const article_title = document.querySelector('article.premium-content h1');
 
@@ -3544,7 +3457,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3558,9 +3470,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.ft.com/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("#barrier-page h1").textContent;
@@ -3580,7 +3490,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3593,9 +3502,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.gva.be/*")) {
-
         window.addEventListener("load", function(event) {
             const article_title = document.querySelector('article.premium-content h1');
 
@@ -3617,7 +3524,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3631,9 +3537,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.nieuwsblad.be/*")) {
-
         window.addEventListener("load", function(event) {
             const article_title = document.querySelector('article.premium-content h1');
 
@@ -3655,7 +3559,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -3668,9 +3571,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.hln.be/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 const titleElem = document.querySelector("h1").childNodes[0];
@@ -3716,7 +3617,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: block;
@@ -3731,9 +3631,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.challenges.fr/*")) {
-
         window.addEventListener("load", function(event) {
             console.log('Ophirofox loaded');
 
@@ -3886,7 +3784,6 @@
             // Lancer la fonction principale avec gestion d'erreur
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             --tw-bg-opacity: 1;
@@ -3912,9 +3809,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.arretsurimages.net/*")) {
-
         window.addEventListener("load", function(event) {
             //Aknowledgment : arret-sur-images feature found already mostly done on https://github.com/Rohirrim03/ profile.
             //BNF : Bibliothèque Nationale de France
@@ -3969,7 +3864,6 @@
                 onLoad().catch(console.error);
             }, 1000);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             background-color: #f05246;
@@ -3983,9 +3877,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.pressreader.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink(AUTH_URL) {
                 const div = document.createElement("div");
@@ -4014,7 +3906,6 @@
 
             onLoad().catch(console.error)
         });
-
         pasteStyle(`
         .ophirofox-europresse {
           visibility: visible !important;
@@ -4034,9 +3925,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.usinenouvelle.com/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1")?.textContent;
@@ -4066,7 +3955,6 @@
             }
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
           visibility: visible !important;
@@ -4086,9 +3974,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://elpais.com/*")) {
-
         window.addEventListener("load", function(event) {
             let buttonAdded = false;
 
@@ -4145,7 +4031,6 @@
             }
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: .5rem;
@@ -4157,9 +4042,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://acteurspublics.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -4184,7 +4067,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             margin-left: 10px;
@@ -4220,9 +4102,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.sciencesetavenir.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -4236,7 +4116,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse{
             display: inline-block;
@@ -4246,9 +4125,7 @@
          }
         `);
     }
-
     if (match(hostname, "https://www.larecherche.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink(extractKeywordsFromTitle());
@@ -4272,7 +4149,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             padding: 8px 12px;
@@ -4281,9 +4157,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.larepubliquedespyrenees.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -4297,7 +4171,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse{
             display: inline-block;
@@ -4306,9 +4179,7 @@
          }
         `);
     }
-
     if (match(hostname, "https://www.journaldunet.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -4322,7 +4193,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse{
             display: inline-block;
@@ -4332,9 +4202,7 @@
          }
         `);
     }
-
     if (match(hostname, "https://www.science-et-vie.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -4348,7 +4216,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse{
             padding: 0 5px 0 5px;
@@ -4357,9 +4224,7 @@
          }
         `);
     }
-
     if (match(hostname, "https://investir.lesechos.fr/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 return await ophirofoxEuropresseLink();
@@ -4373,7 +4238,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse{
             padding: 0 5px 0 5px;
@@ -4386,9 +4250,7 @@
          }
         `);
     }
-
     if (match(hostname, "https://www.jeuneafrique.com/*")) {
-
         window.addEventListener("load", function(event) {
             async function createLink() {
                 const a = await ophirofoxEuropresseLink();
@@ -4404,7 +4266,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -4417,9 +4278,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.leberry.fr/*")) {
-
         window.addEventListener("load", function(event) {
             //Flag pour ne pas créer multiples bouttons par page.
             let isLinkCreated = false
@@ -4492,7 +4351,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             display: inline-block;
@@ -4505,9 +4363,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.economist.com/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document
@@ -4537,7 +4393,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse{
             background: #1f2e7a;
@@ -4549,9 +4404,7 @@
          }
         `);
     }
-
     if (match(hostname, "https://www.lanouvellerepublique.fr/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector('h1').textContent;
@@ -4569,7 +4422,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
           background-color: #f1c84b;
@@ -4579,9 +4431,7 @@
         }
         `);
     }
-
     if (match(hostname, "https://www.lagazettedescommunes.com/*")) {
-
         window.addEventListener("load", function(event) {
             function extractKeywords() {
                 return document.querySelector("h1").textContent;
@@ -4607,7 +4457,6 @@
 
             onLoad().catch(console.error);
         });
-
         pasteStyle(`
         .ophirofox-europresse {
             line-height: 50px;
