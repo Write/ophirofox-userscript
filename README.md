@@ -4,7 +4,20 @@ Génère automatiquement un userscript à chaque release d'une nouvelle version 
 
 Lien vers le projet : https://github.com/lovasoa/ophirofox
 
-Après le premier chargement d'une page d'article, mais avant l'utilisation du lien, il faut aller modifier la variable de script universityName (Voir https://github.com/lovasoa/ophirofox/blob/master/ophirofox/manifest.json#L851 pour la liste des valeurs). Contrairement à l'ancienne façon de faire, cette opération n'a pas à être refaite à chaque mise à jour du userscript.
+
+Après le premier chargement d'une page d'article, un popup vous demande de choisir votre université dans la liste.
+Pour changer ensuite, deux options :
+
+1. Menu de l’extension (icône dans la barre)
+   - clic sur le script
+   - « Changer l’université »
+
+2. Console JS (F12), sur un site ou le script est actif :
+   - `setUniversityName("Mon université")`
+   - ou `setUniversityName("")` pour réinitialiser
+   - puis rechargez la page
+
+Voir la liste des universités disponibles ici : https://github.com/lovasoa/ophirofox/blob/8c0105344e5bdbbfea6288a956c849876e886c3b/ophirofox/manifest.json#L898
 
 # Installation sur iOS 
 
