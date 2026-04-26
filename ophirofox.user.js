@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10426.1450
+// @version 2.6.10426.2050
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -370,6 +370,9 @@
     }, {
         "name": "Lycée la Martinière Diderot",
         "AUTH_URL": "https://idp-auth.gar.education.fr/domaineGar?idENT=QzAw&idEtab=MDY5MDAzN1I=&idRessource=ark%3A%2F57800%2Feuropresse-cision"
+    }, {
+        "name": "Médiathèque de Boulogne-Billancourt",
+        "AUTH_URL": "https://mediatheques.boulognebillancourt.com/ASSARedirect.ashx?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fhttpref%2Fdefault.aspx%3Fun%3DU032145U_2"
     }, {
         "name": "Médiathèque de Télécom SudParis & Institut Mines-Télécom Business School",
         "AUTH_URL": "http://mediaproxy.imtbs-tsp.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_8"
