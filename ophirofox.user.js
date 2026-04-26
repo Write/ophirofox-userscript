@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10425.2350
+// @version 2.6.10426.1450
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -58,7 +58,7 @@
 // @include https://nouveau-europresse-com.docelec-u-paris2.idm.oclc.org/*
 // @include https://nouveau-europresse-com.esc-clermont.idm.oclc.org/*
 // @include https://nouveau-europresse-com.acces-distant.bnu.fr/*
-// @include https://go.openathens.net/redirector/univ-antilles.fr?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ANTILLEST_1*
+// @include https://nouveau-europresse-com.bu-services.univ-antilles.fr/*
 // @include https://nouveau-europresse-com.proxybib-pp.cnam.fr/*
 // @include https://nouveau-europresse-com.srvext.uco.fr/*
 // @include https://nouveau-europresse-com.urca.idm.oclc.org/*
@@ -397,7 +397,7 @@
         "AUTH_URL": "https://buadistant.univ-angers.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=BUANGERST_1"
     }, {
         "name": "Université des Antilles",
-        "AUTH_URL": "http://bu-services.univ-antilles.fr:5000/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ANTILLEST_1"
+        "AUTH_URL": "https://go.openathens.net/redirector/univ-antilles.fr?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ANTILLEST_1"
     }, {
         "name": "Université d'Artois",
         "AUTH_URL": "http://ezproxy.univ-artois.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=littoralT_1"
@@ -854,7 +854,7 @@
         match(hostname, "https://nouveau-europresse-com.docelec-u-paris2.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.esc-clermont.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.acces-distant.bnu.fr/*") ||
-        match(hostname, "https://go.openathens.net/redirector/univ-antilles.fr?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ANTILLEST_1*") ||
+        match(hostname, "https://nouveau-europresse-com.bu-services.univ-antilles.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.proxybib-pp.cnam.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.srvext.uco.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.urca.idm.oclc.org/*") ||
