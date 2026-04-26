@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10420.2138
+// @version 2.6.10425.2350
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -58,7 +58,7 @@
 // @include https://nouveau-europresse-com.docelec-u-paris2.idm.oclc.org/*
 // @include https://nouveau-europresse-com.esc-clermont.idm.oclc.org/*
 // @include https://nouveau-europresse-com.acces-distant.bnu.fr/*
-// @include https://nouveau-europresse-com.bu-services.univ-antilles.fr/*
+// @include https://go.openathens.net/redirector/univ-antilles.fr?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ANTILLEST_1*
 // @include https://nouveau-europresse-com.proxybib-pp.cnam.fr/*
 // @include https://nouveau-europresse-com.srvext.uco.fr/*
 // @include https://nouveau-europresse-com.urca.idm.oclc.org/*
@@ -854,7 +854,7 @@
         match(hostname, "https://nouveau-europresse-com.docelec-u-paris2.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.esc-clermont.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.acces-distant.bnu.fr/*") ||
-        match(hostname, "https://nouveau-europresse-com.bu-services.univ-antilles.fr/*") ||
+        match(hostname, "https://go.openathens.net/redirector/univ-antilles.fr?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ANTILLEST_1*") ||
         match(hostname, "https://nouveau-europresse-com.proxybib-pp.cnam.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.srvext.uco.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.urca.idm.oclc.org/*") ||
