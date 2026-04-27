@@ -123,9 +123,10 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Release from Ophirofox ${{ needs.check-version.outputs.ophirofox_version_raw }}"
+            git pull --rebase
             git push
           fi
-          
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
