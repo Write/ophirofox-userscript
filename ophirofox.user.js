@@ -725,12 +725,17 @@
     if (universityName === null) {
         universityName = await showUniversityPicker();
     }
-
-    GM.registerMenuCommand("Changer l'universite", async () => {
-        universityName = await showUniversityPicker();
-        location.reload();
-    });
-
+    if (typeof GM !== "undefined" && typeof GM.registerMenuCommand === "function") {
+        GM.registerMenuCommand("Changer l'universite", async () => {
+            universityName = await showUniversityPicker();
+            location.reload();
+        });
+    } else if (typeof GM_registerMenuCommand === "function") {
+        GM_registerMenuCommand("Changer l'universite", async () => {
+            universityName = await showUniversityPicker();
+            location.reload();
+        });
+    }
     try {
         unsafeWindow.setUniversityName = async (name) => {
             if (name === undefined) {
