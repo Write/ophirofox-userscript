@@ -25,10 +25,12 @@ jobs:
     steps:
 
       - id: current_repo
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }} 
+        continue-on-error: true
+        run: |
+          RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases?per_page=1" \
+            | jq -r '.[0].tag_name // ""')
+          echo "release=$RELEASE" >> $GITHUB_OUTPUT
 
       - name: "Get latest ophirofox version from 'current' tag"
         id: get_ophirofox_version
