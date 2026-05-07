@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10429.1528
+// @version 2.6.10507.104
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -114,6 +114,7 @@
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1
 // @include https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*
 // @include https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*
+// @include https://nouveau-europresse-com.kedge.idm.oclc.org/*
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -355,6 +356,9 @@
     }, {
         "name": "La Rochelle Université",
         "AUTH_URL": "https://gutenberg.univ-lr.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=ROCHELLET_1"
+    }, {
+        "name": "Kedge Business School",
+        "AUTH_URL": "https://kedge.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=KEDGET_1"
     }, {
         "name": "Le Mans Université",
         "AUTH_URL": "https://login.doc-elec.univ-lemans.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031524T_1"
@@ -917,7 +921,8 @@
         match(hostname, "https://nouveau-europresse-com.ehesp.idm.oclc.org/*") ||
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1") ||
         match(hostname, "https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*") ||
-        match(hostname, "https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*")) {
+        match(hostname, "https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.kedge.idm.oclc.org/*")) {
         function removeMarkElements() {
             Array.from(document.querySelectorAll("article mark")).forEach(mark => {
                 const repl = document.createElement("span");
