@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10602.116
+// @version 2.6.10606.2136
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -452,7 +452,7 @@
         "AUTH_URL": "https://sid2nomade-2.grenet.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=grenobleT_1"
     }, {
         "name": "Université Gustave Eiffel",
-        "AUTH_URL": "https://univ-eiffel.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=D000030T_5"
+        "AUTH_URL": "https://univ-eiffel.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=D000030T_1"
     }, {
         "name": "Université Le Havre Normandie",
         "AUTH_URL": "http://ezproxy.normandie-univ.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031221T_6"
