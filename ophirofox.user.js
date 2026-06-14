@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10611.1714
+// @version 2.6.10614.2202
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -1538,6 +1538,39 @@
                 return await ophirofoxEuropresseLink(extractKeywords());
             }
 
+            /**
+             * Insère le lien Europresse après .article__subscriber-container et
+             * surveille les remplacements DOM (la section est re-rendue par le site).
+             * L'observateur cible le parent de la section, pas document.body,
+             * pour minimiser les callbacks inutiles.
+             */
+            async function ensureLinkAfterSubscriberContainer() {
+                const container = document.querySelector(".article__subscriber-container");
+                if (!container) return;
+
+                const link = await createLink();
+
+                function insertLink() {
+                    const liveContainer = document.querySelector(".article__subscriber-container");
+                    if (!liveContainer) return;
+                    if (liveContainer.nextElementSibling === link) return;
+                    liveContainer.after(link);
+                }
+
+                insertLink();
+
+                // On observe le grand-parent : la section (publication__card) est
+                // remplacée, mais son parent, lui, reste stable.
+                const root = container.parentElement?.parentElement;
+                if (!root) return;
+
+                const observer = new MutationObserver(() => insertLink());
+                observer.observe(root, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+
             async function onLoad() {
                 // Check if we're on the kiosque page
                 if (window.location.href.endsWith('kiosque/telerama')) {
@@ -1568,8 +1601,7 @@
                     }
 
                 } else {
-                    const msg_abo = document.querySelector(".article__subscriber-container");
-                    msg_abo.after(await createLink());
+                    await ensureLinkAfterSubscriberContainer();
                 }
             }
 
@@ -3857,6 +3889,14 @@
                 return [...elems].filter(d => textToFind.some(text => d.textContent.includes(text)));
             }
 
+            /** @return {boolean} true si le bouton BNF est déjà dans le DOM */
+            function bnfLinkAlreadyPresent() {
+                return !!document.querySelector("a.ophirofox-europresse");
+            }
+
+            /** Dernier observer DOM créé par handleArretSurImages — déconnecté à chaque nouvelle navigation SPA */
+            let _asiObserver = null;
+
             async function handleArretSurImagesMirror() {
                 const checkAndRedirect = async () => {
                     const currentPage = new URL(window.location);
@@ -3932,18 +3972,70 @@
 
             async function handleArretSurImages(config) {
                 console.log("[ophirofox][asi] checking for premium banner");
-                const reserve = findPremiumBanner();
-                if (!reserve?.length) {
-                    console.log("[ophirofox][asi] no premium banner found, aborting");
-                    return;
+
+                // Déconnecter l'ancien observer d'une navigation SPA précédente
+                if (_asiObserver) {
+                    _asiObserver.disconnect();
+                    _asiObserver = null;
                 }
-                console.log("[ophirofox][asi] premium banner found, setting storage and injecting link");
-                chrome.storage.sync.set({
-                    "ophirofox_arretsurimages_article": new URL(window.location).pathname
+
+                function tryInject() {
+                    if (bnfLinkAlreadyPresent()) return true;
+
+                    const reserve = findPremiumBanner();
+                    if (!reserve?.length) return false;
+
+                    console.log("[ophirofox][asi] premium banner found, injecting link");
+                    chrome.storage.sync.set({
+                        "ophirofox_arretsurimages_article": new URL(window.location).pathname
+                    });
+                    for (const balise of reserve) {
+                        balise.parentElement.appendChild(createLink());
+                    }
+                    return true;
+                }
+
+                // Tentative immédiate
+                if (tryInject()) return;
+
+                // Sinon, observe le DOM jusqu'à ce que l'article soit rendu
+                const observer = new MutationObserver(() => {
+                    if (tryInject()) {
+                        observer.disconnect();
+                        _asiObserver = null;
+                    }
                 });
-                for (const balise of reserve) {
-                    balise.parentElement.appendChild(createLink());
+                _asiObserver = observer;
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+
+            /**
+             * Ré-exécute handleArretSurImages à chaque navigation SPA.
+             */
+            function watchForSpaNavigation(config) {
+                const run = () => handleArretSurImages(config).catch(console.error);
+
+                // Hook pushState / replaceState
+                for (const method of ["pushState", "replaceState"]) {
+                    const orig = history[method].bind(history);
+                    history[method] = (...args) => {
+                        orig(...args);
+                        run();
+                    };
                 }
+                window.addEventListener("popstate", run);
+
+                // Polling URL pour les SPA qui ne passent pas par history API
+                let lastPathname = window.location.pathname;
+                setInterval(() => {
+                    if (window.location.pathname !== lastPathname) {
+                        lastPathname = window.location.pathname;
+                        run();
+                    }
+                }, 500);
             }
 
             /**@description check for BNF users. If yes, create link button */
@@ -3962,6 +4054,7 @@
                 } else {
                     console.log("[ophirofox][asi] on original site, running handleArretSurImages");
                     setTimeout(() => handleArretSurImages(config).catch(console.error), 1000);
+                    watchForSpaNavigation(config);
                 }
             }
 
@@ -4017,6 +4110,14 @@
                 return [...elems].filter(d => textToFind.some(text => d.textContent.includes(text)));
             }
 
+            /** @return {boolean} true si le bouton BNF est déjà dans le DOM */
+            function bnfLinkAlreadyPresent() {
+                return !!document.querySelector("a.ophirofox-europresse");
+            }
+
+            /** Dernier observer DOM créé par handleArretSurImages — déconnecté à chaque nouvelle navigation SPA */
+            let _asiObserver = null;
+
             async function handleArretSurImagesMirror() {
                 const checkAndRedirect = async () => {
                     const currentPage = new URL(window.location);
@@ -4092,18 +4193,70 @@
 
             async function handleArretSurImages(config) {
                 console.log("[ophirofox][asi] checking for premium banner");
-                const reserve = findPremiumBanner();
-                if (!reserve?.length) {
-                    console.log("[ophirofox][asi] no premium banner found, aborting");
-                    return;
+
+                // Déconnecter l'ancien observer d'une navigation SPA précédente
+                if (_asiObserver) {
+                    _asiObserver.disconnect();
+                    _asiObserver = null;
                 }
-                console.log("[ophirofox][asi] premium banner found, setting storage and injecting link");
-                chrome.storage.sync.set({
-                    "ophirofox_arretsurimages_article": new URL(window.location).pathname
+
+                function tryInject() {
+                    if (bnfLinkAlreadyPresent()) return true;
+
+                    const reserve = findPremiumBanner();
+                    if (!reserve?.length) return false;
+
+                    console.log("[ophirofox][asi] premium banner found, injecting link");
+                    chrome.storage.sync.set({
+                        "ophirofox_arretsurimages_article": new URL(window.location).pathname
+                    });
+                    for (const balise of reserve) {
+                        balise.parentElement.appendChild(createLink());
+                    }
+                    return true;
+                }
+
+                // Tentative immédiate
+                if (tryInject()) return;
+
+                // Sinon, observe le DOM jusqu'à ce que l'article soit rendu
+                const observer = new MutationObserver(() => {
+                    if (tryInject()) {
+                        observer.disconnect();
+                        _asiObserver = null;
+                    }
                 });
-                for (const balise of reserve) {
-                    balise.parentElement.appendChild(createLink());
+                _asiObserver = observer;
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+
+            /**
+             * Ré-exécute handleArretSurImages à chaque navigation SPA.
+             */
+            function watchForSpaNavigation(config) {
+                const run = () => handleArretSurImages(config).catch(console.error);
+
+                // Hook pushState / replaceState
+                for (const method of ["pushState", "replaceState"]) {
+                    const orig = history[method].bind(history);
+                    history[method] = (...args) => {
+                        orig(...args);
+                        run();
+                    };
                 }
+                window.addEventListener("popstate", run);
+
+                // Polling URL pour les SPA qui ne passent pas par history API
+                let lastPathname = window.location.pathname;
+                setInterval(() => {
+                    if (window.location.pathname !== lastPathname) {
+                        lastPathname = window.location.pathname;
+                        run();
+                    }
+                }, 500);
             }
 
             /**@description check for BNF users. If yes, create link button */
@@ -4122,6 +4275,7 @@
                 } else {
                     console.log("[ophirofox][asi] on original site, running handleArretSurImages");
                     setTimeout(() => handleArretSurImages(config).catch(console.error), 1000);
+                    watchForSpaNavigation(config);
                 }
             }
 
