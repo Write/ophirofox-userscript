@@ -9,10 +9,11 @@ Après le premier chargement d'une page d'article, un popup vous demande de choi
 Pour changer ensuite, deux options :
 
 1. Menu de l’extension (icône dans la barre)
+_(Malheureusement ce menu n'existe pas pour l'extension 'Userscripts' iOS/macOS)_
    - clic sur le script
    - « Changer l’université »
 
-2. Console JS (F12), sur un site ou le script est actif :
+3. Console JS (F12), sur un site ou le script est actif :
    - `setUniversityName("Mon université")`
    - ou `setUniversityName("")` pour réinitialiser
    - puis rechargez la page
