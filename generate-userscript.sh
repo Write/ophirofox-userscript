@@ -1,7 +1,17 @@
 #!/bin/bash
 
+# If first argument is a directory, use it as the ophirofox source dir
+# and $2 as version. Otherwise fall back to ./ophirofox and $1 as version.
+if [ -d "$1" ]; then
+    OPHIROFOX_DIR="$1"
+    VERSION="${2:-}"
+else
+    OPHIROFOX_DIR="./ophirofox"
+    VERSION="$1"
+fi
+
 USERSCRIPT="./ophirofox.user.js"
-MANIFEST="./ophirofox/manifest.json"
+MANIFEST="$OPHIROFOX_DIR/manifest.json"
 
 json_data=$(jq -rc '.content_scripts[] ' "$MANIFEST")
 partners=$(jq -rc '.browser_specific_settings.ophirofox_metadata.partners' "$MANIFEST")
@@ -17,9 +27,13 @@ indent() {
 
 # ---- Blocs JS extraits en heredoc pour éviter les problèmes d'échappement ----
 
-read -r -d '' PICKER_BLOCK << 'JSBLOCK'
-  function showUniversityPicker() {
-      return new Promise((resolve) => {
+read -r -d '' SETTINGS_PANEL_BLOCK << 'JSBLOCK'
+  function showSettingsPanel() {
+      return new Promise(async (resolve) => {
+          const currentUniversity = await GM.getValue("universityName", null);
+          const openLinksNewTab = await GM.getValue("open_links_new_tab", false);
+          const autoOpenLink = await GM.getValue("auto_open_link", false);
+
           const overlay = document.createElement('div');
           overlay.style.cssText = `
               position: fixed; inset: 0; z-index: 2147483647;
@@ -30,40 +44,95 @@ read -r -d '' PICKER_BLOCK << 'JSBLOCK'
           const box = document.createElement('div');
           box.style.cssText = `
               background: #fff; border-radius: 10px; padding: 24px;
-              max-width: 480px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+              max-width: 520px; width: 90%; max-height: 85vh;
+              box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+              display: flex; flex-direction: column;
           `;
           const title = document.createElement('h2');
-          title.textContent = 'Choisissez votre universite';
-          title.style.cssText = 'margin: 0 0 8px; font-size: 18px; color: #222;';
-          const subtitle = document.createElement('p');
-          subtitle.textContent = 'Ce choix sera sauvegarde. Vous pourrez le modifier via le menu de l\'extension.';
-          subtitle.style.cssText = 'margin: 0 0 16px; font-size: 13px; color: #666;';
-          const select = document.createElement('select');
-          select.style.cssText = `
+          title.textContent = 'Parametres Ophirofox';
+          title.style.cssText = 'margin: 0 0 4px; font-size: 18px; color: #222;';
+
+          const searchInput = document.createElement('input');
+          searchInput.type = 'search';
+          searchInput.placeholder = 'Rechercher un partenaire...';
+          searchInput.style.cssText = `
               width: 100%; padding: 8px; font-size: 14px;
               border: 1px solid #ccc; border-radius: 6px;
-              margin-bottom: 16px; box-sizing: border-box;
+              margin: 12px 0 8px; box-sizing: border-box;
           `;
-          ophirofox_config_list.forEach((uni, i) => {
-              const opt = document.createElement('option');
-              opt.value = i;
-              opt.textContent = uni.name;
-              select.appendChild(opt);
-          });
+
+          const listContainer = document.createElement('div');
+          listContainer.style.cssText = `
+              max-height: 250px; overflow-y: auto;
+              border: 1px solid #e6e6e6; border-radius: 6px;
+              margin-bottom: 12px;
+          `;
+
+          let selectedName = currentUniversity || ophirofox_config_list[0].name;
+
+          function renderList(filter) {
+              listContainer.innerHTML = '';
+              const f = (filter || '').toLowerCase();
+              ophirofox_config_list.forEach(uni => {
+                  if (f && !uni.name.toLowerCase().includes(f)) return;
+                  const label = document.createElement('label');
+                  label.style.cssText = `
+                      display: flex; align-items: center; gap: 8px;
+                      padding: 6px 10px; cursor: pointer;
+                      font-size: 14px; border-bottom: 1px solid #f0f0f0;
+                  `;
+                  const radio = document.createElement('input');
+                  radio.type = 'radio';
+                  radio.name = 'partner';
+                  radio.value = uni.name;
+                  radio.checked = uni.name === selectedName;
+                  radio.addEventListener('change', () => { selectedName = uni.name; });
+                  label.appendChild(radio);
+                  label.appendChild(document.createTextNode(uni.name));
+                  listContainer.appendChild(label);
+              });
+          }
+          renderList();
+          searchInput.addEventListener('input', () => renderList(searchInput.value));
+
+          const togglesContainer = document.createElement('div');
+          togglesContainer.style.cssText = 'margin-bottom: 12px;';
+
+          const newTabLabel = document.createElement('label');
+          newTabLabel.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; cursor: pointer;';
+          const newTabCheck = document.createElement('input');
+          newTabCheck.type = 'checkbox';
+          newTabCheck.checked = openLinksNewTab;
+          newTabLabel.appendChild(newTabCheck);
+          newTabLabel.appendChild(document.createTextNode('Ouvrir les liens Europresse dans un nouvel onglet'));
+
+          const autoOpenLabel = document.createElement('label');
+          autoOpenLabel.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; cursor: pointer;';
+          const autoOpenCheck = document.createElement('input');
+          autoOpenCheck.type = 'checkbox';
+          autoOpenCheck.checked = autoOpenLink;
+          autoOpenLabel.appendChild(autoOpenCheck);
+          autoOpenLabel.appendChild(document.createTextNode("Ouvrir automatiquement le lien lorsqu'un seul resultat est trouve"));
+
+          togglesContainer.appendChild(newTabLabel);
+          togglesContainer.appendChild(autoOpenLabel);
+
           const btn = document.createElement('button');
-          btn.textContent = 'Confirmer';
+          btn.textContent = 'Enregistrer';
           btn.style.cssText = `
               width: 100%; padding: 10px; font-size: 15px; font-weight: bold;
               background: #1a73e8; color: #fff; border: none;
               border-radius: 6px; cursor: pointer;
           `;
           btn.addEventListener('click', async () => {
-              const chosen = ophirofox_config_list[parseInt(select.value)];
-              await GM.setValue("universityName", chosen.name);
+              await GM.setValue("universityName", selectedName);
+              await GM.setValue("open_links_new_tab", newTabCheck.checked);
+              await GM.setValue("auto_open_link", autoOpenCheck.checked);
               overlay.remove();
-              resolve(chosen.name);
+              resolve({ universityName: selectedName, openLinksNewTab: newTabCheck.checked, autoOpenLink: autoOpenCheck.checked });
           });
-          box.append(title, subtitle, select, btn);
+
+          box.append(title, searchInput, listContainer, togglesContainer, btn);
           overlay.appendChild(box);
           document.documentElement.appendChild(overlay);
       });
@@ -98,11 +167,26 @@ read -r -d '' CONFIG_FUNCTIONS_BLOCK << 'JSBLOCK'
       return ophirofox_config_list.find(({ name }) => search_name === name);
   }
 
+  function isApplePlatform() {
+      return /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  }
+
   const DEFAULT_SETTINGS = {
-      partner_name: "Pas d'intermédiaire",
+      partner_name: "Pas d'intermediaire",
+      partner_AUTH_URL: "https://nouveau.europresse.com/Login",
+      open_links_new_tab: false,
+      auto_open_link: false,
   };
 
   let current_settings = DEFAULT_SETTINGS;
+
+  async function getSettings() {
+      try {
+          current_settings.open_links_new_tab = await GM.getValue("open_links_new_tab", false);
+          current_settings.auto_open_link = await GM.getValue("auto_open_link", false);
+      } catch(e) {}
+      return current_settings;
+  }
 
   async function getOphirofoxConfig() {
       try {
@@ -118,6 +202,7 @@ read -r -d '' CONFIG_FUNCTIONS_BLOCK << 'JSBLOCK'
   const ophirofox_config = getOphirofoxConfig();
 
   async function setKeywords(keywords, publishedTime) {
+      await GM.setValue("ophirofox_request_type", { type: 'read' });
       await GM.setValue("ophirofox_keywords", keywords);
       await GM.setValue("ophirofox_published_time", publishedTime);
   }
@@ -133,13 +218,39 @@ read -r -d '' CONFIG_FUNCTIONS_BLOCK << 'JSBLOCK'
       a.onmousedown = setKeywords(keywords, publishedTime);
       a.onclick = async function(evt) {
           evt.preventDefault();
-          await Promise.resolve([ophirofox_config, setKeywords(keywords, publishedTime)]);
+          await getSettings();
+          await setKeywords(keywords, publishedTime);
           const obj = await ophirofox_config;
-          window.location = obj.AUTH_URL;
+          if (current_settings.open_links_new_tab) {
+              window.open(obj.AUTH_URL, "_blank");
+          } else {
+              window.location = obj.AUTH_URL;
+          }
       }
       ophirofox_config.then(({ AUTH_URL }) => {
           a.href = AUTH_URL;
       });
+
+      if (isApplePlatform()) {
+          const wrapper = document.createElement("span");
+          wrapper.style.cssText = "display: inline-flex; align-items: center; gap: 6px;";
+          wrapper.appendChild(a);
+          const cog = document.createElement("button");
+          cog.textContent = "\u2699";
+          cog.title = "Parametres Ophirofox";
+          cog.style.cssText = "background: none; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 16px; padding: 2px 6px; line-height: 1;";
+          cog.addEventListener('click', async (evt) => {
+              evt.preventDefault();
+              evt.stopPropagation();
+              const result = await showSettingsPanel();
+              universityName = result.universityName;
+              settingsOpenLinksNewTab = result.openLinksNewTab;
+              settingsAutoOpenLink = result.autoOpenLink;
+              await getSettings();
+          });
+          wrapper.appendChild(cog);
+          return wrapper;
+      }
       return a;
   }
 JSBLOCK
@@ -154,12 +265,19 @@ read -r -d '' EUROPRESS_BLOCK << 'JSBLOCK'
           });
       }
 
+      async function consumeRequestType() {
+          const requestType = await GM.getValue("ophirofox_request_type");
+          await GM.deleteValue("ophirofox_request_type");
+          return requestType;
+      }
+
       async function consumeReadRequest() {
           const keywords = await GM.getValue("ophirofox_keywords");
           const published_time = await GM.getValue("ophirofox_published_time");
           const readRequest = { keywords, published_time };
           await GM.deleteValue("ophirofox_keywords");
           await GM.deleteValue("ophirofox_published_time");
+          await GM.deleteValue("ophirofox_request_type");
           return readRequest;
       }
 
@@ -174,9 +292,22 @@ read -r -d '' EUROPRESS_BLOCK << 'JSBLOCK'
           }
       }
 
+      function readWhenOnlyOneResult() {
+          const observer = new MutationObserver(async () => {
+              const linkElement = document.querySelector('a.docList-links');
+              if (linkElement) {
+                  linkElement.click();
+                  observer.disconnect();
+              }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+      }
+
       async function onLoad() {
+          await getSettings();
           ophirofoxRealoadOnExpired();
           const path = window.location.pathname;
+
           if (!(
               path.startsWith("/Search/Reading") ||
               path.startsWith("/Search/Advanced") ||
@@ -190,6 +321,26 @@ read -r -d '' EUROPRESS_BLOCK << 'JSBLOCK'
 
           if (path === '/Pdf' && await hasConsumable()) {
               window.location.pathname = '/Search/Reading';
+              return;
+          }
+
+          if (!await hasConsumable()) {
+              if (path.startsWith("/Search/Result")) {
+                  onElemAvailable('.resultOperations-count').then((countElem) => {
+                      if (countElem && countElem.textContent === '1') {
+                          if (current_settings.auto_open_link) {
+                              readWhenOnlyOneResult();
+                          }
+                      } else if (countElem && countElem.textContent === '0') {
+                          const queryField = document.querySelector('#Keywords');
+                          if (queryField && queryField.value.startsWith('TIT_HEAD=')) {
+                              queryField.value = queryField.value.replace('TIT_HEAD=', 'TEXT=');
+                              const btnSearch = document.querySelector('#btnSearch');
+                              if (btnSearch) btnSearch.click();
+                          }
+                      }
+                  });
+              }
               return;
           }
 
@@ -243,7 +394,12 @@ read -r -d '' EUROPRESS_BLOCK << 'JSBLOCK'
       function ophirofoxRealoadOnExpired() {
           const params = new URLSearchParams(window.location.search);
           if (params.get("ErrorCode") == "4000112") {
-              window.history.back();
+              const partner = getOphirofoxConfigByName(universityName);
+              if (partner && partner.AUTH_URL) {
+                  window.location = partner.AUTH_URL;
+              } else {
+                  window.location = ophirofox_config_list[0].AUTH_URL;
+              }
           }
       }
 
@@ -254,7 +410,7 @@ JSBLOCK
 
 SCRIPT=$(cat <<-END
 // ==UserScript==
-// @version $1
+// @version $VERSION
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -290,15 +446,18 @@ SCRIPT+='//
  * ║                   CONFIGURATION                      ║
  * ╠══════════════════════════════════════════════════════╣
  * ║  Au premier lancement, un popup vous demande de      ║
- * ║  choisir votre universite dans la liste.             ║
+ * ║  choisir votre universite et vos preferences.        ║
  * ║                                                      ║
- * ║  Pour changer ensuite, deux options :                ║
+ * ║  Pour changer ensuite, trois options :               ║
  * ║                                                      ║
  * ║  1. Menu de l'"'"'extension (icone dans la barre)   ║
  * ║     → clic sur le script                             ║
- * ║     → "Changer l'"'"'universite"                    ║
+ * ║     → "Parametres Ophirofox"                         ║
  * ║                                                      ║
- * ║  2. Console JS (F12), sur un site ou le script       ║
+ * ║  2. Icône engrenage (⚙) a cote du bouton            ║
+ * ║     "Lire sur Europresse" (sur iOS/macOS)            ║
+ * ║                                                      ║
+ * ║  3. Console JS (F12), sur un site ou le script       ║
  * ║     est actif :                                      ║
  * ║     setUniversityName("Mon universite")              ║
  * ║     ou setUniversityName("") pour reinitialiser      ║
@@ -345,20 +504,31 @@ SCRIPT+='//
 '
 
 SCRIPT+="  const ophirofox_config_list = ${partners};"$'\n'
-SCRIPT+="$PICKER_BLOCK"
+SCRIPT+="$SETTINGS_PANEL_BLOCK"
 SCRIPT+='
   let universityName = await GM.getValue("universityName", null);
+  let settingsOpenLinksNewTab = await GM.getValue("open_links_new_tab", false);
+  let settingsAutoOpenLink = await GM.getValue("auto_open_link", false);
   if (universityName === null) {
-      universityName = await showUniversityPicker();
+      const result = await showSettingsPanel();
+      universityName = result.universityName;
+      settingsOpenLinksNewTab = result.openLinksNewTab;
+      settingsAutoOpenLink = result.autoOpenLink;
   }
   if (typeof GM !== "undefined" && typeof GM.registerMenuCommand === "function") {
-      GM.registerMenuCommand("Changer l'"'"'universite", async () => {
-          universityName = await showUniversityPicker();
+      GM.registerMenuCommand("Parametres Ophirofox", async () => {
+          const result = await showSettingsPanel();
+          universityName = result.universityName;
+          settingsOpenLinksNewTab = result.openLinksNewTab;
+          settingsAutoOpenLink = result.autoOpenLink;
           location.reload();
       });
   } else if (typeof GM_registerMenuCommand === "function") {
-      GM_registerMenuCommand("Changer l'"'"'universite", async () => {
-          universityName = await showUniversityPicker();
+      GM_registerMenuCommand("Parametres Ophirofox", async () => {
+          const result = await showSettingsPanel();
+          universityName = result.universityName;
+          settingsOpenLinksNewTab = result.openLinksNewTab;
+          settingsAutoOpenLink = result.autoOpenLink;
           location.reload();
       });
   }
@@ -384,7 +554,7 @@ done <<< "$europress_urls"
 SCRIPT+=$'\n'
 SCRIPT+="$EUROPRESS_BLOCK"
 
-css_europress_str=$(command cat ./ophirofox/content_scripts/europresse_article.css | indent 4)
+css_europress_str=$(command cat "$OPHIROFOX_DIR/content_scripts/europresse_article.css" | indent 4)
 SCRIPT+='
       pasteStyle(`
 '"$css_europress_str"'
@@ -406,12 +576,12 @@ while IFS= read -r line; do
     if [[ $matches != *"config.js" ]]; then
       while IFS= read -r js_file; do
         if [[ $js_file != *"config.js" ]]; then
-          js_str=$(cat ./ophirofox/"$js_file")
+          js_str=$(cat "$OPHIROFOX_DIR/$js_file")
         fi
       done <<< "$js_files"
 
       if [ -n "$css_files" ]; then
-          css_str=$(command cat ./ophirofox/"$css_files" | indent 4)
+          css_str=$(command cat "$OPHIROFOX_DIR/$css_files" | indent 4)
       fi
 
       SCRIPT+='
@@ -431,366 +601,4 @@ SCRIPT+='
 })();'
 
 echo "$SCRIPT"
-echo "$SCRIPT" > "$USERSCRIPT"  # Parse JSON using jq
-  matches=$(echo "$line" | jq -r '.matches[]')
-  # Iterate through each JS file entry
-  while IFS= read -r matches; do
-      SCRIPT+="// @include $matches"$'\n'
-      #echo " appejnd - $matches"
-  done <<< "$matches"
-done <<< "$json_data"
-
 echo "$SCRIPT" > "$USERSCRIPT"
-
-SCRIPT+=$'//
-// @run-at      document-start
-//
-// ==/UserScript==
-(function () {
-'\''use strict'\'';
-
-  /* ----------------
-   *   HELPERS
-   * ----------------
-   * */
-
-  if (! (GM_getValue("universityName",null))) {
-    GM_setValue("universityName", "Bibliotheque nationale et universitaire de Strasbourg");
-  }
-
-  const universityName = GM_getValue("universityName");
-
-  const current = window.location.href;
-  const hostname = window.location.hostname;
-
-  function match(str, rule) {
-      // Extract domain pattern from the rule (ignore https:// and /*)
-      var domainRule = rule.replace(/^https?:\/\//, '\'''\'').replace(/\/\*$/, '\'''\'');
-      
-      // Convert the wildcard pattern to a proper regex
-      var regexPattern = "^" + domainRule.split('\''*'\'').map(function(part) {
-          // Escape special regex characters in each part
-          return part.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-      }).join('\''.*'\'') + "$";
-  
-      // Create and test the regex against the input string
-      var regex = new RegExp(regexPattern);
-      return regex.test(str);
-  }
-
-  function pasteStyle(str) {
-      var node = document.createElement('\''style'\'');
-      node.type = '\''text/css'\'';
-      node.appendChild(document.createTextNode(str.replace(/;/g, '\'' !important;'\'')));
-      if (document.head !== null) {
-          document.head.appendChild(node);
-      }
-      else {
-          document.documentElement.appendChild(node);
-      }
-  }
-
-  const onElemAvailable = async selector => {
-        while (document.querySelector(selector) === null) {
-            await new Promise(resolve => requestAnimationFrame(resolve));
-        }
-        return document.querySelector(selector);
-  };
-
-  /* ----------------
-   *   CODE
-   * ----------------
-   * */
-
-  const ophirofox_config_list = '"$partners"';
-
-  function getOphirofoxConfigByName(search_name) {
-      return ophirofox_config_list.find(({ name }) => search_name === name);
-  }
-
-  const DEFAULT_SETTINGS = {
-      partner_name: "Pas d'\''intermédiaire",
-  };
-
-  let current_settings = DEFAULT_SETTINGS;
-
-  async function getOphirofoxConfig() {
-    const url = new URL(window.location);
-    try {
-      const partner_name = universityName;
-      const name_match = getOphirofoxConfigByName(partner_name);
-      if (name_match) return name_match;
-    } catch (err) {
-      console.warn(
-        `No ophirofox domain found, using the default ${fallback.name}: ${err}`
-      );
-    }
-    const fallback = ophirofox_config_list[0];
-    return fallback;
-  }
-
-  const ophirofox_config = getOphirofoxConfig();
-
-  async function setKeywords(keywords, publishedTime) {
-      await GM.setValue("ophirofox_keywords", keywords);
-      await GM.setValue("ophirofox_published_time", publishedTime);
-  }
-
-  /**
-   * Crée un lien vers Europresse avec les keywords donnés
-   * @param {string} keywords
-   * @returns {Promise<HTMLAnchorElement>}
-   */
-  async function ophirofoxEuropresseLink(keywords, { publishedTime } = {}) {
-      // Keywords is the article name
-      keywords = keywords ? keywords.trim() : document.querySelector("h1").textContent;
-      // Trying to determine published time with meta tags (Open Graph values)
-      publishedTime = publishedTime || document.querySelector( "meta[property='\''article:published_time'\''], meta[property='\''og:article:published_time'\''], meta[property='\''date:published_time'\'']")
-      ?.getAttribute("content") || '\'''\'';
-      // Creating HTML anchor element
-      const a = document.createElement("a");
-      a.textContent = "Lire sur Europresse";
-      a.className = "ophirofox-europresse";
-      a.onmousedown = setKeywords(keywords, publishedTime);
-      a.onclick = async function(evt) {
-          evt.preventDefault();
-          await Promise.resolve([ophirofox_config, setKeywords(keywords, publishedTime)])
-          const obj = await ophirofox_config;
-          window.location = obj.AUTH_URL;
-      }
-      ophirofox_config.then(({
-          AUTH_URL
-      }) => {
-          a.href = AUTH_URL
-      });
-      return a;
-  }
-
-'
-
-SCRIPT+=$'if ('
-counter=1
-while IFS= read -r europress_single_url; do
-
-  if [[ "$counter" -eq "$europress_urls_count" ]]; then
-      # last element, close the parenthesis.
-        SCRIPT+=$'
-  match(hostname, "'"$europress_single_url"'")) {'
-  else
-        SCRIPT+=$'
-  match(hostname, "'"$europress_single_url"'") ||'
-  fi
-  ((counter++))
-done <<< "$europress_urls"
-
-# Inject europress_article.{css,js..}
-#  js_europress_article_str=$(cat ./ophirofox/content_scripts/europresse_article.js)
-# js_europress_search_str=$(cat ./ophirofox/content_scripts/europresse_search.js)
-  css_europress_str=$(command cat ./ophirofox/content_scripts/europresse_article.css | indent 4)
-  SCRIPT+=$'
-
-      function removeMarkElements() {
-          // Remove all the <mark> elements, but keep their contents
-          Array.from(document.querySelectorAll("article mark")).forEach(mark => {
-              const repl = document.createElement("span");
-              repl.className = "mark";
-              Array.from(mark.childNodes).forEach(repl.appendChild.bind(repl));
-              mark.parentNode.replaceChild(repl, mark);
-          });
-      }
-
-      // Remove <mark> elements each time the page is updated 
-      /*
-      let nextOp = null;
-      new MutationObserver(() => {
-          if (nextOp) clearTimeout(nextOp);
-          nextOp = setTimeout(removeMarkElements, 500);
-      }).observe(document.body, { subtree: true, childList: true });
-      */
-
-      async function consumeReadRequest() {
-          const keywords = await GM.getValue("ophirofox_keywords");
-          const published_time = await GM.getValue("ophirofox_published_time");
-          const readRequest = { keywords, published_time };
-          await GM.deleteValue("ophirofox_keywords");
-          await GM.deleteValue("ophirofox_published_time");
-          return readRequest;
-      }
-
-      async function hasConsumable() {
-            try {
-                // Récupérer les valeurs stockées avec GM.getValue (équivalent de chrome.storage.local)
-                const requestType = await GM.getValue("ophirofox_request_type");
-                const keywords = await GM.getValue("ophirofox_keywords");
-
-                // Vérifier si l'\''une des deux clés existe et contient une valeur
-                const hasRequestType = requestType !== undefined;
-                const hasKeywords = keywords !== undefined;
-
-                // Retourner true si au moins une des clés existe avec une valeur
-                return hasRequestType || hasKeywords;
-            } catch (error) {
-                console.error("Erreur lors de la vérification des consommables:", error);
-                return false;
-            }
-      }
-
-      async function onLoad() {
-          ophirofoxRealoadOnExpired();
-          const path = window.location.pathname;
-          if (!(
-              path.startsWith("/Search/Reading") ||
-              path.startsWith("/Search/Advanced") ||
-              path.startsWith("/Search/AdvancedMobile") ||
-              path.startsWith("/Search/Express") ||
-              path.startsWith("/Search/Simple") ||
-              path.startsWith("/Search/Result") ||
-              path.startsWith("/Search/ResultMobile") || 
-              path === "/Pdf"
-          )) return;
-
-          /* Fix une issue avec le proxy BNF qui redirige vers /Pdf */
-          if (path === '\''/Pdf'\'' && await hasConsumable()) {
-              window.location.pathname = '\''/Search/Reading'\'';
-              return;
-          }
-
-          const readRequest = await consumeReadRequest();
-          const search_terms = readRequest.keywords;
-          const published_time = readRequest.published_time;
-
-          if (!search_terms) return;
-          const stopwords = new Set(['\''d'\'', '\''l'\'', '\''et'\'', '\''sans'\'', '\''or'\'']);
-          const keywords = search_terms
-              .replace(/œ/g, '\''oe'\'')
-              .split(/[^\p{L}]+/u)
-              .filter(w => !stopwords.has(w))
-              .join('\'' '\'');
-
-          const keyword_field_id = path.startsWith("/Search/Result") ? "NativeQuery" : "Keywords";
-
-          onElemAvailable('\''#'\'' + keyword_field_id).then((selector) => {
-            const keyword_field = selector;
-            keyword_field.value = '\''TIT_HEAD='\'' + keywords;
-            keyword_field.form.submit();
-          });
-
-          onElemAvailable('\''#DateFilter_DateRange'\'').then((selector) => {
-              const date_filter = selector;
-              if (date_filter) {
-                  if (!published_time) { // Full expand the time range
-                      date_filter.value = 9;
-                  } else {
-                      const publishedDate = new Date(published_time);
-                      publishedDate.setUTCHours(0, 0, 0, 0); // Europresse saves the exact UTC date, but "depuis X jours" is based on midnight 
-                      const currentDate = new Date();
-          
-                      const timeDifference = currentDate.getTime() - publishedDate.getTime();
-                      // Rounds up for tolerance to be sure to not filtering badly
-                      const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-          
-                      let filterValue = 9;
-          
-                      switch (true) {
-                          case (daysDifference <= 1):
-                              filterValue = 2; // Depuis hier
-                              break;
-                          case (daysDifference <= 3):
-                              filterValue = 11; // Depuis 3 jours
-                              break;
-                          case (daysDifference <= 7):
-                              filterValue = 3; // Depuis 7 jours
-                              break;
-                          case (daysDifference <= 30):
-                              filterValue = 4; // Depuis 30 jours
-                              break;
-                          case (daysDifference <= 90):
-                              filterValue = 5; // Depuis 3 mois
-                              break;
-                          case (daysDifference <= 180):
-                              filterValue = 6; // Depuis 6 mois
-                              break;
-                          case (daysDifference <= 365):
-                              filterValue = 7; // Depuis 1 an
-                              break;
-                          case (daysDifference <= 730):
-                              filterValue = 8; // Depuis 2 ans
-                              break;
-                          default:
-                              filterValue = 9; // Dans toutes les archives
-                              break;
-                      }
-          
-                      date_filter.value = filterValue;
-                  }
-              }
-          });
-      }
-
-      function ophirofoxRealoadOnExpired() {
-          const params = new URLSearchParams(window.location.search)
-          if (params.get("ErrorCode") == "4000112") {
-              // session expirée
-              window.history.back();
-          }
-      }
-
-      onLoad().catch(console.error);
-
-      pasteStyle(`
-'"$css_europress_str"'
-        `);
-  }'
-
-
-# Loop to add each .js and .css files to the userscript
-while IFS= read -r line; do
-  # Parse JSON using jq
-  matches=$(echo "$line" | jq -r '.matches[]')
-  js_files=$(echo "$line" | jq -r '.js[]')
-  # Check if "css" field exists before iterating
-  if jq -e '.css' <<< "$line" > /dev/null; then
-    css_files=$(echo "$line" | jq -r '.css[]')
-  else
-    css_files=""
-  fi
-
-  # Iterate through each matches file entry
-  while IFS= read -r matches; do
-    # Ignore entries containing "config.js"
-    if [[ $matches != *"config.js" ]]; then
-
-      # Iterate through each JS file entry
-      while IFS= read -r js_file; do
-        # Ignore entries containing "config.js"
-        if [[ $js_file != *"config.js" ]]; then
-          js_str=$(cat ./ophirofox/"$js_file")
-        fi
-      done <<< "$js_files"
-
-      # Print CSS Files if not empty
-      if [ -n "$css_files" ]; then
-          css_str=$(command cat ./ophirofox/"$css_files" | indent 4)
-      fi
-
-      SCRIPT+=$'
-  if (match(hostname, "'"$matches"'")) {
-
-      window.addEventListener("load", function(event) {
-      '"$js_str"'
-      });
-
-      pasteStyle(`
-'"$css_str"'
-        `);
-  }
-'
-    fi
-  done <<< "$matches"
-
-done <<< "$json_data"
-
-SCRIPT+="})();";
-echo "$SCRIPT"
-
-echo "$SCRIPT" > $USERSCRIPT
