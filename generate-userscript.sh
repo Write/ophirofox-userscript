@@ -1,7 +1,17 @@
 #!/bin/bash
 
+# If first argument is a directory, use it as the ophirofox source dir
+# and $2 as version. Otherwise fall back to ./ophirofox and $1 as version.
+if [ -d "$1" ]; then
+    OPHIROFOX_DIR="$1"
+    VERSION="${2:-}"
+else
+    OPHIROFOX_DIR="./ophirofox"
+    VERSION="$1"
+fi
+
 USERSCRIPT="./ophirofox.user.js"
-MANIFEST="./ophirofox/manifest.json"
+MANIFEST="$OPHIROFOX_DIR/manifest.json"
 
 json_data=$(jq -rc '.content_scripts[] ' "$MANIFEST")
 partners=$(jq -rc '.browser_specific_settings.ophirofox_metadata.partners' "$MANIFEST")
@@ -316,19 +326,20 @@ read -r -d '' EUROPRESS_BLOCK << 'JSBLOCK'
 
           if (!await hasConsumable()) {
               if (path.startsWith("/Search/Result")) {
-                  const countElem = document.querySelector('.resultOperations-count');
-                  if (countElem && countElem.textContent === '1') {
-                      if (current_settings.auto_open_link) {
-                          readWhenOnlyOneResult();
+                  onElemAvailable('.resultOperations-count').then((countElem) => {
+                      if (countElem && countElem.textContent === '1') {
+                          if (current_settings.auto_open_link) {
+                              readWhenOnlyOneResult();
+                          }
+                      } else if (countElem && countElem.textContent === '0') {
+                          const queryField = document.querySelector('#Keywords');
+                          if (queryField && queryField.value.startsWith('TIT_HEAD=')) {
+                              queryField.value = queryField.value.replace('TIT_HEAD=', 'TEXT=');
+                              const btnSearch = document.querySelector('#btnSearch');
+                              if (btnSearch) btnSearch.click();
+                          }
                       }
-                  } else if (countElem && countElem.textContent === '0') {
-                      const queryField = document.querySelector('#Keywords');
-                      if (queryField && queryField.value.startsWith('TIT_HEAD=')) {
-                          queryField.value = queryField.value.replace('TIT_HEAD=', 'TEXT=');
-                          const btnSearch = document.querySelector('#btnSearch');
-                          if (btnSearch) btnSearch.click();
-                      }
-                  }
+                  });
               }
               return;
           }
@@ -399,7 +410,7 @@ JSBLOCK
 
 SCRIPT=$(cat <<-END
 // ==UserScript==
-// @version $1
+// @version $VERSION
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -543,7 +554,7 @@ done <<< "$europress_urls"
 SCRIPT+=$'\n'
 SCRIPT+="$EUROPRESS_BLOCK"
 
-css_europress_str=$(command cat ./ophirofox/content_scripts/europresse_article.css | indent 4)
+css_europress_str=$(command cat "$OPHIROFOX_DIR/content_scripts/europresse_article.css" | indent 4)
 SCRIPT+='
       pasteStyle(`
 '"$css_europress_str"'
@@ -565,12 +576,12 @@ while IFS= read -r line; do
     if [[ $matches != *"config.js" ]]; then
       while IFS= read -r js_file; do
         if [[ $js_file != *"config.js" ]]; then
-          js_str=$(cat ./ophirofox/"$js_file")
+          js_str=$(cat "$OPHIROFOX_DIR/$js_file")
         fi
       done <<< "$js_files"
 
       if [ -n "$css_files" ]; then
-          css_str=$(command cat ./ophirofox/"$css_files" | indent 4)
+          css_str=$(command cat "$OPHIROFOX_DIR/$css_files" | indent 4)
       fi
 
       SCRIPT+='
