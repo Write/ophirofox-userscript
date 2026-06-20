@@ -39,11 +39,13 @@ if prop:
 # ── 3. chrome.storage.sync.remove(["k1","k2"]) → GM.deleteValue(...) ────────
 def _replace_remove(m):
     indent = m.group(1)
-    keys = _extract_keys(m.group(2))
-    return "\n".join(f"{indent}await GM.deleteValue(\"{k}\");" for k in keys)
+    has_await = bool(m.group(2))
+    keys = _extract_keys(m.group(3))
+    prefix = "await " if has_await else ""
+    return "\n".join(f"{indent}{prefix}GM.deleteValue(\"{k}\");" for k in keys)
 
 code = re.sub(
-    r"(\s*)(?:await\s+)?chrome\.storage\.sync\.remove\(\s*\[(.*?)\]\s*\);?",
+    r"(\s*)(await\s+)?chrome\.storage\.sync\.remove\(\s*\[(.*?)\]\s*\);?",
 
     _replace_remove,
     code,
@@ -53,16 +55,18 @@ code = re.sub(
 # ── 4. chrome.storage.sync.set({...}) → GM.setValue(...) ────────────────────
 def _replace_set(m):
     indent = m.group(1)
-    inner = m.group(2)
+    has_await = bool(m.group(2))
+    inner = m.group(3)
     pairs = re.findall(r"""['"]([^'"]+)['"]\s*:\s*(.+?)\s*(?:,|$)""", inner, re.DOTALL)
+    prefix = "await " if has_await else ""
     lines = []
     for k, v in pairs:
         v = v.strip().rstrip(",")
-        lines.append(f"{indent}await GM.setValue(\"{k}\", {v});")
+        lines.append(f"{indent}{prefix}GM.setValue(\"{k}\", {v});")
     return "\n".join(lines)
 
 code = re.sub(
-    r"(\s*)(?:await\s+)?chrome\.storage\.sync\.set\(\s*\{(.*?)\}\s*\);?",
+    r"(\s*)(await\s+)?chrome\.storage\.sync\.set\(\s*\{(.*?)\}\s*\);?",
 
     _replace_set,
     code,
