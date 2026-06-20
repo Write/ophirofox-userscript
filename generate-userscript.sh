@@ -238,7 +238,7 @@ read -r -d '' CONFIG_FUNCTIONS_BLOCK << 'JSBLOCK'
           const cog = document.createElement("button");
           cog.textContent = "\u2699";
           cog.title = "Parametres Ophirofox";
-          cog.style.cssText = "background: none; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 16px; padding: 2px 6px; line-height: 1;";
+          cog.style.cssText = "background: white; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 16px; padding: 2px 6px; line-height: 1; z-index: 20;";
           cog.addEventListener('click', async (evt) => {
               evt.preventDefault();
               evt.stopPropagation();
@@ -487,7 +487,7 @@ SCRIPT+='//
   function pasteStyle(str) {
       var node = document.createElement('"'"'style'"'"');
       node.type = '"'"'text/css'"'"';
-      node.appendChild(document.createTextNode(str.replace(/;/g, '"'"' !important;'"'"')));
+      node.appendChild(document.createTextNode(str.replace(/(?:\s*!important)?;/g, '"'"' !important;'"'"')));
       (document.head ?? document.documentElement).appendChild(node);
   }
 
@@ -575,7 +575,15 @@ while IFS= read -r line; do
   while IFS= read -r matches; do
     if [[ $matches != *"config.js" ]]; then
       while IFS= read -r js_file; do
-        if [[ $js_file != *"config.js" ]]; then
+        if [[ $js_file == *"mediapart.js" ]]; then
+          js_str=$(python3 adapt-special-case.py mediapart < "$OPHIROFOX_DIR/$js_file")
+        elif [[ $js_file == *"arret-sur-images.js" ]]; then
+          js_str=$(python3 adapt-special-case.py arretsurimages < "$OPHIROFOX_DIR/$js_file")
+        elif [[ $js_file == *"alternatives-economiques.js" ]]; then
+          js_str=$(python3 adapt-special-case.py alternativeseconomiques < "$OPHIROFOX_DIR/$js_file")
+        elif [[ $js_file == *"pressreader.js" ]]; then
+          js_str=$(python3 adapt-special-case.py pressreader < "$OPHIROFOX_DIR/$js_file")
+        elif [[ $js_file != *"config.js" ]]; then
           js_str=$(cat "$OPHIROFOX_DIR/$js_file")
         fi
       done <<< "$js_files"

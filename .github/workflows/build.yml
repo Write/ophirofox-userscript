@@ -79,8 +79,10 @@ jobs:
           # Clone the repo and checkout the 'current' tag
           git clone --depth 1 --branch current https://github.com/lovasoa/ophirofox.git ophirofox
 
-      - name: Copy generate-userscript.sh inside ophirofox dir
-        run: cp ./generate-userscript.sh ./ophirofox/generate-userscript.sh
+      - name: Copy generate-userscript.sh and adapt-special-case.py inside ophirofox dir
+        run: |
+          cp ./generate-userscript.sh ./ophirofox/generate-userscript.sh
+          cp ./adapt-special-case.py ./ophirofox/adapt-special-case.py
 
       - name: Grant execution rights to generate-userscript.sh
         working-directory: ophirofox
