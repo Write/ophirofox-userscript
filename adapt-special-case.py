@@ -122,4 +122,37 @@ code = re.sub(
 # ── 7. Cleanup ───────────────────────────────────────────────────────────────
 code = re.sub(r"await\s+await\s+", "await ", code)
 
+# ── 8. Apple-platform cog wheel (⚙) on special-case links ───────────────────
+COG_WRAPPER = """\
+  function ophirofoxWrapWithCog(element) {
+      if (isApplePlatform()) {
+          const wrapper = document.createElement("span");
+          wrapper.style.cssText = "display: inline-flex; align-items: center; gap: 6px;";
+          wrapper.appendChild(element);
+          const cog = document.createElement("button");
+          cog.textContent = "\\\\u2699";
+          cog.title = "Parametres Ophirofox";
+          cog.style.cssText = "background: none; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 16px; padding: 2px 6px; line-height: 1;";
+          cog.addEventListener("click", async (evt) => {
+              evt.preventDefault();
+              evt.stopPropagation();
+              const result = await showSettingsPanel();
+              universityName = result.universityName;
+              settingsOpenLinksNewTab = result.openLinksNewTab;
+              settingsAutoOpenLink = result.autoOpenLink;
+              await getSettings();
+          });
+          wrapper.appendChild(cog);
+          return wrapper;
+      }
+      return element;
+  }
+"""
+
+# Inject the wrapper before the onLoad function
+code = re.sub(r"(\s*)(async function onLoad)", r"\1" + COG_WRAPPER + r"\n\1\2", code)
+
+# Wrap return value of createLink functions with the cog
+code = re.sub(r"(\s+return) (a|div);", r"\1 ophirofoxWrapWithCog(\2);", code)
+
 sys.stdout.write(code)
