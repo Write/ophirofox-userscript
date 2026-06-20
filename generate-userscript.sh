@@ -487,7 +487,7 @@ SCRIPT+='//
   function pasteStyle(str) {
       var node = document.createElement('"'"'style'"'"');
       node.type = '"'"'text/css'"'"';
-      node.appendChild(document.createTextNode(str.replace(/;/g, '"'"' !important;'"'"')));
+      node.appendChild(document.createTextNode(str.replace(/(?:\s*!important)?;/g, '"'"' !important;'"'"')));
       (document.head ?? document.documentElement).appendChild(node);
   }
 
