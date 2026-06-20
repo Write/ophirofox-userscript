@@ -132,7 +132,7 @@ COG_WRAPPER = """\
           const cog = document.createElement("button");
           cog.textContent = "\\\\u2699";
           cog.title = "Parametres Ophirofox";
-          cog.style.cssText = "background: none; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 16px; padding: 2px 6px; line-height: 1;";
+          cog.style.cssText = "background: white; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; font-size: 16px; padding: 2px 6px; line-height: 1; z-index: 20;";
           cog.addEventListener("click", async (evt) => {
               evt.preventDefault();
               evt.stopPropagation();
