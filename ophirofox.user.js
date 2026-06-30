@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10615.44
+// @version 2.6.10630.642
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -328,10 +328,10 @@
         "name": "ENSAM",
         "AUTH_URL": "https://rp1.ensam.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=AML"
     }, {
-        "name": "ENSTA Bretagne",
+        "name": "ENSTA - Campus de Brest",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=ENSTAT_1"
     }, {
-        "name": "ENSTA Paris",
+        "name": "ENSTA - Campus de Paris-Saclay",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_9"
     }, {
         "name": "ENSAE Paris/ENSAI",
