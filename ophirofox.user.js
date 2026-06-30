@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10630.642
+// @version 2.6.10630.1424
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -184,6 +184,7 @@
 // @include https://www.economist.com/*
 // @include https://www.lanouvellerepublique.fr/*
 // @include https://www.lagazettedescommunes.com/*
+// @include https://www.24heures.ch/*
 //
 // @run-at      document-start
 //
@@ -4596,28 +4597,19 @@
              * @description create link <a> to BNF mirror
              */
             function createLink() {
-                const span = document.createElement("span");
-                span.textContent = "Lire avec BNF";
-                span.className = "sub-stamp-component etiquette ophirofox-europresse";
                 const a = document.createElement("a");
+                a.textContent = "Lire avec BNF";
                 a.href = BNF_ALTERNATIVESECONOMIQUES_LOGIN_URL;
-                a.appendChild(span);
                 return ophirofoxWrapWithCog(a);
             }
 
             /**
              * @description check DOM for paywall iframe
-             * @return {HTMLElement[]} The paywall iframe elements
              */
             function findPremiumBanner() {
-                const paywall = document.querySelector("iframe#temp-paywall");
+                const paywall = document.querySelector("iframe#p3-paywall");
                 if (!paywall) return [];
                 return [paywall];
-            }
-
-            /** @return {boolean} true si le bouton BNF est déjà dans le DOM */
-            function bnfLinkAlreadyPresent() {
-                return !!document.querySelector("a.ophirofox-europresse");
             }
 
             async function handleAlternativesEconomiquesMirror(config) {
@@ -4627,11 +4619,9 @@
                 const articlePath = await GM.getValue("ophirofox_alternativeseconomiques_article", null);
 
                 if (!articlePath) {
-                    // If we're directly on the mirror with no stored article, nothing to do
                     return;
                 }
 
-                // Redirect to the stored article on the mirror
                 console.log("[ophirofox][ae-mirror] redirect to:", articlePath);
                 GM.deleteValue("ophirofox_alternativeseconomiques_article");
                 window.location.pathname = articlePath;
@@ -4640,30 +4630,21 @@
             async function handleAlternativesEconomiques(config) {
                 console.log("[ophirofox][ae] checking for premium banner");
 
-                if (bnfLinkAlreadyPresent()) return;
-
                 const reserve = findPremiumBanner();
                 if (!reserve?.length) return;
 
-                console.log("[ophirofox][ae] premium banner found, injecting link");
+                console.log("[ophirofox][ae] premium banner found, storing article path");
                 GM.setValue("ophirofox_alternativeseconomiques_article", new URL(window.location).pathname);
 
-                for (const balise of reserve) {
-                    const link = createLink();
-                    balise.parentElement.insertBefore(link, balise);
-                    console.log("[ophirofox][ae] link injected —", link);
-                    console.log("[ophirofox][ae] find it with: document.querySelector('a.ophirofox-europresse')");
-                }
+                injectRubriquesBnfLink();
             }
 
-            /** @description watch for the paywall iframe to appear and inject the BNF link */
+            /** @description watch for the paywall iframe to appear */
             function watchForPaywall(config) {
-                // Tentative immédiate au cas où l'iframe est déjà là
                 handleAlternativesEconomiques(config).catch(console.error);
 
-                // Observe le DOM jusqu'à ce que iframe#temp-paywall apparaisse
                 const observer = new MutationObserver(() => {
-                    if (document.querySelector("iframe#temp-paywall")) {
+                    if (document.querySelector("iframe#p3-paywall")) {
                         console.log("[ophirofox][ae] paywall iframe detected via observer");
                         handleAlternativesEconomiques(config).catch(console.error);
                         observer.disconnect();
@@ -4674,11 +4655,33 @@
                     subtree: true
                 });
 
-                // Filet de sécurité : arrêter l'observer après 30s
                 setTimeout(() => observer.disconnect(), 30000);
             }
 
-            /** @description check for BNF users. If yes, create link button */
+            /** @description inject BNF link as first child inside .article-header__rubriques */
+            async function injectRubriquesBnfLink() {
+                const tryInject = () => {
+                    const rubriques = document.querySelector(".article-header__rubriques");
+                    if (!rubriques) return false;
+                    if (rubriques.querySelector(".ophirofox-europresse")) return true;
+                    const link = createLink();
+                    link.className = "ophirofox-europresse";
+                    rubriques.insertBefore(link, rubriques.firstChild);
+                    return true;
+                };
+
+                if (tryInject()) return;
+
+                const observer = new MutationObserver(() => {
+                    if (tryInject()) observer.disconnect();
+                });
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+                setTimeout(() => observer.disconnect(), 30000);
+            }
+
             function ophirofoxWrapWithCog(element) {
                 if (isApplePlatform()) {
                     const wrapper = document.createElement("span");
@@ -4704,20 +4707,20 @@
             }
 
 
+
             async function onLoad() {
                 console.log("[ophirofox][ae] onLoad");
+
                 const config = await getOphirofoxConfig();
                 if (!config.AUTH_URL_ALTERNATIVESECONOMIQUES) {
                     console.log("[ophirofox][ae] no BNF config found, aborting");
                     return;
                 }
                 const currentPage = new URL(window.location);
-                console.log("[ophirofox][ae] currentPage.host:", currentPage.host, "| AUTH_URL_ALTERNATIVESECONOMIQUES:", config.AUTH_URL_ALTERNATIVESECONOMIQUES);
                 if (currentPage.host == config.AUTH_URL_ALTERNATIVESECONOMIQUES) {
                     console.log("[ophirofox][ae] on mirror, running handleAlternativesEconomiquesMirror");
                     handleAlternativesEconomiquesMirror(config);
                 } else {
-                    console.log("[ophirofox][ae] on original site, running handleAlternativesEconomiques");
                     watchForPaywall(config);
                 }
             }
@@ -4749,28 +4752,19 @@
              * @description create link <a> to BNF mirror
              */
             function createLink() {
-                const span = document.createElement("span");
-                span.textContent = "Lire avec BNF";
-                span.className = "sub-stamp-component etiquette ophirofox-europresse";
                 const a = document.createElement("a");
+                a.textContent = "Lire avec BNF";
                 a.href = BNF_ALTERNATIVESECONOMIQUES_LOGIN_URL;
-                a.appendChild(span);
                 return ophirofoxWrapWithCog(a);
             }
 
             /**
              * @description check DOM for paywall iframe
-             * @return {HTMLElement[]} The paywall iframe elements
              */
             function findPremiumBanner() {
-                const paywall = document.querySelector("iframe#temp-paywall");
+                const paywall = document.querySelector("iframe#p3-paywall");
                 if (!paywall) return [];
                 return [paywall];
-            }
-
-            /** @return {boolean} true si le bouton BNF est déjà dans le DOM */
-            function bnfLinkAlreadyPresent() {
-                return !!document.querySelector("a.ophirofox-europresse");
             }
 
             async function handleAlternativesEconomiquesMirror(config) {
@@ -4780,11 +4774,9 @@
                 const articlePath = await GM.getValue("ophirofox_alternativeseconomiques_article", null);
 
                 if (!articlePath) {
-                    // If we're directly on the mirror with no stored article, nothing to do
                     return;
                 }
 
-                // Redirect to the stored article on the mirror
                 console.log("[ophirofox][ae-mirror] redirect to:", articlePath);
                 GM.deleteValue("ophirofox_alternativeseconomiques_article");
                 window.location.pathname = articlePath;
@@ -4793,30 +4785,21 @@
             async function handleAlternativesEconomiques(config) {
                 console.log("[ophirofox][ae] checking for premium banner");
 
-                if (bnfLinkAlreadyPresent()) return;
-
                 const reserve = findPremiumBanner();
                 if (!reserve?.length) return;
 
-                console.log("[ophirofox][ae] premium banner found, injecting link");
+                console.log("[ophirofox][ae] premium banner found, storing article path");
                 GM.setValue("ophirofox_alternativeseconomiques_article", new URL(window.location).pathname);
 
-                for (const balise of reserve) {
-                    const link = createLink();
-                    balise.parentElement.insertBefore(link, balise);
-                    console.log("[ophirofox][ae] link injected —", link);
-                    console.log("[ophirofox][ae] find it with: document.querySelector('a.ophirofox-europresse')");
-                }
+                injectRubriquesBnfLink();
             }
 
-            /** @description watch for the paywall iframe to appear and inject the BNF link */
+            /** @description watch for the paywall iframe to appear */
             function watchForPaywall(config) {
-                // Tentative immédiate au cas où l'iframe est déjà là
                 handleAlternativesEconomiques(config).catch(console.error);
 
-                // Observe le DOM jusqu'à ce que iframe#temp-paywall apparaisse
                 const observer = new MutationObserver(() => {
-                    if (document.querySelector("iframe#temp-paywall")) {
+                    if (document.querySelector("iframe#p3-paywall")) {
                         console.log("[ophirofox][ae] paywall iframe detected via observer");
                         handleAlternativesEconomiques(config).catch(console.error);
                         observer.disconnect();
@@ -4827,11 +4810,33 @@
                     subtree: true
                 });
 
-                // Filet de sécurité : arrêter l'observer après 30s
                 setTimeout(() => observer.disconnect(), 30000);
             }
 
-            /** @description check for BNF users. If yes, create link button */
+            /** @description inject BNF link as first child inside .article-header__rubriques */
+            async function injectRubriquesBnfLink() {
+                const tryInject = () => {
+                    const rubriques = document.querySelector(".article-header__rubriques");
+                    if (!rubriques) return false;
+                    if (rubriques.querySelector(".ophirofox-europresse")) return true;
+                    const link = createLink();
+                    link.className = "ophirofox-europresse";
+                    rubriques.insertBefore(link, rubriques.firstChild);
+                    return true;
+                };
+
+                if (tryInject()) return;
+
+                const observer = new MutationObserver(() => {
+                    if (tryInject()) observer.disconnect();
+                });
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+                setTimeout(() => observer.disconnect(), 30000);
+            }
+
             function ophirofoxWrapWithCog(element) {
                 if (isApplePlatform()) {
                     const wrapper = document.createElement("span");
@@ -4857,20 +4862,20 @@
             }
 
 
+
             async function onLoad() {
                 console.log("[ophirofox][ae] onLoad");
+
                 const config = await getOphirofoxConfig();
                 if (!config.AUTH_URL_ALTERNATIVESECONOMIQUES) {
                     console.log("[ophirofox][ae] no BNF config found, aborting");
                     return;
                 }
                 const currentPage = new URL(window.location);
-                console.log("[ophirofox][ae] currentPage.host:", currentPage.host, "| AUTH_URL_ALTERNATIVESECONOMIQUES:", config.AUTH_URL_ALTERNATIVESECONOMIQUES);
                 if (currentPage.host == config.AUTH_URL_ALTERNATIVESECONOMIQUES) {
                     console.log("[ophirofox][ae] on mirror, running handleAlternativesEconomiquesMirror");
                     handleAlternativesEconomiquesMirror(config);
                 } else {
-                    console.log("[ophirofox][ae] on original site, running handleAlternativesEconomiques");
                     watchForPaywall(config);
                 }
             }
@@ -5500,6 +5505,49 @@
         pasteStyle(`
         .ophirofox-europresse {
             line-height: 50px;
+        }
+        `);
+    }
+    if (match(hostname, "https://www.24heures.ch/*")) {
+        window.addEventListener("load", function(event) {
+            function extractKeywords() {
+                const title = document.querySelector("h1, .titleheader");
+                return title?.textContent?.trim();
+            }
+
+            async function createLink() {
+                const a = await ophirofoxEuropresseLink(extractKeywords());
+                a.classList.add("ophirofox-europresse");
+                return a;
+            }
+
+            function findPremiumBanner() {
+                const premium = document.querySelector("span.premium");
+                if (!premium?.textContent.includes("Abo")) return null;
+                return premium;
+            }
+
+            async function onLoad() {
+                if (window.location.pathname === "/") return;
+                const premium = findPremiumBanner();
+                if (!premium) return;
+                premium.before(await createLink());
+            }
+
+            onLoad().catch(console.error);
+        });
+        pasteStyle(`
+        .ophirofox-europresse {
+            display: inline-block;
+            margin-right: .5rem;
+            padding: .2rem .6rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+            font-family: var(--font-libre-franklin);
+            line-height: 1.6rem;
+            letter-spacing: .025rem;
+            background: #ffe404;
+            color: black;
         }
         `);
     }
