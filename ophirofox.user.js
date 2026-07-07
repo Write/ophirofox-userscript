@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10630.1424
+// @version 2.6.10707.1958
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -681,6 +681,10 @@
         "name": "Médiathèques de Rennes Métropole",
         "HTTP_REFERER": "https://www.lesmediatheques-rennesmetropole.fr/",
         "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=CARMU_2"
+    }, {
+        "name": "Vallée Sud Médiathèques",
+        "HTTP_REFERER": "https://mediatheques.valleesud.fr/",
+        "AUTH_URL": "https://nouveau.europresse.com/access/httpref/default.aspx?un=U032788U_2"
     }];
 
     function showSettingsPanel() {
