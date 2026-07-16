@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10707.1958
+// @version 2.6.10715.2328
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -480,8 +480,8 @@
         "name": "Université de La Réunion",
         "AUTH_URL": "https://elgebar.univ-reunion.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=BUREUNIONT_1"
     }, {
-        "name": "Université de Liège",
-        "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=U031558T_1"
+        "name": "Université de Liège (ULiège)",
+        "AUTH_URL": "https://go.openathens.net/redirector/uliege.be?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fip%2Fdefault.aspx%3Fun%3DU031558T_1"
     }, {
         "name": "Université Libre de Bruxelles",
         "AUTH_URL": "http://nouveau.europresse.com.ezproxy.ulb.ac.be/access/ip/default.aspx?un=LIBRET_1"
