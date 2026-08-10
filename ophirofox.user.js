@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10715.2328
+// @version 2.6.10810.1508
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -104,6 +104,7 @@
 // @include https://nouveau-europresse-com.ezproxy.uclouvain.be/*
 // @include https://nouveau-europresse-com.iepnomade-2.grenet.fr/*
 // @include https://nouveau-europresse-com.bsg-ezproxy.univ-paris3.fr/*
+// @include https://nouveau-europresse-com.bsi-cite-sciences.idm.oclc.org/*
 // @include https://nouveau-europresse-com.eu1.proxy.openathens.net/*
 // @include https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1
 // @include http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1
@@ -288,6 +289,9 @@
     }, {
         "name": "Centrale Lyon",
         "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
+    }, {
+        "name": "Cité des Sciences",
+        "AUTH_URL": "https://bsi-cite-sciences.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033451U_1"
     }, {
         "name": "CY Cergy Paris Université",
         "AUTH_URL": "https://bibdocs.u-cergy.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031547T_1"
@@ -1044,6 +1048,7 @@
         match(hostname, "https://nouveau-europresse-com.ezproxy.uclouvain.be/*") ||
         match(hostname, "https://nouveau-europresse-com.iepnomade-2.grenet.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.bsg-ezproxy.univ-paris3.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.bsi-cite-sciences.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.eu1.proxy.openathens.net/*") ||
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_1") ||
         match(hostname, "http://nouveau.europresse.com.docelec.enssib.fr/access/ip/default.aspx?un=ENSSIBT_1") ||
