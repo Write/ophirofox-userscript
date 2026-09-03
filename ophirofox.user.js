@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10830.2212
+// @version 2.6.10903.1800
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -295,6 +295,9 @@
     }, {
         "name": "CY Cergy Paris Université",
         "AUTH_URL": "https://bibdocs.u-cergy.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U031547T_1"
+    }, {
+        "name": "Collège Sévigné - Paris",
+        "AUTH_URL": "https://nouveau.europresse.com/Login/Esidoc?sso_id=0753598D"
     }, {
         "name": "E-SIDOC LFS (Lycée Français de Shanghai)",
         "AUTH_URL": "https://2160010m-cas.esidoc.fr/cas/login?service=http%3a%2f%2fnouveau.europresse.com%2fLogin%2fEsidoc%3fsso_id%3d2160010M"
