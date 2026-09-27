@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10903.1800
+// @version 2.6.10927.1438
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -389,6 +389,9 @@
     }, {
         "name": "Lycée la Martinière Diderot",
         "AUTH_URL": "https://idp-auth.gar.education.fr/domaineGar?idENT=QzAw&idEtab=MDY5MDAzN1I=&idRessource=ark%3A%2F57800%2Feuropresse-cision"
+    }, {
+        "name": "Lycée Louis Rascol",
+        "AUTH_URL": "https://idp-auth.gar.education.fr/domaineGar?idENT=TjA=&idEtab=MDgxMDAwNFA=&idRessource=ark%3A%2F57800%2Feuropresse-cision"
     }, {
         "name": "Médiathèque de Boulogne-Billancourt",
         "AUTH_URL": "https://mediatheques.boulognebillancourt.com/ASSARedirect.ashx?url=https%3A%2F%2Fnouveau.europresse.com%2Faccess%2Fhttpref%2Fdefault.aspx%3Fun%3DU032145U_2"
