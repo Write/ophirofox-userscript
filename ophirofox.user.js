@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10928.1812
+// @version 2.6.10928.2140
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -2663,7 +2663,9 @@
             background-color: #f2c94c;
             color: #695106;
             font-family: Lato,Lato-fallback,Arial,Helvetica,sans-serif;
-            padding: 1em;
+            display: inline-block;
+            padding: .5em 1em;
+            margin: 0 .5em 1em 0;
             vertical-align: middle;
             border-radius: 0.5rem;
         }
@@ -3045,7 +3047,7 @@
                 if (!banner) return;
                 if (banner.querySelector('.ophirofox-europresse')) return;
                 const premiumBanner = [...banner.querySelectorAll('p')]
-                    .find(p => p.textContent === 'Ce contenu est réservé aux abonnés');
+                    .find(p => p.textContent.trim().startsWith('Ce contenu est réservé aux abonnés'));
                 if (!premiumBanner) return;
                 ophirofoxEuropresseLink(document.querySelector('h1')?.textContent)
                     .then(a => premiumBanner.after(a));
