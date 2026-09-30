@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.10929.1918
+// @version 2.6.10930.2138
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -116,6 +116,7 @@
 // @include https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*
 // @include https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*
 // @include https://nouveau-europresse-com.kedge.idm.oclc.org/*
+// @include https://nouveau-europresse-com.ezproxybsb.ad.univ-paris3.fr/
 // @include https://www.lemonde.fr/*
 // @include https://www.liberation.fr/*
 // @include https://next.liberation.fr/*
@@ -283,6 +284,9 @@
     }, {
         "name": "Bibliothèque publique d'Ottawa",
         "AUTH_URL": "https://ezproxy.biblioottawalibrary.ca/login?qurl=https://nouveau.eureka.cc/access/ip/default.aspx?un=opladminU_1"
+    }, {
+        "name": "Bibliothèque Sainte-Barbe",
+        "AUTH_URL": "https://ezproxybsb.ad.univ-paris3.fr/login?=&url=http://nouveau.europresse.com/access/ip/default.aspx?un=pantheonT_1"
     }, {
         "name": "Bibliothèque Sainte-Geneviève (BSG)",
         "AUTH_URL": "http://bsg-ezproxy.univ-paris3.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=pantheonT_1"
@@ -1065,7 +1069,8 @@
         match(hostname, "https://nouveau.europresse.com/access/ip/default.aspx?un=lausanneAT_1") ||
         match(hostname, "https://nouveau-eureka-cc.ezproxy.biblioottawalibrary.ca/*") ||
         match(hostname, "https://nouveau-europresse-com.ville-geneve.idm.oclc.org/*") ||
-        match(hostname, "https://nouveau-europresse-com.kedge.idm.oclc.org/*")) {
+        match(hostname, "https://nouveau-europresse-com.kedge.idm.oclc.org/*") ||
+        match(hostname, "https://nouveau-europresse-com.ezproxybsb.ad.univ-paris3.fr/")) {
         function removeMarkElements() {
             Array.from(document.querySelectorAll("article mark")).forEach(mark => {
                 const repl = document.createElement("span");
