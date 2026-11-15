@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.11103.1518
+// @version 2.6.11115.2228
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -308,6 +308,9 @@
     }, {
         "name": "École Centrale de Lyon (ECL)",
         "AUTH_URL": "https://ec-lyon.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=LYONT_7"
+    }, {
+        "name": "École Centrale Méditerranée",
+        "AUTH_URL": "https://externe.centrale-med.fr/europress.html"
     }, {
         "name": "École Centrale de Nantes",
         "AUTH_URL": "https://nouveau.europresse.com/access/ip/default.aspx?un=CENTRALENANTEST_1"
@@ -625,6 +628,9 @@
     }, {
         "name": "Université de Toulouse",
         "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_6"
+    }, {
+        "name": "Université de technologie Tarbes occitanie Pyrénées",
+        "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_15"
     }, {
         "name": "Institut national polytechnique de Toulouse et ENVT",
         "AUTH_URL": "https://gorgone.univ-toulouse.fr/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=CAPITOLET_7"
