@@ -1,4 +1,4 @@
-# ophirofox-userscript# ophirofox-userscript
+# ophirofox-userscript
 
 Userscript généré automatiquement (toutes les 2 h par GitHub Actions) à partir de la
 release `current` du projet [lovasoa/ophirofox](https://github.com/lovasoa/ophirofox) :
