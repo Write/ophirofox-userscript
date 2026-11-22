@@ -1,6 +1,5 @@
 name: CI
 
-    
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
@@ -14,6 +13,15 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Needed to push the built userscript back to main and create the release
+permissions:
+  contents: write
+
+# Never let two runs (schedule + manual) race on the same commit/release
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
 
   check-version:
@@ -24,41 +32,55 @@ jobs:
       ophirofox_version_raw: ${{ steps.get_ophirofox_version.outputs.version_raw }}
     steps:
 
+      # Authenticated call (avoids the 60 req/h anonymous rate limit).
+      # Empty answer now FAILS the job instead of silently producing a bogus
+      # "release=''" that made the build job re-run and re-release every 2 hours.
       - id: current_repo
-        continue-on-error: true
         run: |
-          RELEASE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          RELEASE=$(curl -fsSL \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
             | jq -r '.tag_name // ""')
-          echo "release=$RELEASE" >> $GITHUB_OUTPUT
+          if [ -z "$RELEASE" ]; then
+            echo "::error::Could not read the latest release of ${{ github.repository }}"
+            exit 1
+          fi
+          echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
+          echo "Latest release of this repo: $RELEASE"
 
       - name: "Get latest ophirofox version from 'current' tag"
         id: get_ophirofox_version
-        continue-on-error: true
         run: |
-          # Get the release info for the 'current' tag
-          RELEASE_INFO=$(curl -s https://api.github.com/repos/lovasoa/ophirofox/releases/tags/current)
-          
-          # Extract version from release name (format: "Current Build (vX.Y.Z.W) - Signed/Unsigned")
-          OPHIROFOX_VERSION_RAW=$(echo "$RELEASE_INFO" | jq -r '.name' | grep -oP 'v[\d.]+')
+          RELEASE_INFO=$(curl -fsSL \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/lovasoa/ophirofox/releases/tags/current)
+
+          # Release name format: "Current Build (vX.Y.Z.W) - Signed/Unsigned"
+          OPHIROFOX_VERSION_RAW=$(echo "$RELEASE_INFO" | jq -r '.name // ""' | grep -oP 'v[\d.]+' | head -n1 || true)
+          if [ -z "$OPHIROFOX_VERSION_RAW" ]; then
+            echo "::error::Could not extract a version from the 'current' release name:"
+            echo "$RELEASE_INFO" | jq -r '.name // "(no name)"'
+            exit 1
+          fi
           OPHIROFOX_VERSION=$(echo "$OPHIROFOX_VERSION_RAW" | cut -c2-)
-          
-          echo "version_raw=$OPHIROFOX_VERSION_RAW" >> $GITHUB_OUTPUT
-          echo "version=$OPHIROFOX_VERSION" >> $GITHUB_OUTPUT
-          
+
+          echo "version_raw=$OPHIROFOX_VERSION_RAW" >> "$GITHUB_OUTPUT"
+          echo "version=$OPHIROFOX_VERSION" >> "$GITHUB_OUTPUT"
+
           echo "Found Ophirofox version: $OPHIROFOX_VERSION_RAW ($OPHIROFOX_VERSION)"
-    
+
       - id: update_available
-        if: steps.get_ophirofox_version.outcome == 'success'
         run: |
-          echo CURRENT REPO RELEASE   : ${{ steps.current_repo.outputs.release }}
-          echo OPHIROFOX REPO RELEASE : ${{ steps.get_ophirofox_version.outputs.version_raw }}
+          echo "CURRENT REPO RELEASE   : ${{ steps.current_repo.outputs.release }}"
+          echo "OPHIROFOX REPO RELEASE : ${{ steps.get_ophirofox_version.outputs.version_raw }}"
           if [[ "${{ steps.current_repo.outputs.release }}" == "${{ steps.get_ophirofox_version.outputs.version_raw }}" ]]; then
             echo "No release available"
-            echo "update_status=false" >> $GITHUB_OUTPUT
+            echo "update_status=false" >> "$GITHUB_OUTPUT"
           else
             echo "New release available"
-            echo "update_status=true" >> $GITHUB_OUTPUT
+            echo "update_status=true" >> "$GITHUB_OUTPUT"
           fi
 
   build:
@@ -70,7 +92,7 @@ jobs:
     if: ${{ needs.check-version.outputs.update_available == 'true' }}
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -91,29 +113,28 @@ jobs:
       - name: Run generate-userscript.sh
         working-directory: ophirofox
         run: bash ./generate-userscript.sh ${{ needs.check-version.outputs.ophirofox_version }} || true
-        
+
       - name: Debug file existence
         run: |
           ls -la ./ophirofox/
           echo "Does file exist?"
           if [ -f "./ophirofox/ophirofox.user.js" ]; then echo "Yes"; else echo "No"; fi
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - name: Install jsbeautifier via pip
-        working-directory: ophirofox
-        run: pip install jsbeautifier
-
+      # No setup-python step: python3 + pipx are preinstalled on ubuntu-latest
+      # (PEP 668 makes a plain `pip install` fail on Ubuntu 24.04).
       - name: Beautify userscript
         working-directory: ophirofox
-        run: js-beautify ophirofox.user.js >> ophirofox-pretty.user.js && mv ophirofox-pretty.user.js ophirofox.user.js
+        run: |
+          pipx run jsbeautifier ophirofox.user.js > ophirofox-pretty.user.js
+          mv ophirofox-pretty.user.js ophirofox.user.js
 
       - name: Get ophirofox changelog from 'current' release
         run: |
-          curl -s https://api.github.com/repos/lovasoa/ophirofox/releases/tags/current | jq -r '.body' | tee /tmp/changelog.txt
+          curl -fsSL \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/lovasoa/ophirofox/releases/tags/current \
+            | jq -r '.body // ""' | tee /tmp/changelog.txt
 
       - name: Push to main
         run: |
@@ -125,12 +146,12 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Release from Ophirofox ${{ needs.check-version.outputs.ophirofox_version_raw }}"
-            git pull --rebase
-            git push
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.check-version.outputs.ophirofox_version_raw }}
           name: Release ${{ needs.check-version.outputs.ophirofox_version }}
