@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version 2.6.11121.1956
+// @version 2.6.11127.1818
 // @author  Write
 // @name    OphirofoxScript
 // @grant   GM.getValue
@@ -92,6 +92,7 @@
 // @include https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/*
 // @include https://nouveau-europresse-com.ezproxy.unilim.fr/*
 // @include https://nouveau-europresse-com.ezproxy.uphf.fr/*
+// @include https://nouveau-europresse-com.neoma-bs.idm.oclc.org/*
 // @include https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*
 // @include https://nouveau-europresse-com.hub.tbs-education.fr/*
 // @include https://nouveau-europresse-com.ezproxy.univ-perp.fr/*
@@ -405,6 +406,9 @@
     }, {
         "name": "Médiathèque de Télécom SudParis & Institut Mines-Télécom Business School",
         "AUTH_URL": "http://mediaproxy.imtbs-tsp.eu/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033137T_8"
+    }, {
+        "name": "NEOMA Business School",
+        "AUTH_URL": "https://neoma-bs.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=U033490T_1"
     }, {
         "name": "Rennes School of Business",
         "AUTH_URL": "https://rennes-sb.idm.oclc.org/login?url=https://nouveau.europresse.com/access/ip/default.aspx?un=RENNES2T_2"
@@ -1052,6 +1056,7 @@
         match(hostname, "https://nouveau-europresse-com.univ-eiffel.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.unilim.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.uphf.fr/*") ||
+        match(hostname, "https://nouveau-europresse-com.neoma-bs.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.rennes-sb.idm.oclc.org/*") ||
         match(hostname, "https://nouveau-europresse-com.hub.tbs-education.fr/*") ||
         match(hostname, "https://nouveau-europresse-com.ezproxy.univ-perp.fr/*") ||
